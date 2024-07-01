@@ -1,31 +1,31 @@
 {
 	"schemaVersion": 1,
-	"id": "modid",
+	"id": "seasons4fabric",
 	"version": "${version}",
-	"name": "Example mod",
+	"name": "Seasons4Fabric",
 	"description": "This is an example description! Tell everyone what your mod is about!",
 	"authors": [
 		"Me!"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/kochkaev/Seasons4Fabric"
 	},
 	"license": "CC0-1.0",
-	"icon": "assets/modid/icon.png",
+	"icon": "assets/seasons4fabric/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.example.ExampleMod"
+			"ru.kochkaev.Seasons4Fabric.Main"
 		],
 		"client": [
-			"com.example.ExampleModClient"
+			"ru.kochkaev.Seasons4Fabric.MainClient"
 		]
 	},
 	"mixins": [
-		"modid.mixins.json",
+		"seasons4fabric.mixins.json",
 		{
-			"config": "modid.client.mixins.json",
+			"config": "seasons4fabric.client.mixins.json",
 			"environment": "client"
 		}
 	],
