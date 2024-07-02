@@ -10,8 +10,8 @@ public class MessageFormat {
     public static String formatMessage(String message){
 
         // Placeholders
-        message.replaceAll("%season%", Season.getCurrent().name());
-        message.replaceAll("%weather%", Weather.getCurrent().name());
+        message.replaceAll("%season%", Season.getCurrent().getName());
+        message.replaceAll("%weather%", Weather.getCurrent().getName());
 
         // Colors
         message.replaceAll("&", "§");

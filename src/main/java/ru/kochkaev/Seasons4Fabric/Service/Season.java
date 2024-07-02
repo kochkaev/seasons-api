@@ -28,11 +28,14 @@ public enum Season {
     }
 
     public static void restoreCurrentFromConfig(){
-        String currentStr = Config.getCurrentWeather();
+        String currentStr = Config.getCurrentSeason();
         CURRENT_SEASON = valueOf(currentStr);
     }
     public static void saveCurrentToConfig(){
         String currentStr = CURRENT_SEASON.toString();
-        Config.setCurrentWeather(currentStr);
+        Config.setCurrentSeason(currentStr);
     }
+
+    public String getName(){ return this.name; }
+    public String getMessage(){ return this.message; }
 }

@@ -3,7 +3,6 @@
 	"package": "ru.kochkaev.Seasons4Fabric.Mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
-      "ExampleMixin",
       "ServerWorldMixin"
 	],
 	"injectors": {

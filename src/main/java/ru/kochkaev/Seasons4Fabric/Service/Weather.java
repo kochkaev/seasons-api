@@ -62,18 +62,18 @@ public enum Weather {
     private final String name; // Default name shown to players
     private final String message; // Default message to show the weather changing
     private final boolean catastrophic; // Is there is a high risk of this weather killing a player?
-    private final boolean storm; // Whether there should be rain
+    private final boolean raining; // Whether there should be rain
     private final boolean thundering; // Whether the rain should be thunderous
     private final int chance;
     private final List<Season> seasons; // List of seasons this weather can be triggered on
 
     private static Weather CURRENT_WEATHER;
 
-    Weather(String name, String broadcast, boolean catastrophic, boolean storm, boolean thundering, int chance, List<Season> seasons) {
+    Weather(String name, String broadcast, boolean catastrophic, boolean raining, boolean thundering, int chance, List<Season> seasons) {
         this.name = name;
         this.message = broadcast;
         this.catastrophic = catastrophic;
-        this.storm = storm;
+        this.raining = raining;
         this.thundering = thundering;
         this.chance = chance;
         this.seasons = seasons;
@@ -124,6 +124,11 @@ public enum Weather {
         Weather weather = Weather.getChancedWeather(currentSeason);
         Weather.setCurrent(weather);
         Message.getInstance().sendMessage(weather.message);
-        WeatherUtils.setWeather(weather);
+        WeatherUtils.getInstance().setWeather(weather);
     }
+
+    public String getName() { return this.name; }
+    public String  getMessage() { return this.name; }
+    public boolean getRaining() { return this.raining; }
+    public boolean getThundering() { return this.thundering; }
 }

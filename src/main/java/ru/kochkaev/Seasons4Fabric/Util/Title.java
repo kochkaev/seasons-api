@@ -19,7 +19,7 @@ public class Title extends ServerPlayerEntity{
     }
 
     public void showSubtitle() {
-        this.networkHandler.sendPacket(new SubtitleS2CPacket(Text.of((Season.getCurrent().name() + " &7• "+ Weather.getCurrent().name()).replaceAll("&", "§"))));
+        this.networkHandler.sendPacket(new SubtitleS2CPacket(Text.of((Season.getCurrent().getName() + " &7• "+ Weather.getCurrent().getName()).replaceAll("&", "§"))));
     }
 
     public static Title getInstance() { return instance; }
