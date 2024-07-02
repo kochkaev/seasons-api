@@ -1,6 +1,6 @@
 {
 	"required": true,
-	"package": "ru.kochkaev.Seasons4Fabric.mixin",
+	"package": "ru.kochkaev.Seasons4Fabric.Mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
       "ExampleMixin",

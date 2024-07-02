@@ -1,9 +1,8 @@
 package ru.kochkaev.Seasons4Fabric.Service;
 
 import ru.kochkaev.Seasons4Fabric.Config.Config;
-import ru.kochkaev.Seasons4Fabric.Execute.Message;
-import ru.kochkaev.Seasons4Fabric.Execute.WeatherExecutor;
-import ru.kochkaev.Seasons4Fabric.Temp;
+import ru.kochkaev.Seasons4Fabric.Util.Message;
+import ru.kochkaev.Seasons4Fabric.Util.WeatherUtils;
 
 import java.util.*;
 
@@ -111,11 +110,20 @@ public enum Weather {
         CURRENT_WEATHER = weather;
     }
 
+    public static void restoreCurrentFromConfig(){
+        String currentStr = Config.getCurrentWeather();
+        CURRENT_WEATHER = valueOf(currentStr);
+    }
+    public static void saveCurrentToConfig(){
+        String currentStr = CURRENT_WEATHER.toString();
+        Config.setCurrentWeather(currentStr);
+    }
+
     public static void setChancedWeatherInCurrentSeason(){
         Season currentSeason = Season.getCurrent();
         Weather weather = Weather.getChancedWeather(currentSeason);
         Weather.setCurrent(weather);
         Message.getInstance().sendMessage(weather.message);
-        WeatherExecutor.setWeather(weather);
+        WeatherUtils.setWeather(weather);
     }
 }

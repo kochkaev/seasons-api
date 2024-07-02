@@ -14,6 +14,7 @@ public class MessageFormat {
         message.replaceAll("%weather%", Weather.getCurrent().name());
 
         // Colors
+        message.replaceAll("&", "§");
 
         return message;
     }

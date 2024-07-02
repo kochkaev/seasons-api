@@ -1,14 +1,22 @@
 package ru.kochkaev.Seasons4Fabric.Config;
 
+import com.google.gson.Gson;
 import com.mojang.datafixers.util.Pair;
+import net.fabricmc.loader.api.FabricLoader;
+
+import java.io.*;
 
 public class Config {
     public static SimpleConfig CONFIG;
     private static ModConfigProvider configs;
+    private static Gson gson = new Gson();
+    private static File json;
+    private static FileOutputStream fos;
+    private static OutputStreamWriter osw;
 
     //// CONF = Other configs
     //// LANG = Translation
-    //// CURRENT = Current Weather/Season info
+    //// CURRENT = Current Weather/Season info (json)
 
     //// NAME = Display name of the Weather/Season
     //// MESSAGE = Message, sends to chat on trigger
@@ -78,16 +86,16 @@ public class Config {
     public static int CONF_WEATHER_BEAUTIFUL_CHANCE;
 
     /// CURRENT
-    public static String CURRENT_SEASON;
-    public static String CURRENT_WEATHER;
+    public static Current current;
 
     public static void registerConfigs() {
         configs = new ModConfigProvider();
         createConfigs();
 
-        CONFIG = SimpleConfig.of("Seasons4Fabric_config").provider(configs).request();
+        CONFIG = SimpleConfig.of("Seasons4Fabric/config").provider(configs).request();
 
         assignConfigs();
+        openJson();
     }
 
     private static void createConfigs() {
@@ -183,12 +191,6 @@ public class Config {
         configs.addKeyValuePair(new Pair<>("lang.weather.beautiful.name", "&aКрасиво"), "String");
         configs.addKeyValuePair(new Pair<>("lang.weather.beautiful.message", "&aСолнце светит, жизнь прекрасна! Сегодня %weather%"), "String");
         configs.addKeyValuePair(new Pair<>("conf.weather.beautiful.chance", 20), "int");
-
-        /// CURRENT
-        configs.addVoidPair();
-        configs.addCommentLinePair("* CURRENT");
-        configs.addKeyValuePair(new Pair<>("current.season", "Winter, Spring, Summer, Fall"), "String");
-        configs.addKeyValuePair(new Pair<>("current.weather", "Night, Snowy, Freezing, Stormy, Cold, Warm, Hot, Scorching, Rainy, Chilly, Breezy, Beautiful"), "String");
     }
 
     private static void assignConfigs() {
@@ -255,9 +257,40 @@ public class Config {
         LANG_WEATHER_BEAUTIFUL_MESSAGE = CONFIG.getOrDefault("lang.weather.beautiful.message", "&aСолнце светит, жизнь прекрасна! Сегодня %weather%");
         CONF_WEATHER_BEAUTIFUL_CHANCE = CONFIG.getOrDefault("conf.weather.beautiful.chance", 20);
 
-        /// CURRENT
-        CURRENT_SEASON = CONFIG.getOrDefault("current.season", "Summer");
-        CURRENT_WEATHER = CONFIG.getOrDefault("current.weather", "Night");
         System.out.println("All " + configs.getConfigsList().size() + " have been set properly");
     }
+    private static Current openJson(){
+        json = new File(FabricLoader.getInstance().getConfigDir().resolve("Seasons4Fabric/current.json").toString());
+        try {
+            if (!json.exists()) {
+                json.createNewFile();
+            }
+            fos = new FileOutputStream(json);
+            osw = new OutputStreamWriter(fos);
+            current = gson.fromJson(FabricLoader.getInstance().getConfigDir().resolve("Seasons4Fabric/current.json").toString(), Current.class);
+            return current;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+    public static void closeJson(){
+        String jsonStr = gson.toJson(current);
+        try {
+            osw.write(jsonStr);
+            osw.close();
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public class Current{
+        public static String season;
+        public static String weather;
+    }
+
+    public static String getCurrentWeather() { return current.weather; }
+    public static void setCurrentWeather(String value) { current.weather = value; }
+    public static String getCurrentSeason() { return current.season; }
+    public static void setCurrentSeason(String value) { current.season = value; }
 }

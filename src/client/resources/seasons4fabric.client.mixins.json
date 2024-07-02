@@ -1,6 +1,6 @@
 {
 	"required": true,
-	"package": "ru.kochkaev.Seasons4Fabric.mixin.client",
+	"package": "ru.kochkaev.Seasons4Fabric.Mixin.client",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
       "ExampleClientMixin"

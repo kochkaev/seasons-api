@@ -2,9 +2,12 @@ package ru.kochkaev.Seasons4Fabric;
 
 import net.fabricmc.api.ModInitializer;
 
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.kochkaev.Seasons4Fabric.Config.Config;
+import ru.kochkaev.Seasons4Fabric.Service.Season;
+import ru.kochkaev.Seasons4Fabric.Service.Weather;
 
 public class Main implements ModInitializer {
 	// This logger is used to write text to the console and the log file.
@@ -19,7 +22,17 @@ public class Main implements ModInitializer {
 		// Proceed with mild caution.
 
 		Config.registerConfigs();
+		Weather.restoreCurrentFromConfig();
+		Season.restoreCurrentFromConfig();
 
 		LOGGER.info("Hello Fabric world!");
+
+		ServerLifecycleEvents.SERVER_STOPPED.register((server) -> onShutdown());
+	}
+
+	private void onShutdown() {
+		Weather.saveCurrentToConfig();
+		Season.saveCurrentToConfig();
+		Config.closeJson();
 	}
 }

@@ -1,4 +1,4 @@
-package ru.kochkaev.Seasons4Fabric.mixin.client;
+package ru.kochkaev.Seasons4Fabric.Mixin.client;
 
 import net.minecraft.client.MinecraftClient;
 import org.spongepowered.asm.mixin.Mixin;

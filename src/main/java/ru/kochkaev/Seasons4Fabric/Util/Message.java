@@ -1,4 +1,4 @@
-package ru.kochkaev.Seasons4Fabric.Execute;
+package ru.kochkaev.Seasons4Fabric.Util;
 
 import com.mojang.datafixers.DataFixer;
 import net.minecraft.resource.ResourcePackManager;
@@ -8,7 +8,6 @@ import net.minecraft.server.WorldGenerationProgressListenerFactory;
 import net.minecraft.text.Text;
 import net.minecraft.util.ApiServices;
 import net.minecraft.world.level.storage.LevelStorage;
-import ru.kochkaev.Seasons4Fabric.Util.MessageFormat;
 
 import java.net.Proxy;
 
