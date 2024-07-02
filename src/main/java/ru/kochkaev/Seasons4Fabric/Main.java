@@ -4,7 +4,7 @@ import net.fabricmc.api.ModInitializer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.kochkaev.Seasons4Fabric.Config.ModConfigs;
+import ru.kochkaev.Seasons4Fabric.Config.Config;
 
 public class Main implements ModInitializer {
 	// This logger is used to write text to the console and the log file.
@@ -18,7 +18,7 @@ public class Main implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-		ModConfigs.registerConfigs();
+		Config.registerConfigs();
 
 		LOGGER.info("Hello Fabric world!");
 	}

@@ -2,7 +2,7 @@ package ru.kochkaev.Seasons4Fabric.Config;
 
 import com.mojang.datafixers.util.Pair;
 
-public class ModConfigs {
+public class Config {
     public static SimpleConfig CONFIG;
     private static ModConfigProvider configs;
 
