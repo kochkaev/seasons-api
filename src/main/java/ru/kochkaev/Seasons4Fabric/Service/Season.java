@@ -1,13 +1,15 @@
 package ru.kochkaev.Seasons4Fabric.Service;
 
+//import ru.kochkaev.Seasons4Fabric.Config.OldConfig;
+
 import ru.kochkaev.Seasons4Fabric.Config.Config;
 
 public enum Season {
 
-    WINTER(Config.LANG_SEASON_WINTER_NAME, Config.LANG_SEASON_WINTER_MESSAGE),
-    SPRING(Config.LANG_SEASON_SPRING_NAME, Config.LANG_SEASON_SPRING_MESSAGE),
-    SUMMER(Config.LANG_SEASON_SUMMER_NAME, Config.LANG_SEASON_SUMMER_MESSAGE),
-    FALL(Config.LANG_SEASON_FALL_NAME, Config.LANG_SEASON_FALL_MESSAGE);
+    WINTER(Config.getString("lang.season.winter.name"), Config.getString("lang.season.winter.message")),
+    SPRING(Config.getString("lang.season.spring.name"), Config.getString("lang.season.spring.message")),
+    SUMMER(Config.getString("lang.season.summer.name"), Config.getString("lang.season.summer.message")),
+    FALL(Config.getString("lang.season.fall.name"), Config.getString("lang.season.fall.message"));
 
     private final String name;
     private final String message;
@@ -28,12 +30,12 @@ public enum Season {
     }
 
     public static void restoreCurrentFromConfig(){
-        String currentStr = Config.getCurrentSeason();
+        String currentStr = Config.getCurrent("season");
         CURRENT_SEASON = valueOf(currentStr);
     }
     public static void saveCurrentToConfig(){
         String currentStr = CURRENT_SEASON.toString();
-        Config.setCurrentSeason(currentStr);
+        Config.writeCurrent("season", currentStr);
     }
 
     public String getName(){ return this.name; }

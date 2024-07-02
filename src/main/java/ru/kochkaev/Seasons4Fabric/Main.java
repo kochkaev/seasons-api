@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.kochkaev.Seasons4Fabric.Config.Config;
+//import ru.kochkaev.Seasons4Fabric.Config.OldConfig;
 import ru.kochkaev.Seasons4Fabric.Service.Season;
 import ru.kochkaev.Seasons4Fabric.Service.Weather;
 
@@ -21,7 +22,8 @@ public class Main implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-		Config.registerConfigs();
+		//OldConfig.registerConfigs();
+		Config.init__();
 		Weather.restoreCurrentFromConfig();
 		Season.restoreCurrentFromConfig();
 
@@ -33,6 +35,7 @@ public class Main implements ModInitializer {
 	private void onShutdown() {
 		Weather.saveCurrentToConfig();
 		Season.saveCurrentToConfig();
-		Config.closeJson();
+		//OldConfig.closeJson();
+		Config.close__();
 	}
 }
