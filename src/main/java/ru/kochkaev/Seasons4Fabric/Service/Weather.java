@@ -153,5 +153,9 @@ public enum Weather {
         WeatherUtils.setWeather(weather, world);
     }
 
-    public static Weather getWeatherViaID(String id) { return valueOf(id); }
+    public static Weather getWeatherByID(String id) { return valueOf(id); }
+
+    public static Weather[] getAll() {
+        return values();
+    }
 }

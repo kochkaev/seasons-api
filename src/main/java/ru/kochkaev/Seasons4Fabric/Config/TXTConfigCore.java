@@ -1,11 +1,9 @@
 package ru.kochkaev.Seasons4Fabric.Config;
 
 import net.fabricmc.loader.api.FabricLoader;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +18,7 @@ public class TXTConfigCore {
             File txt = new File(pathStr+"/"+filename+".txt");
             if (!txt.exists()){ txt.createNewFile(); }
             Scanner reader = new Scanner(txt, "UTF-8");
-            if (!reader.hasNext()){
+            if (txt.length() == 0){
                 reader.close();
                 Writer writer = Files.newBufferedWriter(Paths.get(pathStr+"/"+filename+".txt"));
                 writer.write(defaults);
@@ -47,12 +45,9 @@ public class TXTConfigCore {
      *  Empty line is available!
      */
     public static Map<String, String> txtParser(Scanner reader){
-        //int countOfLineBreak = StringUtils.countMatches(input, "\n");
         Map<String, String> output = new HashMap<>();
         String temp, tempKey, tempValue;
-        //for (int i = 0; i<countOfLineBreak; i++){
         while (true) {
-            //temp = input.substring(0, input.indexOf("\n"));
             if (reader.hasNextLine()) temp = reader.nextLine();
             else {
                 temp = "";
@@ -60,7 +55,6 @@ public class TXTConfigCore {
                     temp += reader.next();
                 }
             }
-            //input = input.substring(input.indexOf("\n") | input.length() - 1);
             if (temp.length() > 0 && temp.charAt(0) != '#') {
                 if (temp.contains("#")) {
                     temp = temp.substring(0, temp.indexOf("#") - 1);
@@ -70,7 +64,7 @@ public class TXTConfigCore {
                 output.put(tempKey, tempValue);
             }
             if (!reader.hasNext()) break;
-        } //while(reader.hasNextLine());
+        }
         return output;
     }
 

@@ -1,25 +1,30 @@
 package ru.kochkaev.Seasons4Fabric.Config;
 
+import com.google.gson.JsonObject;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class Config {
 
     private static Map<String, String> config = new HashMap<>();
-    private static Map<String, String> current = new HashMap<>();
-
-    private static JSONConfigCore jsonCore;
+    private static JsonObject current = new JsonObject();
+    private static JSONConfigCoreTools jsonCore;
 
     public static void init__() {
 
         String defaultConfig = DefaultTXTConfig.init__();
         config = TXTConfigCore.openOrCreate("Seasons4Fabric/config", defaultConfig);
-        Map<String, String> defaultCurrent = new HashMap<>();
-        defaultCurrent.put("season", "WINTER");
-        defaultCurrent.put("weather", "NIGHT");
+        String defaultCurrent = "{ \"season\": \"WINTER\", \"weather\": \"NIGHT\" }";
         jsonCore = JSONConfigCore.openOrCreate("Seasons4Fabric/current", defaultCurrent);
-        current = jsonCore.getMap();
+        current = jsonCore.getJsonObject();
 
+    }
+
+    public static void saveCurrent() {
+        jsonCore.flush();
+        jsonCore.writeJsonObject(current);
+        jsonCore.save();
     }
 
     public static String getString(String key) {
@@ -32,11 +37,12 @@ public class Config {
         return Long.parseLong(config.get(key));
     }
 
-    public static String getCurrent(String key) { return current.get(key); }
-    public static void writeCurrent(String key, String value) { current.put(key, value); }
+    public static String getCurrent(String key) { return current.get(key).getAsString(); }
+    public static void writeCurrent(String key, String value) { current.addProperty(key, value); }
 
     public static void close__() {
-        jsonCore.writeMap(current);
+        jsonCore.flush();
+        jsonCore.writeJsonObject(current);
         jsonCore.close();
 
     }

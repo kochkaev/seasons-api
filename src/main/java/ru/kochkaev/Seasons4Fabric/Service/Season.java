@@ -2,7 +2,11 @@ package ru.kochkaev.Seasons4Fabric.Service;
 
 //import ru.kochkaev.Seasons4Fabric.Config.OldConfig;
 
+import net.minecraft.server.PlayerManager;
+import net.minecraft.server.world.ServerWorld;
 import ru.kochkaev.Seasons4Fabric.Config.Config;
+import ru.kochkaev.Seasons4Fabric.Util.Message;
+import ru.kochkaev.Seasons4Fabric.Util.WeatherUtils;
 
 public enum Season {
 
@@ -27,6 +31,7 @@ public enum Season {
 
     public static void setCurrent(Season season){
         CURRENT_SEASON = season;
+        saveCurrentToConfig();
     }
 
     public static void restoreCurrentFromConfig(){
@@ -36,8 +41,19 @@ public enum Season {
     public static void saveCurrentToConfig(){
         String currentStr = CURRENT_SEASON.toString();
         Config.writeCurrent("season", currentStr);
+        //Config.saveCurrent();
+    }
+
+    public static void setSeason(Season season, PlayerManager players) {
+        setCurrent(season);
+        Message.sendNewMessage(season.getMessage(), players);
     }
 
     public String getName(){ return this.name; }
     public String getMessage(){ return this.message; }
-}
+
+    public static Season getSeasonByID(String id) { return valueOf(id); }
+
+    public static Season[] getAll() {
+        return values();
+    }}

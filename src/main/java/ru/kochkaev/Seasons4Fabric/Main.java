@@ -2,9 +2,11 @@ package ru.kochkaev.Seasons4Fabric;
 
 import net.fabricmc.api.ModInitializer;
 
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.kochkaev.Seasons4Fabric.Commands.Seasons4FabricCommand;
 import ru.kochkaev.Seasons4Fabric.Config.Config;
 //import ru.kochkaev.Seasons4Fabric.Config.OldConfig;
 import ru.kochkaev.Seasons4Fabric.Service.Season;
@@ -26,6 +28,7 @@ public class Main implements ModInitializer {
 		Config.init__();
 		Weather.restoreCurrentFromConfig();
 		Season.restoreCurrentFromConfig();
+		CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> Seasons4FabricCommand.register(dispatcher)));
 
 		LOGGER.info("Hello Fabric world!");
 

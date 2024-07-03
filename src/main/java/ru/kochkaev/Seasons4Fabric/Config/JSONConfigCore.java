@@ -2,60 +2,87 @@ package ru.kochkaev.Seasons4Fabric.Config;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.*;
-import java.lang.reflect.Type;
 import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Map;
-import java.util.Scanner;
+import java.nio.file.Path;
 
-public class JSONConfigCore {
+class JSONConfigCoreTools {
 
     private Writer writer;
-    private Map<String, String> map;
-    // This Map for primitive Json!
+    private JsonObject jsonObject;
+    static Gson gson = new Gson();
 
-    Gson gson = new Gson();
-
-    JSONConfigCore(Writer writer, Scanner reader) {
-        this.writer = writer;
-        Type mapType = new TypeToken<Map<String, Object>>(){}.getType();
-        reader.useDelimiter(System.getProperty("line.separator"));
-        String readed = "";
-        while (reader.hasNext()) {
-            readed += reader.next();
+    // If file isn't empty
+    JSONConfigCoreTools(Path path, BufferedReader reader) {
+        this.jsonObject = JsonParser.parseReader(reader).getAsJsonObject();
+        try {
+            reader.close();
+            this.writer = Files.newBufferedWriter(path.toRealPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        String fixReaded = readed.length()>0 ? readed : "{}";
-        this.map = new Gson().fromJson(fixReaded, mapType);
-        reader.close();
     }
 
-    public Map<String, String> getMap() { return this.map; }
+    // If file empty
+    JSONConfigCoreTools(Path path, String defaults) {
+        this.jsonObject = (JsonObject) JsonParser.parseString(defaults);
+        try {
+            this.writer = Files.newBufferedWriter(path.toRealPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-    public void writeMap(Map<String, String> newMap) { this.map = newMap; }
+    public JsonObject getJsonObject() {
+        return this.jsonObject;
+    }
+
+    public void writeJsonObject(JsonObject newJsonObject) {
+        this.jsonObject = newJsonObject;
+    }
 
     public void close() {
         try {
-            writer.write(gson.toJson(map));
+            writer.write(gson.toJson(jsonObject));
             writer.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static JSONConfigCore openOrCreate(String filename, Map<String, String> defaults) {
-        String pathStr = FabricLoader.getInstance().getConfigDir().resolve("").toString();
+    public void save() {
         try {
-            File json = new File(pathStr+"/"+filename+".json");
+            writer.write(gson.toJson(jsonObject));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void flush() {
+        try {
+            writer.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+
+public class JSONConfigCore {
+    public static JSONConfigCoreTools openOrCreate(String filename, String defaults) {
+        Path path = FabricLoader.getInstance().getConfigDir().resolve(filename+".json");
+        String pathStr = path.toString();
+        try {
+            File json = new File(pathStr);
+            long jsonLen = json.length();
             if (!json.exists()){ json.createNewFile(); }
-            Writer writer = Files.newBufferedWriter(Paths.get(pathStr+"/"+filename+".json"));
-            Scanner reader = new Scanner(json);
-            JSONConfigCore instance = new JSONConfigCore(writer, reader);
-            if (instance.getMap().isEmpty()){
-                instance.getMap().putAll(defaults);
-            }
+            BufferedReader reader = Files.newBufferedReader(path.toRealPath());
+            JSONConfigCoreTools instance;
+            if (jsonLen != 0L) instance = new JSONConfigCoreTools(path, reader);
+            else instance = new JSONConfigCoreTools(path, defaults);
             return instance;
         } catch (IOException e) {
             throw new RuntimeException(e);
