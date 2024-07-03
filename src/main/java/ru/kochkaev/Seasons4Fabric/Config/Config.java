@@ -124,7 +124,7 @@ class DefaultTXTConfig {
         // Rainy
         gen.addComment(" Rainy");
         gen.addValueAndCommentDefault("lang.weather.rainy.name", "&9Дождливо");
-        gen.addValueAndCommentDefault("lang.weather.rainy.message", "&3Вы лицизреете сильнейший ливень! Сегодня %weather%");
+        gen.addValueAndCommentDefault("lang.weather.rainy.message", "&3Вы лицезреете сильнейший ливень! Сегодня %weather%");
         gen.addValueAndCommentDefault("conf.weather.rainy.chance", "10");
         // Chilly
         gen.addComment(" Chilly");

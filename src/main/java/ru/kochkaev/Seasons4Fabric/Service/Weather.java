@@ -101,7 +101,8 @@ public enum Weather {
         }
         int randInt = (int) (random.nextFloat() * (maxChance - 1) + 1);
         for (int i = 0; i<weathers.size(); i++){
-            if (randInt<= chances.get(i)) { return weathers.get(i); }
+            if (maxChance - randInt <= chances.get(i+1)) { return weathers.get(i); }
+            else maxChance -= chances.get(i+1);
         }
         return null;
     }
@@ -135,7 +136,7 @@ public enum Weather {
         Season currentSeason = Season.getCurrent();
         Weather weather = Weather.getChancedWeather(currentSeason);
         Weather.setCurrent(weather);
-        Message.getInstance().sendMessage(weather.getMessage());
+        Message.sendMessage(weather.getMessage());
         WeatherUtils.getInstance().setWeather(weather);
     }
 

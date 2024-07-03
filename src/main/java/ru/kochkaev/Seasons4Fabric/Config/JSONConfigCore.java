@@ -4,13 +4,12 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import net.fabricmc.loader.api.FabricLoader;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.Scanner;
 
 public class JSONConfigCore {
 
@@ -20,11 +19,17 @@ public class JSONConfigCore {
 
     Gson gson = new Gson();
 
-    JSONConfigCore(Writer writer) {
+    JSONConfigCore(Writer writer, Scanner reader) {
         this.writer = writer;
         Type mapType = new TypeToken<Map<String, Object>>(){}.getType();
-        String writerStr = writer.toString().length()>0 ? writer.toString() : "{}";
-        this.map = new Gson().fromJson(writerStr, mapType);
+        reader.useDelimiter(System.getProperty("line.separator"));
+        String readed = "";
+        while (reader.hasNext()) {
+            readed += reader.next();
+        }
+        String fixReaded = readed.length()>0 ? readed : "{}";
+        this.map = new Gson().fromJson(fixReaded, mapType);
+        reader.close();
     }
 
     public Map<String, String> getMap() { return this.map; }
@@ -46,8 +51,9 @@ public class JSONConfigCore {
             File json = new File(pathStr+"/"+filename+".json");
             if (!json.exists()){ json.createNewFile(); }
             Writer writer = Files.newBufferedWriter(Paths.get(pathStr+"/"+filename+".json"));
-            JSONConfigCore instance = new JSONConfigCore(writer);
-            if (writer.toString().length() == 0){
+            Scanner reader = new Scanner(json);
+            JSONConfigCore instance = new JSONConfigCore(writer, reader);
+            if (instance.getMap().isEmpty()){
                 instance.getMap().put("season", "WINTER");
                 instance.getMap().put("weather", "NIGHT");
             }
