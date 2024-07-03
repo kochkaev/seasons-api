@@ -1,6 +1,9 @@
 package ru.kochkaev.Seasons4Fabric.Service;
 
 //import ru.kochkaev.Seasons4Fabric.Config.OldConfig;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.PlayerManager;
+import net.minecraft.server.world.ServerWorld;
 import ru.kochkaev.Seasons4Fabric.Config.Config;
 import ru.kochkaev.Seasons4Fabric.Util.Message;
 import ru.kochkaev.Seasons4Fabric.Util.WeatherUtils;
@@ -11,8 +14,7 @@ public enum Weather {
     
     NIGHT(Config.getString("lang.weather.night.name"),
             Config.getString("lang.weather.night.message"),
-            false, false, false, 0,
-            Arrays.asList(Season.WINTER, Season.SPRING, Season.SUMMER, Season.FALL)),
+            false, false, false, 0, Collections.emptyList()),
     SNOWY(Config.getString("lang.weather.snowy.name"),
             Config.getString("lang.weather.snowy.message"),
             false, true, false,
@@ -101,8 +103,8 @@ public enum Weather {
         }
         int randInt = (int) (random.nextFloat() * (maxChance - 1) + 1);
         for (int i = 0; i<weathers.size(); i++){
-            if (maxChance - randInt <= chances.get(i+1)) { return weathers.get(i); }
-            else maxChance -= chances.get(i+1);
+            if (maxChance - randInt <= chances.get(i)) { return weathers.get(i); }
+            else maxChance -= chances.get(i);
         }
         return null;
     }
@@ -132,12 +134,10 @@ public enum Weather {
         Config.writeCurrent("weather", currentStr);
     }
 
-    public static void setChancedWeatherInCurrentSeason(){
+    public static void setChancedWeatherInCurrentSeason(ServerWorld world){
         Season currentSeason = Season.getCurrent();
         Weather weather = Weather.getChancedWeather(currentSeason);
-        Weather.setCurrent(weather);
-        Message.sendMessage(weather.getMessage());
-        WeatherUtils.getInstance().setWeather(weather);
+        setWeather(weather, world);
     }
 
     public String getName() { return this.name; }
@@ -145,4 +145,13 @@ public enum Weather {
     public boolean getRaining() { return this.raining; }
     public boolean getThundering() { return this.thundering; }
     public List<Season> getSeasons() { return this.seasons; }
+
+    public static Boolean isNight() { return CURRENT_WEATHER == NIGHT; }
+    public static void setWeather(Weather weather, ServerWorld world) {
+        Weather.setCurrent(weather);
+        Message.sendNewMessage(weather.getMessage(), world.getServer().getPlayerManager());
+        WeatherUtils.setWeather(weather, world);
+    }
+
+    public static Weather getWeatherViaID(String id) { return valueOf(id); }
 }

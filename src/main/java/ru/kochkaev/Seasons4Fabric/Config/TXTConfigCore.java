@@ -21,9 +21,11 @@ public class TXTConfigCore {
             if (!txt.exists()){ txt.createNewFile(); }
             Scanner reader = new Scanner(txt, "UTF-8");
             if (!reader.hasNext()){
+                reader.close();
                 Writer writer = Files.newBufferedWriter(Paths.get(pathStr+"/"+filename+".txt"));
                 writer.write(defaults);
                 writer.close();
+                reader = new Scanner(txt, "UTF-8");
             }
             config = txtParser(reader);
             reader.close();

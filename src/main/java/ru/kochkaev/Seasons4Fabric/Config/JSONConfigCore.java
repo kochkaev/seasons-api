@@ -45,7 +45,7 @@ public class JSONConfigCore {
         }
     }
 
-    public static JSONConfigCore openOrCreate(String filename) {
+    public static JSONConfigCore openOrCreate(String filename, Map<String, String> defaults) {
         String pathStr = FabricLoader.getInstance().getConfigDir().resolve("").toString();
         try {
             File json = new File(pathStr+"/"+filename+".json");
@@ -54,8 +54,7 @@ public class JSONConfigCore {
             Scanner reader = new Scanner(json);
             JSONConfigCore instance = new JSONConfigCore(writer, reader);
             if (instance.getMap().isEmpty()){
-                instance.getMap().put("season", "WINTER");
-                instance.getMap().put("weather", "NIGHT");
+                instance.getMap().putAll(defaults);
             }
             return instance;
         } catch (IOException e) {

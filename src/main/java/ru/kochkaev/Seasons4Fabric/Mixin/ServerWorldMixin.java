@@ -15,7 +15,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import ru.kochkaev.Seasons4Fabric.Config.Config;
+import ru.kochkaev.Seasons4Fabric.Main;
 import ru.kochkaev.Seasons4Fabric.Service.Weather;
+import ru.kochkaev.Seasons4Fabric.Util.Title;
 //import ru.kochkaev.Seasons4Fabric.Util.Title;
 
 import java.util.function.BooleanSupplier;
@@ -33,9 +36,14 @@ public abstract class ServerWorldMixin
 //        super(properties, registryRef, registryManager, dimensionEntry, profiler, isClient, debugWorld, biomeAccess, maxChainedNeighborUpdates);
 //    }
     //@Inject(method = "tick", at=@At(value="INVOKE_ASSIGN", target = "Lnet/minecraft/server/world/ServerWorld;wakeSleepingPlayers()V"))
+    //@Inject(method = "tick", at=@At("HEAD"))
     @Inject(method = "tick", at=@At("HEAD"))
     public void tick(BooleanSupplier shouldKeepTicking, CallbackInfo ci){
-        Weather.setChancedWeatherInCurrentSeason();
+        if (this.properties.getTimeOfDay() >= Config.getLong("conf.tick.day.start") && Weather.isNight() && Config.getLong("conf.tick.day.end") >= this.properties.getTimeOfDay()) Weather.setChancedWeatherInCurrentSeason(this.toServerWorld());
+        if (this.properties.getTimeOfDay() >= Config.getLong("conf.tick.day.end") && !Weather.isNight()) Weather.setWeather(Weather.getWeatherViaID("NIGHT"), this.toServerWorld());
+        //Main.getLogger().info(String.valueOf(this.properties.getTime()));
+        Title.showActionBar(this.getServer().getPlayerManager());
+
     }
 
     //@Inject(method = "tick", at=@At("HEAD"))

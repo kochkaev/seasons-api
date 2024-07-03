@@ -16,22 +16,22 @@ import ru.kochkaev.Seasons4Fabric.Service.Weather;
 import java.util.List;
 import java.util.concurrent.Executor;
 
-public class WeatherUtils extends ServerWorld {
+public class WeatherUtils {
 
-    static WeatherUtils instance;
+    //static WeatherUtils instance;
 
-    public WeatherUtils(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey<World> worldKey, DimensionOptions dimensionOptions, WorldGenerationProgressListener worldGenerationProgressListener, boolean debugWorld, long seed, List<SpecialSpawner> spawners, boolean shouldTickTime, @Nullable RandomSequencesState randomSequencesState) {
-        super(server, workerExecutor, session, properties, worldKey, dimensionOptions, worldGenerationProgressListener, debugWorld, seed, spawners, shouldTickTime, randomSequencesState);
-    }
+    //public WeatherUtils(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey<World> worldKey, DimensionOptions dimensionOptions, WorldGenerationProgressListener worldGenerationProgressListener, boolean debugWorld, long seed, List<SpecialSpawner> spawners, boolean shouldTickTime, @Nullable RandomSequencesState randomSequencesState) {
+    //    super(server, workerExecutor, session, properties, worldKey, dimensionOptions, worldGenerationProgressListener, debugWorld, seed, spawners, shouldTickTime, randomSequencesState);
+    //}
 
-    public void setWeather (Weather weather){
+    public static void setWeather (Weather weather, ServerWorld world){
         int clearDuration = -1;
         int rainDuration = -1;
         boolean raining = weather.getRaining();
         boolean thundering = weather.getThundering();
-        this.setWeather(clearDuration, rainDuration, raining, thundering);
+        world.setWeather(clearDuration, rainDuration, raining, thundering);
     }
 
-    public static WeatherUtils getInstance() { return instance; }
+    //public static WeatherUtils getInstance() { return instance; }
 
 }
