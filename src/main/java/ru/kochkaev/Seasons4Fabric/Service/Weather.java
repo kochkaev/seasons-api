@@ -164,9 +164,9 @@ public enum Weather {
     public static Boolean isNight() { return isNight; }
     public static void setWeather(Weather weather, ServerWorld world) {
         Weather.setCurrent(weather);
-        Message.sendNewMessage(weather.getMessage(), world.getServer().getPlayerManager());
+        Message.sendMessage2Server(weather.getMessage(), world.getServer().getPlayerManager());
         WeatherUtils.setWeather(weather, world);
-        for (EffectObject effect : getListOfAvailableEffects(EffectsTicker.getListOfEffects())) Message.sendNewMessage(effect.getTriggerMessage(), world.getServer().getPlayerManager());
+        for (EffectObject effect : getListOfAvailableEffects(EffectsTicker.getListOfEffects())) Message.sendMessage2Server(effect.getTriggerMessage(), world.getServer().getPlayerManager());
     }
 
     public static Weather getWeatherByID(String id) { return valueOf(id); }
@@ -177,7 +177,7 @@ public enum Weather {
 
     public static void setNight(ServerWorld world) {
         isNight = true;
-        Message.sendNewMessage(Weather.NIGHT.getMessage(), world.getServer().getPlayerManager());
+        Message.sendMessage2Server(Weather.NIGHT.getMessage(), world.getServer().getPlayerManager());
     }
     public static void setDay(ServerWorld world) {
         isNight = false;

@@ -28,9 +28,15 @@ public abstract class Message {
     //    super(serverThread, session, dataPackManager, saveLoader, proxy, dataFixer, apiServices, worldGenerationProgressListenerFactory);
     //}
 
-    public static void sendNewMessage(String message, PlayerManager players){
+    public static void sendMessage2Server(String message, PlayerManager players){
         String formattedMessage = MessageFormat.formatMessage(message);
         for (PlayerEntity player : players.getPlayerList()) player.sendMessage(Text.of(formattedMessage));
+        //ServerPlayerEntity.sendMessage(Text.of(formattedMessage));
+    }
+
+    public static void sendMessage2Player(String message, ServerPlayerEntity player){
+        String formattedMessage = MessageFormat.formatMessage(message);
+        player.sendMessage(Text.of(formattedMessage));
         //ServerPlayerEntity.sendMessage(Text.of(formattedMessage));
     }
 

@@ -51,7 +51,7 @@ public enum Season {
 
     public static void setSeason(Season season, PlayerManager players) {
         setCurrent(season);
-        Message.sendNewMessage(season.getMessage(), players);
+        Message.sendMessage2Server(season.getMessage(), players);
     }
 
     public String getName(){ return Config.getString(this.nameKey); }
