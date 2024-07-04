@@ -33,6 +33,36 @@ public class TXTConfigCore {
         return config;
     }
 
+    public static TXTMapObject open(String filename){
+        TXTMapObject config;
+        String pathStr = FabricLoader.getInstance().getConfigDir().resolve("").toString();
+        try {
+            File txt = new File(pathStr+"/"+filename+".txt");
+            Scanner reader = new Scanner(txt, "UTF-8");
+            config = new TXTMapObject(pathStr+"/"+filename+".txt", reader);
+            reader.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return config;
+    }
+
+    public static void createIfDoNotExists(String filename, String defaults){
+        TXTMapObject config;
+        String pathStr = FabricLoader.getInstance().getConfigDir().resolve("").toString();
+        try {
+            File txt = new File(pathStr+"/"+filename+".txt");
+            if (!txt.exists()){ txt.createNewFile(); }
+            if (txt.length() == 0){
+                Writer writer = Files.newBufferedWriter(Paths.get(pathStr+"/"+filename+".txt"));
+                writer.write(defaults);
+                writer.close();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     /** .txt file syntax:
      *  ----------------------------------
