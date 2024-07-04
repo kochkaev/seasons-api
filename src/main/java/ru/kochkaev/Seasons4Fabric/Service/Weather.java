@@ -2,9 +2,13 @@ package ru.kochkaev.Seasons4Fabric.Service;
 
 //import ru.kochkaev.Seasons4Fabric.Config.OldConfig;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.world.ServerWorld;
 import ru.kochkaev.Seasons4Fabric.Config.Config;
+import ru.kochkaev.Seasons4Fabric.EffectsTicker;
+import ru.kochkaev.Seasons4Fabric.Objects.EffectObject;
 import ru.kochkaev.Seasons4Fabric.Util.Message;
 import ru.kochkaev.Seasons4Fabric.Util.WeatherUtils;
 
@@ -162,6 +166,7 @@ public enum Weather {
         Weather.setCurrent(weather);
         Message.sendNewMessage(weather.getMessage(), world.getServer().getPlayerManager());
         WeatherUtils.setWeather(weather, world);
+        for (EffectObject effect : getListOfAvailableEffects(EffectsTicker.getListOfEffects())) Message.sendNewMessage(effect.getTriggerMessage(), world.getServer().getPlayerManager());
     }
 
     public static Weather getWeatherByID(String id) { return valueOf(id); }
@@ -177,5 +182,11 @@ public enum Weather {
     public static void setDay(ServerWorld world) {
         isNight = false;
         setChancedWeatherInCurrentSeason(world);
+    }
+
+    public static List<EffectObject> getListOfAvailableEffects(List<EffectObject> list) {
+        List<EffectObject> availables = List.of();
+        for (EffectObject effect : list) if (effect.isAllowed()) availables.add(effect);
+        return availables;
     }
 }

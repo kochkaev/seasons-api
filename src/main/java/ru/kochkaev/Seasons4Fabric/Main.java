@@ -34,6 +34,7 @@ public class Main implements ModInitializer {
 
 		LOGGER.info("Hello Fabric world!");
 
+		//new Ticker();
 		ServerLifecycleEvents.SERVER_STOPPED.register((server) -> onShutdown());
 	}
 
