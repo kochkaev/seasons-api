@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class Config {
 
-    private static Map<String, String> config = new HashMap<>();
+    private static TXTMapObject config;
     private static JsonObject current = new JsonObject();
     private static JSONConfigCoreTools jsonCore;
 
@@ -19,6 +19,10 @@ public class Config {
         jsonCore = JSONConfigCore.openOrCreate("Seasons4Fabric/current", defaultCurrent);
         current = jsonCore.getJsonObject();
 
+    }
+
+    public static void reload() {
+        config.reload();
     }
 
     public static void saveCurrent() {

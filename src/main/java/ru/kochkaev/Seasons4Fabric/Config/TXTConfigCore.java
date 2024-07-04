@@ -11,8 +11,8 @@ import java.util.Scanner;
 
 public class TXTConfigCore {
 
-    public static Map<String, String> openOrCreate(String filename, String defaults){
-        Map<String, String> config;
+    public static TXTMapObject openOrCreate(String filename, String defaults){
+        TXTMapObject config;
         String pathStr = FabricLoader.getInstance().getConfigDir().resolve("").toString();
         try {
             File txt = new File(pathStr+"/"+filename+".txt");
@@ -25,7 +25,7 @@ public class TXTConfigCore {
                 writer.close();
                 reader = new Scanner(txt, "UTF-8");
             }
-            config = txtParser(reader);
+            config = new TXTMapObject(pathStr+"/"+filename+".txt", reader);
             reader.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -92,6 +92,35 @@ public class TXTConfigCore {
 
     }
 
+}
+
+class TXTMapObject {
+
+    private String path;
+    private Map<String, String> map;
+
+    TXTMapObject (String path, Map<String, String> map) {
+        this.path = path;
+        this.map = map;
+    }
+
+    TXTMapObject (String path, Scanner reader) {
+        this.path = path;
+        this.map = TXTConfigCore.txtParser(reader);
+    }
+
+    public void reload() {
+        try {
+            File txt = new File(path);
+            Scanner reader = new Scanner(txt, "UTF-8");
+            this.map = TXTConfigCore.txtParser(reader);
+            reader.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String get(String key) { return map.get(key); }
 }
 
 //  This classes has been created by @kochkaev

@@ -12,85 +12,85 @@ import java.util.*;
 
 public enum Weather {
     
-    NIGHT(Config.getString("lang.weather.night.name"),
-            Config.getString("lang.weather.night.message"),
-            false, false, false, 0, Collections.emptyList()),
-    SNOWY(Config.getString("lang.weather.snowy.name"),
-            Config.getString("lang.weather.snowy.message"),
+    NIGHT("lang.weather.night.name",
+            "lang.weather.night.message",
+            false, false, false, "", Collections.emptyList()),
+    SNOWY("lang.weather.snowy.name",
+            "lang.weather.snowy.message",
             false, true, false,
-            Config.getInt("conf.weather.snowy.chance"),
+            "conf.weather.snowy.chance",
             Collections.singletonList(Season.WINTER)),
-    FREEZING(Config.getString("lang.weather.freezing.name"),
-            Config.getString("lang.weather.freezing.message"),
+    FREEZING("lang.weather.freezing.name",
+            "lang.weather.freezing.message",
             true, false, false,
-            Config.getInt("conf.weather.freezing.chance"),
+            "conf.weather.freezing.chance",
             Collections.singletonList(Season.WINTER)),
-    STORMY(Config.getString("lang.weather.stormy.name"),
-            Config.getString("lang.weather.stormy.message"),
+    STORMY("lang.weather.stormy.name",
+            "lang.weather.stormy.message",
             true, true, true,
-            Config.getInt("conf.weather.stormy.chance"),
+            "conf.weather.stormy.chance",
             Collections.singletonList(Season.FALL)),
-    COLD(Config.getString("lang.weather.cold.name"),
-            Config.getString("lang.weather.cold.message"),
+    COLD("lang.weather.cold.name",
+            "lang.weather.cold.message",
             false, false, false,
-            Config.getInt("conf.weather.cold.chance"),
+            "conf.weather.cold.chance",
             Arrays.asList(Season.WINTER, Season.FALL)),
-    WARM(Config.getString("lang.weather.warm.name"),
-            Config.getString("lang.weather.warm.message"),
+    WARM("lang.weather.warm.name",
+            "lang.weather.warm.message",
             false, false, false,
-            Config.getInt("conf.weather.warm.chance"),
+            "conf.weather.warm.chance",
             Collections.singletonList(Season.SUMMER)),
-    HOT(Config.getString("lang.weather.hot.name"),
-            Config.getString("lang.weather.hot.message"),
+    HOT("lang.weather.hot.name",
+            "lang.weather.hot.message",
             false, false, false,
-            Config.getInt("conf.weather.hot.chance"),
+            "conf.weather.hot.chance",
             Collections.singletonList(Season.SUMMER)),
-    SCORCHING(Config.getString("lang.weather.scorching.name"),
-            Config.getString("lang.weather.scorching.message"),
+    SCORCHING("lang.weather.scorching.name",
+            "lang.weather.scorching.message",
             false, false, false,
-            Config.getInt("conf.weather.scorching.chance"),
+            "conf.weather.scorching.chance",
             Collections.singletonList(Season.SUMMER)),
-    RAINY(Config.getString("lang.weather.rainy.name"),
-            Config.getString("lang.weather.rainy.message"),
+    RAINY("lang.weather.rainy.name",
+            "lang.weather.rainy.message",
             false, true, false,
-            Config.getInt("conf.weather.rainy.chance"),
+            "conf.weather.rainy.chance",
             Arrays.asList(Season.WINTER, Season.SPRING, Season.FALL)),
-    CHILLY(Config.getString("lang.weather.chilly.name"),
-            Config.getString("lang.weather.chilly.message"),
+    CHILLY("lang.weather.chilly.name",
+            "lang.weather.chilly.message",
             false, false, false,
-            Config.getInt("conf.weather.chilly.chance"),
+            "conf.weather.chilly.chance",
             Collections.singletonList(Season.SPRING)),
-    BREEZY(Config.getString("lang.weather.breezy.name"),
-            Config.getString("lang.weather.breezy.message"),
+    BREEZY("lang.weather.breezy.name",
+            "lang.weather.breezy.message",
             false, false, false,
-            Config.getInt("conf.weather.breezy.chance"),
+            "conf.weather.breezy.chance",
             Arrays.asList(Season.SPRING, Season.FALL)),
-    BEAUTIFUL(Config.getString("lang.weather.beautiful.name"),
-            Config.getString("lang.weather.beautiful.message"),
+    BEAUTIFUL("lang.weather.beautiful.name",
+            "lang.weather.beautiful.message",
             false, false, false,
-            Config.getInt("conf.weather.beautiful.chance"),
+            "conf.weather.beautiful.chance",
             Arrays.asList(Season.SPRING, Season.SUMMER));
 
     private static final Random random = new Random();
 
-    private final String name; // Default name shown to players
-    private final String message; // Default message to show the weather changing
+    private final String nameKey; // Default name shown to players
+    private final String messageKey; // Default message to show the weather changing
     private final boolean catastrophic; // Is there is a high risk of this weather killing a player?
     private final boolean raining; // Whether there should be rain
     private final boolean thundering; // Whether the rain should be thunderous
-    private final int chance;
+    private final String chanceKey;
     private final List<Season> seasons; // List of seasons this weather can be triggered on
 
     private static Weather CURRENT_WEATHER;
     private static boolean isNight;
 
-    Weather(String name, String broadcast, boolean catastrophic, boolean raining, boolean thundering, int chance, List<Season> seasons) {
-        this.name = name;
-        this.message = broadcast;
+    Weather(String nameKey, String messageKey, boolean catastrophic, boolean raining, boolean thundering, String chanceKey, List<Season> seasons) {
+        this.nameKey = nameKey;
+        this.messageKey = messageKey;
         this.catastrophic = catastrophic;
         this.raining = raining;
         this.thundering = thundering;
-        this.chance = chance;
+        this.chanceKey = chanceKey;
         this.seasons = seasons;
     }
 
@@ -99,8 +99,8 @@ public enum Weather {
         List<Integer> chances = new ArrayList<>();
         int maxChance = 0;
         for (Weather weather : weathers){
-            chances.add(weather.chance);
-            maxChance += weather.chance;
+            chances.add(weather.getChance());
+            maxChance += weather.getChance();
         }
         int randInt = (int) (random.nextFloat() * (maxChance - 1) + 1);
         for (int i = 0; i<weathers.size(); i++){
@@ -137,14 +137,22 @@ public enum Weather {
         Config.saveCurrent();
     }
 
+    public static void reloadFromConfig(ServerWorld world) {
+        String currentStr = Config.getCurrent("weather");
+        if (CURRENT_WEATHER != valueOf(currentStr)) {
+            setWeather(valueOf(currentStr), world);
+        }
+    }
+
     public static void setChancedWeatherInCurrentSeason(ServerWorld world){
         Season currentSeason = Season.getCurrent();
         Weather weather = Weather.getChancedWeather(currentSeason);
         setWeather(weather, world);
     }
 
-    public String getName() { return this.name; }
-    public String  getMessage() { return this.message; }
+    public String getName() { return Config.getString(this.nameKey); }
+    public String  getMessage() { return Config.getString(this.messageKey); }
+    public int  getChance() { return Config.getInt(this.chanceKey); }
     public boolean getRaining() { return this.raining; }
     public boolean getThundering() { return this.thundering; }
     public List<Season> getSeasons() { return this.seasons; }
