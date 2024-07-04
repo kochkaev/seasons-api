@@ -22,7 +22,6 @@ public class Config {
     }
 
     public static void saveCurrent() {
-        jsonCore.flush();
         jsonCore.writeJsonObject(current);
         jsonCore.save();
     }
@@ -39,13 +38,6 @@ public class Config {
 
     public static String getCurrent(String key) { return current.get(key).getAsString(); }
     public static void writeCurrent(String key, String value) { current.addProperty(key, value); }
-
-    public static void close__() {
-        jsonCore.flush();
-        jsonCore.writeJsonObject(current);
-        jsonCore.close();
-
-    }
 
 }
 

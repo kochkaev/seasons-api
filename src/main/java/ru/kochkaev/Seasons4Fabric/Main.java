@@ -4,6 +4,7 @@ import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.minecraft.world.GameRules;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.kochkaev.Seasons4Fabric.Commands.Seasons4FabricCommand;
@@ -29,6 +30,7 @@ public class Main implements ModInitializer {
 		Weather.restoreCurrentFromConfig();
 		Season.restoreCurrentFromConfig();
 		CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> Seasons4FabricCommand.register(dispatcher)));
+		//GameRules.DO_WEATHER_CYCLE = GameRules.BooleanRule.create(false);
 
 		LOGGER.info("Hello Fabric world!");
 
@@ -39,7 +41,7 @@ public class Main implements ModInitializer {
 		Weather.saveCurrentToConfig();
 		Season.saveCurrentToConfig();
 		//OldConfig.closeJson();
-		Config.close__();
+		Config.saveCurrent();
 	}
 
 	public static Logger getLogger() { return LOGGER; }

@@ -9,9 +9,11 @@ public class MessageFormat {
 
     public static String formatMessage(String message){
 
+        Weather weather = Weather.isNight() ? Weather.NIGHT : Weather.getCurrent();
+
         // Placeholders
         message = message.replaceAll("%season%", Season.getCurrent().getName());
-        message = message.replaceAll("%weather%", Weather.getCurrent().getName());
+        message = message.replaceAll("%weather%", weather.getName());
 
         // Colors
         message = message.replaceAll("&", "§");

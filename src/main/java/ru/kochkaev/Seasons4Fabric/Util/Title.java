@@ -29,7 +29,8 @@ public class Title{
 
     public static void showActionBar(PlayerManager players) {
         Function<Text, Packet<?>> constructor = OverlayMessageS2CPacket::new;
-        Text title = Text.of((Season.getCurrent().getName() + " &7• " + Weather.getCurrent().getName()).replaceAll("&", "§"));
+        Weather weather = Weather.isNight() ? Weather.NIGHT : Weather.getCurrent();
+        Text title = Text.of((Season.getCurrent().getName() + " &7• " + weather.getName()).replaceAll("&", "§"));
         for (ServerPlayerEntity player : players.getPlayerList()) {
             //Main.getLogger().info(player.getName().getString());
             //player.networkHandler.sendPacket(new SubtitleS2CPacket(Text.of((Season.getCurrent().getName() + " &7• " + Weather.getCurrent().getName()).replaceAll("&", "§"))));

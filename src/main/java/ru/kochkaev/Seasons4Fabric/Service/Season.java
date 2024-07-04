@@ -41,7 +41,7 @@ public enum Season {
     public static void saveCurrentToConfig(){
         String currentStr = CURRENT_SEASON.toString();
         Config.writeCurrent("season", currentStr);
-        //Config.saveCurrent();
+        Config.saveCurrent();
     }
 
     public static void setSeason(Season season, PlayerManager players) {

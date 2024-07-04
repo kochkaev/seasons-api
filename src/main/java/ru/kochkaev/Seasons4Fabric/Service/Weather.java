@@ -82,6 +82,7 @@ public enum Weather {
     private final List<Season> seasons; // List of seasons this weather can be triggered on
 
     private static Weather CURRENT_WEATHER;
+    private static boolean isNight;
 
     Weather(String name, String broadcast, boolean catastrophic, boolean raining, boolean thundering, int chance, List<Season> seasons) {
         this.name = name;
@@ -123,6 +124,7 @@ public enum Weather {
 
     public static void setCurrent(Weather weather){
         CURRENT_WEATHER = weather;
+        saveCurrentToConfig();
     }
 
     public static void restoreCurrentFromConfig(){
@@ -132,6 +134,7 @@ public enum Weather {
     public static void saveCurrentToConfig(){
         String currentStr = CURRENT_WEATHER.toString();
         Config.writeCurrent("weather", currentStr);
+        Config.saveCurrent();
     }
 
     public static void setChancedWeatherInCurrentSeason(ServerWorld world){
@@ -146,7 +149,7 @@ public enum Weather {
     public boolean getThundering() { return this.thundering; }
     public List<Season> getSeasons() { return this.seasons; }
 
-    public static Boolean isNight() { return CURRENT_WEATHER == NIGHT; }
+    public static Boolean isNight() { return isNight; }
     public static void setWeather(Weather weather, ServerWorld world) {
         Weather.setCurrent(weather);
         Message.sendNewMessage(weather.getMessage(), world.getServer().getPlayerManager());
@@ -157,5 +160,14 @@ public enum Weather {
 
     public static Weather[] getAll() {
         return values();
+    }
+
+    public static void setNight(ServerWorld world) {
+        isNight = true;
+        Message.sendNewMessage(Weather.NIGHT.getMessage(), world.getServer().getPlayerManager());
+    }
+    public static void setDay(ServerWorld world) {
+        isNight = false;
+        setChancedWeatherInCurrentSeason(world);
     }
 }

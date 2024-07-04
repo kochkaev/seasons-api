@@ -1,6 +1,5 @@
 package ru.kochkaev.Seasons4Fabric.Config;
 
-import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -12,16 +11,16 @@ import java.nio.file.Path;
 
 class JSONConfigCoreTools {
 
-    private Writer writer;
+    private final Path path;
     private JsonObject jsonObject;
     static Gson gson = new Gson();
 
     // If file isn't empty
     JSONConfigCoreTools(Path path, BufferedReader reader) {
         this.jsonObject = JsonParser.parseReader(reader).getAsJsonObject();
+        this.path = path;
         try {
             reader.close();
-            this.writer = Files.newBufferedWriter(path.toRealPath());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -30,11 +29,7 @@ class JSONConfigCoreTools {
     // If file empty
     JSONConfigCoreTools(Path path, String defaults) {
         this.jsonObject = (JsonObject) JsonParser.parseString(defaults);
-        try {
-            this.writer = Files.newBufferedWriter(path.toRealPath());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        this.path = path;
     }
 
     public JsonObject getJsonObject() {
@@ -45,26 +40,11 @@ class JSONConfigCoreTools {
         this.jsonObject = newJsonObject;
     }
 
-    public void close() {
-        try {
-            writer.write(gson.toJson(jsonObject));
-            writer.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public void save() {
         try {
+            Writer writer = Files.newBufferedWriter(path.toRealPath());
             writer.write(gson.toJson(jsonObject));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void flush() {
-        try {
-            writer.flush();
+            writer.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
