@@ -154,9 +154,9 @@ public enum Weather {
         setWeather(weather, world);
     }
 
-    public String getName() { return Config.getString(this.nameKey); }
-    public String  getMessage() { return Config.getString(this.messageKey); }
-    public int  getChance() { return Config.getInt(this.chanceKey); }
+    public String getName() { return Config.getLang().getString(this.nameKey); }
+    public String  getMessage() { return Config.getLang().getString(this.messageKey); }
+    public int  getChance() { return Config.getConfig().getInt(this.chanceKey); }
     public boolean getRaining() { return this.raining; }
     public boolean getThundering() { return this.thundering; }
     public List<Season> getSeasons() { return this.seasons; }
@@ -166,7 +166,8 @@ public enum Weather {
         Weather.setCurrent(weather);
         Message.sendMessage2Server(weather.getMessage(), world.getServer().getPlayerManager());
         WeatherUtils.setWeather(weather, world);
-        for (EffectObject effect : getListOfAvailableEffects(EffectsTicker.getListOfEffects())) Message.sendMessage2Server(effect.getTriggerMessage(), world.getServer().getPlayerManager());
+        Effect.updateEffectsInCurrentWeather();
+        for (EffectObject effect : Effect.getEffectsInCurrentWeather()) Message.sendMessage2Server(effect.getTriggerMessage(), world.getServer().getPlayerManager());
     }
 
     public static Weather getWeatherByID(String id) { return valueOf(id); }
@@ -184,9 +185,4 @@ public enum Weather {
         setChancedWeatherInCurrentSeason(world);
     }
 
-    public static List<EffectObject> getListOfAvailableEffects(List<EffectObject> list) {
-        List<EffectObject> availables = List.of();
-        for (EffectObject effect : list) if (effect.isAllowed()) availables.add(effect);
-        return availables;
-    }
 }

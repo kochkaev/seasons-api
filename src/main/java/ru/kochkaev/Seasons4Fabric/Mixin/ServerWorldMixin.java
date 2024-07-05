@@ -39,8 +39,8 @@ public abstract class ServerWorldMixin
 
     @Inject(method = "tick", at=@At("HEAD"))
     public void tick(BooleanSupplier shouldKeepTicking, CallbackInfo ci){
-        if ((this.properties.getTimeOfDay()%24000L >= Config.getLong("conf.tick.day.start")) && (Weather.isNight()) && (Config.getLong("conf.tick.day.end") > this.properties.getTimeOfDay()%24000L)) Weather.setDay(this.toServerWorld());
-        if ((this.properties.getTimeOfDay()%24000L >= Config.getLong("conf.tick.day.end")) && (!Weather.isNight())) Weather.setNight(this.toServerWorld());
+        if ((this.properties.getTimeOfDay()%24000L >= Config.getConfig().getLong("conf.tick.day.start")) && (Weather.isNight()) && (Config.getConfig().getLong("conf.tick.day.end") > this.properties.getTimeOfDay()%24000L)) Weather.setDay(this.toServerWorld());
+        if ((this.properties.getTimeOfDay()%24000L >= Config.getConfig().getLong("conf.tick.day.end")) && (!Weather.isNight())) Weather.setNight(this.toServerWorld());
         Title.showActionBar(this.getServer().getPlayerManager());
         if ((this.worldProperties.isRaining()!=Weather.getCurrent().getRaining()) || (this.worldProperties.isThundering()!=Weather.getCurrent().getThundering())) this.setWeather(-1, -1, false, false);
     }

@@ -4,12 +4,11 @@ import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.minecraft.world.GameRules;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.kochkaev.Seasons4Fabric.Commands.Seasons4FabricCommand;
 import ru.kochkaev.Seasons4Fabric.Config.Config;
-//import ru.kochkaev.Seasons4Fabric.Config.OldConfig;
+import ru.kochkaev.Seasons4Fabric.Service.Effect;
 import ru.kochkaev.Seasons4Fabric.Service.Season;
 import ru.kochkaev.Seasons4Fabric.Service.Weather;
 
@@ -25,23 +24,21 @@ public class Main implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-		//OldConfig.registerConfigs();
 		Config.init__();
 		Weather.restoreCurrentFromConfig();
 		Season.restoreCurrentFromConfig();
 		CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> Seasons4FabricCommand.register(dispatcher)));
-		//GameRules.DO_WEATHER_CYCLE = GameRules.BooleanRule.create(false);
+		Effect.updateEffectsInCurrentWeather();
+		EffectsTicker.start();
 
 		LOGGER.info("Hello Fabric world!");
 
-		//new Ticker();
 		ServerLifecycleEvents.SERVER_STOPPED.register((server) -> onShutdown());
 	}
 
 	private void onShutdown() {
 		Weather.saveCurrentToConfig();
 		Season.saveCurrentToConfig();
-		//OldConfig.closeJson();
 		Config.saveCurrent();
 	}
 

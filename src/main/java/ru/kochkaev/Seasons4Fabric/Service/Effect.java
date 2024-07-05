@@ -1,19 +1,14 @@
 package ru.kochkaev.Seasons4Fabric.Service;
 
-import net.minecraft.entity.damage.DamageType;
-import net.minecraft.registry.Registerable;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.util.Identifier;
-import ru.kochkaev.Seasons4Fabric.Config.Config;
+import ru.kochkaev.Seasons4Fabric.EffectsTicker;
 import ru.kochkaev.Seasons4Fabric.Objects.EffectObject;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Effect {
 
-//    FEELS_GOOD(new EffectObject("feelsGood", true, Arrays.asList())),
+//    FEELS_GOOD(new EffectObject("feelsGood", true, Arrays.asList())), +
 //    FLUFFY_COAT(new EffectObject("fluffyCoat", true, Arrays.asList())),
 //    PRIMITIVE_HEATING(new EffectObject("primitiveHeating", true, Arrays.asList())),
 //    REVITALIZED(new EffectObject("revitalized", true, Arrays.asList())),
@@ -30,11 +25,33 @@ public class Effect {
 //    THE_SHIVERS(new EffectObject("theShivers", false, Arrays.asList())),
 //    WET_MUD(new EffectObject("wetMud", false, Arrays.asList()));
 
-    private final EffectObject effect;
+    private static final List<EffectObject> effects = new ArrayList<>();
 
-    Effect(EffectObject effect) {
-        //RegistryKey<DamageType> WEATHER = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of("seasons4fabric:weather"));
-        this.effect = effect;
+    private static final List<EffectObject> effectsInCurrentWeather = new ArrayList<>();
+
+    private static List<EffectObject> onConsumeEffects;
+
+    public static void register(EffectObject effect) {
+        effect.register();
+        effects.add(effect);
+        if (EffectsTicker.isTicking()) EffectsTicker.addEffect(effect);
+    }
+
+    public static List<EffectObject> getEffects() { return effects; }
+
+    public static List<EffectObject> getEffectsInCurrentWeather() { return effectsInCurrentWeather; }
+    public static void updateEffectsInCurrentWeather() {
+        effectsInCurrentWeather.clear();
+        for (EffectObject effect : effects) if (effect.isAllowed()) effectsInCurrentWeather.add(effect);
+    }
+
+
+    public static void registerOnConsume(EffectObject effect) {
+        onConsumeEffects.add(effect);
+    }
+
+    public static List<EffectObject> getOnConsumeEffects() {
+        return onConsumeEffects;
     }
 
 }

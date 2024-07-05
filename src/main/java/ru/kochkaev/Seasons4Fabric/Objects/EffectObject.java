@@ -4,6 +4,7 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
+import ru.kochkaev.Seasons4Fabric.Service.Effect;
 import ru.kochkaev.Seasons4Fabric.Service.Weather;
 import ru.kochkaev.Seasons4Fabric.Util.Message;
 import ru.kochkaev.Seasons4Fabric.WeatherDamageType;
@@ -22,6 +23,7 @@ import java.util.List;
  *     <a href="https://youtube.com/@kochkaev">YouTube channel</a>
  *     <a href="https://vk.com/kleverdi">VK</a>
  *     <a href="https://github.com/kochkaev">GitHub</a>
+ *     <a href="https://gitverse.ru/kochkaev">GitVerse</a>
  * </p>
  */
 public abstract class EffectObject {
@@ -47,7 +49,7 @@ public abstract class EffectObject {
      * </code>
      * or<br>
      * {@code this.weathers = Collections.singletonList(Weather.WEATHER);}<br><br>
-     * This method must be realized in your effect.<br>
+     * This method must be realized in your effect. Use {@code @Override} annotation for this method.<br>
      * {@code public void register() { ... }}
      */
     public abstract void register();
@@ -56,10 +58,20 @@ public abstract class EffectObject {
      * Effect logic. <br><br>
      * This method will be called every {@code conf.tick.secondsPerTick} (from config.txt) seconds.
      * Method contains effect logic for one thing player.<br><br>
-     * This method must be realized in your effect.<br>
+     * This method must be realized in your effect. Use {@code @Override} annotation for this method.<br>
      * {@code public void logic(ServerPlayerEntity player, int countOfInARowCalls) { ... }}
+     * @param player player to whom the logic applies.
+     * @param countOfInARowCalls count of fulfilled conditions in "logic" in a row.
+     * @return new value for countOfInARowCalls
      */
-    public abstract void logic(ServerPlayerEntity player, int countOfInARowCalls);
+    public abstract int logic(ServerPlayerEntity player, int countOfInARowCalls);
+
+    /**
+     * You can use this method for call your effect logic when player eats.<br>
+     * For use this feature you most add {@code registerOnConsume();} to your register() method. Use {@code @Override} annotation.<br>
+     * @param player player, who will eat
+     */
+    public void onConsume(ServerPlayerEntity player) {  }
 
     /**
      * You can use this method for damage player.
@@ -89,6 +101,18 @@ public abstract class EffectObject {
     protected void effect(ServerPlayerEntity player, RegistryEntry<StatusEffect> effect, int amplifier) { effect(player, effect, -1, amplifier, false); }
     /** See {@link  #effect(ServerPlayerEntity, RegistryEntry, int, int, boolean)} */
     protected void effect(ServerPlayerEntity player, RegistryEntry<StatusEffect> effect) { effect(player, effect, -1, 1, false); }
+
+    protected void removeEffect(ServerPlayerEntity player, RegistryEntry<StatusEffect> effect)  {
+        player.removeStatusEffect(effect);
+    }
+
+    /**
+     * You can use this method for register your onConsume() method.<br>
+     * @see #onConsume(ServerPlayerEntity)
+     */
+    protected void registerOnConsume() {
+        Effect.registerOnConsume(this);
+    }
 
     /**
      * You can use this method for send a message to player chat.<br><br>
