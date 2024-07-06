@@ -5,11 +5,16 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import ru.kochkaev.Seasons4Fabric.Service.Effect;
+import ru.kochkaev.Seasons4Fabric.Service.Event;
 import ru.kochkaev.Seasons4Fabric.Service.Weather;
 import ru.kochkaev.Seasons4Fabric.Util.Message;
 import ru.kochkaev.Seasons4Fabric.WeatherDamageType;
 
+import java.lang.reflect.Method;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  * It's EffectObject, object for create your own effects.<br><br>
@@ -67,13 +72,6 @@ public abstract class EffectObject {
     public abstract int logic(ServerPlayerEntity player, int countOfInARowCalls);
 
     /**
-     * You can use this method for call your effect logic when player eats.<br>
-     * For use this feature you most add {@code registerOnConsume();} to your register() method. Use {@code @Override} annotation.<br>
-     * @param player player, who will eat
-     */
-    public void onConsume(ServerPlayerEntity player) {  }
-
-    /**
      * You can use this method for damage player.
      * @param player player, who we will damage
      * @param amount (optional) amount of damage (hp) | default = 1.0f
@@ -107,11 +105,19 @@ public abstract class EffectObject {
     }
 
     /**
-     * You can use this method for register your onConsume() method.<br>
-     * @see #onConsume(ServerPlayerEntity)
+     * You can use this for call your method on event.<br>
+     * {@code registerOnEventMethod("TARGET_EVENT_ID", this::yourMethod)  { ... }} <br><br>
+     * You can create onEffect method for event in this way:<br>
+     * {@code public void yourMethod(Object... args)  { ... }}
+     * <p>For get arguments of event, you can use <br>{@code Object arg = (Object) args[0];} <br>Object may be int, String, etc.</p>
+     * @param eventID id of target event.
+     * @param method method, who we will call.
+     * @return EventObject of target event.
      */
-    protected void registerOnConsume() {
-        Effect.registerOnConsume(this);
+    protected EventObject registerOnEventMethod(String eventID, Consumer<Object> method) {
+        EventObject event = Event.getEventByID(eventID);
+        event.addMethod(method);
+        return event;
     }
 
     /**
@@ -125,8 +131,6 @@ public abstract class EffectObject {
      * @param message message, who we will send
      */
     protected void sendMessage(ServerPlayerEntity player, String message) { Message.sendMessage2Player(message, player); }
-
-    //protected void registerOnSteppedOn(Method method) {  }
 
     /** This method check this effect available in current weather.
      * @return true, if {@link #weathers} contains current weather | false, if not.

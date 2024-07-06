@@ -3,6 +3,7 @@ package ru.kochkaev.Seasons4Fabric.Service;
 import ru.kochkaev.Seasons4Fabric.EffectsTicker;
 import ru.kochkaev.Seasons4Fabric.Objects.EffectObject;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,11 +44,6 @@ public class Effect {
     public static void updateEffectsInCurrentWeather() {
         effectsInCurrentWeather.clear();
         for (EffectObject effect : effects) if (effect.isAllowed()) effectsInCurrentWeather.add(effect);
-    }
-
-
-    public static void registerOnConsume(EffectObject effect) {
-        onConsumeEffects.add(effect);
     }
 
     public static List<EffectObject> getOnConsumeEffects() {
