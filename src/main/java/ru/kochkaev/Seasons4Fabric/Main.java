@@ -6,37 +6,35 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.kochkaev.Seasons4Fabric.Commands.Seasons4FabricCommand;
-import ru.kochkaev.Seasons4Fabric.Config.Config;
-import ru.kochkaev.Seasons4Fabric.Service.Effect;
-import ru.kochkaev.Seasons4Fabric.Service.Season;
-import ru.kochkaev.Seasons4Fabric.Service.Weather;
+import ru.kochkaev.Seasons4Fabric.command.Seasons4FabricCommand;
+import ru.kochkaev.Seasons4Fabric.config.Config;
+import ru.kochkaev.Seasons4Fabric.object.ChallengeObject;
+import ru.kochkaev.Seasons4Fabric.object.EventObject;
+import ru.kochkaev.Seasons4Fabric.service.Challenge;
+import ru.kochkaev.Seasons4Fabric.service.Event;
+import ru.kochkaev.Seasons4Fabric.service.Season;
+import ru.kochkaev.Seasons4Fabric.service.Weather;
+import ru.kochkaev.Seasons4Fabric.util.ParseClassesInPackage;
 
 public class Main implements ModInitializer {
-	// This logger is used to write text to the console and the log file.
-	// It is considered best practice to use your mod id as the logger's name.
-	// That way, it's clear which mod wrote info, warnings, and errors.
-    public static final Logger LOGGER = LoggerFactory.getLogger("Seasons4Fabric");
+    public static final Logger LOGGER = LoggerFactory.getLogger("Seasons");
 
 	@Override
 	public void onInitialize() {
-		// This code runs as soon as Minecraft is in a mod-load-ready state.
-		// However, some things (like resources) may still be uninitialized.
-		// Proceed with mild caution.
-
 		Config.init__();
+		new ParseClassesInPackage<EventObject>("ru.kochkaev.Seasons4Fabric.event", Event::register);
+		new ParseClassesInPackage<ChallengeObject>("ru.kochkaev.Seasons4Fabric.challenge", Challenge::register);
 		Weather.restoreCurrentFromConfig();
 		Season.restoreCurrentFromConfig();
 		CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> Seasons4FabricCommand.register(dispatcher)));
-		Effect.updateEffectsInCurrentWeather();
-		EffectsTicker.start();
-
-		LOGGER.info("Hello Fabric world!");
+		Challenge.updateChallengesInCurrentWeather();
+		ChallengesTicker.start();
 
 		ServerLifecycleEvents.SERVER_STOPPED.register((server) -> onShutdown());
 	}
 
 	private void onShutdown() {
+		ChallengesTicker.stop();
 		Weather.saveCurrentToConfig();
 		Season.saveCurrentToConfig();
 		Config.saveCurrent();
