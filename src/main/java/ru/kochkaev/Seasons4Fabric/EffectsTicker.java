@@ -2,6 +2,7 @@ package ru.kochkaev.Seasons4Fabric;
 
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import ru.kochkaev.Seasons4Fabric.Config.Config;
 import ru.kochkaev.Seasons4Fabric.Objects.EffectObject;
 import ru.kochkaev.Seasons4Fabric.Service.Effect;
 
@@ -16,16 +17,17 @@ public class EffectsTicker {
     private static ServerWorld overworld;
     private static final Map<ServerPlayerEntity, Map<EffectObject, Integer>> countOfInARowCallsMap = new HashMap<>();
     private static boolean isTicking = false;
+    private static final int ticksPerAction = Config.getConfig().getInt("conf.tick.secondsPerTick");
 
     public static void start() {
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         isTicking = true;
-        executorService.scheduleAtFixedRate(EffectsTicker::tickPerSecond, 0, 1, TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(EffectsTicker::tick, 0, Config.getConfig().getInt("conf.tick.secondsPerTick"), TimeUnit.SECONDS);
     }
 
-    public static void tickPerSecond() {
+    public static void tick() {
         for (ServerPlayerEntity player : overworld.getPlayers()) {
-            if (player.getServerWorld() == overworld) for (EffectObject effect : Effect.getEffectsInCurrentWeather()) countOfInARowCallsMap.get(player).put(effect, effect.logic(player, countOfInARowCallsMap.get(player).get(effect)));
+            if (player.getServerWorld() == overworld) for (EffectObject effect : Effect.getEffectsInCurrentWeather()) countOfInARowCallsMap.get(player).put(effect, effect.logic(player, countOfInARowCallsMap.get(player).get(effect)), ticksPerAction);
         }
     }
 

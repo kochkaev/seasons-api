@@ -15,17 +15,16 @@ public class FeelsGood extends EffectObject {
     @Override
     public void register(){
         this.triggerMessage = Config.getLang().getString("lang.effect.feelsGood.message.trigger");
-        this.isGood = true;
         this.weathers = Collections.singletonList(Weather.WARM);
     }
 
     @Override
-    public int logic(ServerPlayerEntity player, int countOfInARowCalls){
+    public int logic(ServerPlayerEntity player, int countOfInARowCalls, int ticksPerAction){
         boolean wearArmor = false;
         for (ItemStack item : player.getInventory().player.getArmorItems()) wearArmor = (item != null) || (wearArmor);
         if (!wearArmor && countOfInARowCalls == 0) {
             sendMessage(player, Config.getLang().getString("lang.effect.feelsGood.message.get"));
-            effect(player, StatusEffects.SPEED);
+            giveEffect(player, StatusEffects.SPEED);
             return countOfInARowCalls+1;
         }
         else if (wearArmor && countOfInARowCalls>0) {

@@ -16,13 +16,12 @@ public class Devastation extends EffectObject {
     @Override
     public void register() {
         this.triggerMessage = Config.getLang().getString("lang.effect.devastation.message.trigger");
-        this.isGood = false;
         this.weathers = Collections.singletonList(Weather.STORMY);
         onHeal = registerOnEventMethod("ON_HEAL", this::onHeal);
     }
 
     @Override
-    public int logic(ServerPlayerEntity player, int countOfInARowCalls) {
+    public int logic(ServerPlayerEntity player, int countOfInARowCalls, int ticksPerAction) {
         return 0;
     }
 

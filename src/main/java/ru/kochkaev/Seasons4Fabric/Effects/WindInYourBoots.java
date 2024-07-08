@@ -14,15 +14,14 @@ public class WindInYourBoots extends EffectObject {
     @Override
     public void register() {
         this.triggerMessage = Config.getLang().getString("lang.effect.windInYourBoots.message.trigger");
-        this.isGood = true;
         this.weathers = Collections.singletonList(Weather.BREEZY);
     }
 
     @Override
-    public int logic(ServerPlayerEntity player, int countOfInARowCalls) {
+    public int logic(ServerPlayerEntity player, int countOfInARowCalls, int ticksPerAction) {
         if (countOfInARowCalls >= 60 * 2) {
             int random = new Random().nextInt(10);
-            if (random < 5 && !player.hasStatusEffect(StatusEffects.SPEED)) effect(player, StatusEffects.SPEED, 20*10, 0);
+            if (random < 5 && !player.hasStatusEffect(StatusEffects.SPEED)) giveEffect(player, StatusEffects.SPEED, 20*10, 0);
             return 0;
         }
         else {

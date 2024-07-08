@@ -72,7 +72,7 @@ public abstract class EventObject {
 
     /**
      * You can use this method to invoke methods. <br>
-     * For add method for invoke on event you can use {@link #addMethod(Method method)}.
+     * For add method for invoke on event you can use {@link #addMethod(Consumer method)}.
      * @param args additional arguments for invoke on event.
      */
     protected void invokeMethods(Object... args)  {
@@ -106,6 +106,14 @@ public abstract class EventObject {
 
     /** @return true if method returned any object. */
     public boolean isReturned()  { return this.isReturned; }
+    /** Returns {@link #isReturned} and set it false (reset)
+     *  @return true if method was returned any Object.
+     */
+    public boolean isReturnedAndReset()  {
+        boolean isReturned= this.isReturned;
+        this.isReturned = false;
+        return isReturned;
+    }
 
     /** @return true if event was canceled by method. */
     public boolean isCancelled()  { return this.isCancelled; }

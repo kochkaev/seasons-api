@@ -111,6 +111,10 @@ class DefaultTXTConfig {
         gen.addValueAndCommentDefault("conf.tick.day.start", "0");
         gen.addComment("Tick of day ends");
         gen.addValueAndCommentDefault("conf.tick.day.end", "12542");
+        gen.addComment("Seconds per seasons tick");
+        gen.addValueAndCommentDefault("conf.tick.secondsPerTick", "1");
+        gen.addComment("Ticks before action starts (for example, damage)");
+        gen.addValueAndCommentDefault("conf.tick.ticksPerAction", "3");
 
     }
 

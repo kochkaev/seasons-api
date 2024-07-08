@@ -20,17 +20,16 @@ public class PrimitiveHeating extends EffectObject {
     @Override
     public void register() {
         this.triggerMessage = Config.getLang().getString("lang.effect.primitiveHeating.message.trigger");
-        this.isGood = true;
         this.weathers = Collections.singletonList(Weather.COLD);
     }
 
     @Override
-    public int logic(ServerPlayerEntity player, int countOfInARowCalls) {
+    public int logic(ServerPlayerEntity player, int countOfInARowCalls, int ticksPerAction) {
         boolean  isHot  = false;
         for (ItemStack item : hots) if (player.getInventory().contains(item)) isHot = true;
         if (isHot && countOfInARowCalls==0) {
             sendMessage(player, Config.getLang().getString("lang.effect.primitiveHeating.message.get"));
-            effect(player, StatusEffects.RESISTANCE, 0);
+            giveEffect(player, StatusEffects.RESISTANCE, 0);
             return countOfInARowCalls+1;
         }
         else if (!isHot && countOfInARowCalls>0) {

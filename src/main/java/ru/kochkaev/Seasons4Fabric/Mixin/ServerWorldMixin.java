@@ -1,10 +1,12 @@
 package ru.kochkaev.Seasons4Fabric.Mixin;
 
 import net.fabricmc.fabric.api.attachment.v1.AttachmentTarget;
+import net.minecraft.block.BlockState;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.StructureWorldAccess;
@@ -19,6 +21,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import ru.kochkaev.Seasons4Fabric.Config.Config;
 import ru.kochkaev.Seasons4Fabric.Main;
+import ru.kochkaev.Seasons4Fabric.Objects.EventObject;
+import ru.kochkaev.Seasons4Fabric.Service.Event;
 import ru.kochkaev.Seasons4Fabric.Service.Weather;
 import ru.kochkaev.Seasons4Fabric.Util.Title;
 
@@ -34,15 +38,24 @@ public abstract class ServerWorldMixin
         this.worldProperties = worldProperties;
     }
 
+    private static final EventObject onBlockChangeEvent = Event.getEventByID("ON_BLOCK_CHANGE");
+
     @Shadow
     private final ServerWorldProperties worldProperties;
 
-    @Inject(method = "tick", at=@At("HEAD"))
+    @Inject(method = "tick", at = @At("HEAD"))
     public void tick(BooleanSupplier shouldKeepTicking, CallbackInfo ci){
         if ((this.properties.getTimeOfDay()%24000L >= Config.getConfig().getLong("conf.tick.day.start")) && (Weather.isNight()) && (Config.getConfig().getLong("conf.tick.day.end") > this.properties.getTimeOfDay()%24000L)) Weather.setDay(this.toServerWorld());
         if ((this.properties.getTimeOfDay()%24000L >= Config.getConfig().getLong("conf.tick.day.end")) && (!Weather.isNight())) Weather.setNight(this.toServerWorld());
         Title.showActionBar(this.getServer().getPlayerManager());
         if ((this.worldProperties.isRaining()!=Weather.getCurrent().getRaining()) || (this.worldProperties.isThundering()!=Weather.getCurrent().getThundering())) this.setWeather(-1, -1, false, false);
+    }
+
+    @Inject(method = "onBlockChanged", at = @At("HEAD"))
+    public void onBlockChanged(BlockPos pos, BlockState oldBlock, BlockState newBlock, CallbackInfo ci){
+        onBlockChangeEvent.onEvent(pos, oldBlock, newBlock);
+        if (onBlockChangeEvent.isCancelledAndReset()) return;
+        if (onBlockChangeEvent.isReturnedAndReset()) newBlock = (BlockState) onBlockChangeEvent.getReturned();
     }
 
     /**

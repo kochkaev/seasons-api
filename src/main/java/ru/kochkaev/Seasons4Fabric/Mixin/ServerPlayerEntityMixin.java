@@ -37,10 +37,11 @@ public class ServerPlayerEntityMixin extends PlayerEntity {
         EffectsTicker.removePlayer((ServerPlayerEntity) (Object) this);
     }
 
-    @Inject(method = "consumeItem", at = @At("TAIL"))
+    @Inject(method = "consumeItem", at = @At("HEAD"))
     protected void consumeItem(CallbackInfo ci){
         if (!this.activeItemStack.isEmpty() && this.isUsingItem()) {
            onConsumeEvent.onEvent((ServerPlayerEntity) (Object) this);
+            if (onConsumeEvent.isCancelledAndReset()) return;
         }
     }
 

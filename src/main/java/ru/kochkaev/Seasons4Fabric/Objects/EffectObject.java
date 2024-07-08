@@ -38,8 +38,6 @@ public abstract class EffectObject {
      * @see #sendMessage(ServerPlayerEntity, String)
      */
     protected String triggerMessage;
-    /** isGood true if effect gives a buff | false if effect gives a debuff. */
-    protected boolean isGood;
     /** weathers contains weathers, that available this effect. */
     protected List<Weather> weathers;
 
@@ -49,7 +47,6 @@ public abstract class EffectObject {
      * Method must contain effect data.<br>
      * <code>
      *     this.triggerMessage = "Your message";<br>
-     *     this.isGood = true;<br>
      *     this.weathers = Arrays.asList(Weather.FIRST_WEATHER, Weather.SECOND_WEATHER);<br>
      * </code>
      * or<br>
@@ -69,7 +66,7 @@ public abstract class EffectObject {
      * @param countOfInARowCalls count of fulfilled conditions in "logic" in a row.
      * @return new value for countOfInARowCalls
      */
-    public abstract int logic(ServerPlayerEntity player, int countOfInARowCalls);
+    public abstract int logic(ServerPlayerEntity player, int countOfInARowCalls, int ticksPerAction);
 
     /**
      * You can use this method for damage player.
@@ -90,15 +87,15 @@ public abstract class EffectObject {
      * @param amplifier (optional) effect level | default = 1
      * @param hideParticles (optional) hide effect particles | default = false
      */
-    protected void effect(ServerPlayerEntity player, RegistryEntry<StatusEffect> effect, int duration, int amplifier, boolean hideParticles) {
+    protected void giveEffect(ServerPlayerEntity player, RegistryEntry<StatusEffect> effect, int duration, int amplifier, boolean hideParticles) {
         player.addStatusEffect(new StatusEffectInstance(effect, duration, amplifier, hideParticles, hideParticles));
     }
-    /** See {@link  #effect(ServerPlayerEntity, RegistryEntry, int, int, boolean)} */
-    protected void effect(ServerPlayerEntity player, RegistryEntry<StatusEffect> effect, int duration, int amplifier) { effect(player, effect, duration, amplifier, false); }
-    /** See {@link  #effect(ServerPlayerEntity, RegistryEntry, int, int, boolean)} */
-    protected void effect(ServerPlayerEntity player, RegistryEntry<StatusEffect> effect, int amplifier) { effect(player, effect, -1, amplifier, false); }
-    /** See {@link  #effect(ServerPlayerEntity, RegistryEntry, int, int, boolean)} */
-    protected void effect(ServerPlayerEntity player, RegistryEntry<StatusEffect> effect) { effect(player, effect, -1, 1, false); }
+    /** See {@link  #giveEffect(ServerPlayerEntity, RegistryEntry, int, int, boolean)} */
+    protected void giveEffect(ServerPlayerEntity player, RegistryEntry<StatusEffect> effect, int duration, int amplifier) { giveEffect(player, effect, duration, amplifier, false); }
+    /** See {@link  #giveEffect(ServerPlayerEntity, RegistryEntry, int, int, boolean)} */
+    protected void giveEffect(ServerPlayerEntity player, RegistryEntry<StatusEffect> effect, int amplifier) { giveEffect(player, effect, -1, amplifier, false); }
+    /** See {@link  #giveEffect(ServerPlayerEntity, RegistryEntry, int, int, boolean)} */
+    protected void giveEffect(ServerPlayerEntity player, RegistryEntry<StatusEffect> effect) { giveEffect(player, effect, -1, 1, false); }
 
     protected void removeEffect(ServerPlayerEntity player, RegistryEntry<StatusEffect> effect)  {
         player.removeStatusEffect(effect);

@@ -17,13 +17,12 @@ public class WarmingStew extends EffectObject {
     @Override
     public void register() {
         this.triggerMessage = Config.getLang().getString("lang.effect.warmingStew.message.trigger");
-        this.isGood = true;
         this.weathers = Collections.singletonList(Weather.COLD);
         registerOnEventMethod("ON_CONSUME", this::onConsume);
     }
 
     @Override
-    public int logic(ServerPlayerEntity player, int countOfInARowCalls) {
+    public int logic(ServerPlayerEntity player, int countOfInARowCalls, int ticksPerAction) {
         return 0;
     }
 
@@ -31,7 +30,7 @@ public class WarmingStew extends EffectObject {
         ServerPlayerEntity player = (ServerPlayerEntity) args[0];
         for (ItemStack stew : stews) if (player.getActiveItem() == stew) {
             sendMessage(player, Config.getLang().getString("lang.effect.warmingStew.message.get"));
-            effect(player, StatusEffects.REGENERATION, 20*10, 0);
+            giveEffect(player, StatusEffects.REGENERATION, 20*10, 0);
         }
     }
 }

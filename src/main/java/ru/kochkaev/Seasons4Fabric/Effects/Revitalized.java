@@ -12,15 +12,14 @@ public class Revitalized extends EffectObject {
     @Override
     public void register() {
         this.triggerMessage = Config.getLang().getString("lang.effect.revitalized.message.trigger");
-        this.isGood = true;
         this.weathers = Collections.singletonList(Weather.BEAUTIFUL);
     }
 
     @Override
-    public int logic(ServerPlayerEntity player, int countOfInARowCalls) {
+    public int logic(ServerPlayerEntity player, int countOfInARowCalls, int ticksPerAction) {
         if (player.getServerWorld().getTimeOfDay() < Config.getConfig().getLong("conf.time.day.end")-1) {
             sendMessage(player, Config.getLang().getString("lang.effect.revitalized.message.get"));
-            effect(player, StatusEffects.REGENERATION, 0);
+            giveEffect(player, StatusEffects.REGENERATION, 0);
             return countOfInARowCalls+1;
         }
         else if (player.getServerWorld().getTimeOfDay() == Config.getConfig().getLong("conf.time.day.end")) {
