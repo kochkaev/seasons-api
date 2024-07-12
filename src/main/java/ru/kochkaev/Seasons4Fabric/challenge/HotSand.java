@@ -25,7 +25,7 @@ public class HotSand extends ChallengeObject {
     public int logic(ServerPlayerEntity player, int countOfInARowCalls, int ticksPerAction) {
         if (!player.hasVehicle() && hots.contains(player.getSteppingBlockState().getBlock())) {
             sendMessage(player, Config.getLang().getString("lang.effect.hotSand.message.get"));
-            if (countOfInARowCalls>ticksPerAction) damage(player);
+            if (countOfInARowCalls>ticksPerAction) damageHot(player);
             return countOfInARowCalls+1;
         }
         return 0;

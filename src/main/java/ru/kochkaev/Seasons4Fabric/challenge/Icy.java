@@ -10,6 +10,7 @@ import ru.kochkaev.Seasons4Fabric.object.EventObject;
 import ru.kochkaev.Seasons4Fabric.service.Weather;
 
 import java.util.Collections;
+import java.util.List;
 
 public class Icy extends ChallengeObject {
 
@@ -27,8 +28,8 @@ public class Icy extends ChallengeObject {
         return 0;
     }
 
-    public void onBlockChange(Object... args)  {
-        BlockState newBlock = (BlockState) ((Object[]) args[0])[2];
+    public void onBlockChange(List<Object> args)  {
+        BlockState newBlock = (BlockState) args.get(2);
 
         if(newBlock.getBlock() == Blocks.WATER) onBlockChange.returnValue(Blocks.ICE.getDefaultState());
         //sendMessage(Config.getLang().getString(player, "lang.effect.icy.message.get"));

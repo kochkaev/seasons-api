@@ -11,12 +11,16 @@ import net.minecraft.util.Identifier;
 
 public class WeatherDamageType {
 
-    public static final RegistryKey<DamageType> WEATHER_DAMAGE_TYPE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of("seasons4fabric", "weather"));
+    public static final RegistryKey<DamageType> WEATHER_COLDS_DAMAGE_TYPE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of("seasons4fabric", "weather_colds"));
+    public static final RegistryKey<DamageType> WEATHER_HOTS_DAMAGE_TYPE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of("seasons4fabric", "weather_hots"));
+    public static final RegistryKey<DamageType> WEATHER_STORMY_DAMAGE_TYPE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of("seasons4fabric", "weather_stormy"));
+//    public static ServerWorld world;
+//    public static final DamageSource WEATHER_DAMAGE_SOURCE = new DamageSource(world.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(WEATHER_DAMAGE_TYPE));
 
 
     public static DamageSource of(ServerWorld world, RegistryKey<DamageType> key) {
-        DamageSource source = new DamageSource(world.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).createEntry(new DamageType("seasons4fabric:deathMessage.weather", 0.1f, DamageEffects.FREEZING)));
-        return source;
+//        return new DamageSource(world.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).createEntry(new DamageType("death.attack.weather", 0.1f, DamageEffects.FREEZING)));
+        return new DamageSource(world.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(key));
     }
 
 }

@@ -13,9 +13,9 @@ import ru.kochkaev.Seasons4Fabric.ChallengesTicker;
 @Mixin(PlayerManager.class)
 public class PlayerManagerMixin {
 
-    @Inject(method = "onPlayerConnect", at=@At("HEAD"))
-    public void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player, ConnectedClientData clientData, CallbackInfo ci) {
-        ChallengesTicker.addPlayer(player);
-    }
+//    @Inject(method = "onPlayerConnect", at=@At("HEAD"))
+//    public void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player, ConnectedClientData clientData, CallbackInfo ci) {
+//        ChallengesTicker.addPlayer(player);
+//    }
 
 }

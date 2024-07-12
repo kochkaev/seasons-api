@@ -20,7 +20,7 @@ public class TheShivers extends ChallengeObject {
     public int logic(ServerPlayerEntity player, int countOfInARowCalls, int ticksPerAction) {
         if (player.getSteppingBlockState().getBlock().equals(Blocks.WATER) && !player.hasVehicle()) {
             if (countOfInARowCalls == 0) sendMessage(player, Config.getLang().getString("lang.effect.theShivers.message.get"));
-            if (countOfInARowCalls % ticksPerAction == 0) damage(player);
+            if (countOfInARowCalls % ticksPerAction == 0) damageCold(player);
             return countOfInARowCalls+1;
         }
         return 0;

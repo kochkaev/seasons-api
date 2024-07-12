@@ -18,8 +18,10 @@ public class ChallengesTicker {
     private static final Map<ServerPlayerEntity, Map<ChallengeObject, Integer>> countOfInARowCallsMap = new HashMap<>();
     private static final List<ServerPlayerEntity> players = new ArrayList<>();
     private static boolean isTicking = false;
-    private static final int ticksPerAction = Config.getConfig().getInt("conf.tick.secondsPerTick");
+    private static final int ticksPerAction = Config.getConfig().getInt("conf.tick.ticksPerAction");
     private static final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+    private static final List<ServerPlayerEntity> playersRemoveList = new ArrayList<>();
+    private static final List<ServerPlayerEntity> playersAddList = new ArrayList<>();
 
     public static void start() {
         isTicking = true;
@@ -35,21 +37,36 @@ public class ChallengesTicker {
         for (ServerPlayerEntity player : players) {
             for (ChallengeObject challenge : Challenge.getChallengesInCurrentWeather()) countOfInARowCallsMap.get(player).put(challenge, challenge.logic(player, countOfInARowCallsMap.get(player).get(challenge), ticksPerAction));
         }
+        if (!playersRemoveList.isEmpty()) removePlayersTask();
+        if (!playersAddList.isEmpty()) addPlayersTask();
+        Main.getLogger().info("Challenges ticker is ticking");
     }
 
 
     public static void addPlayer(ServerPlayerEntity player) {
-        countOfInARowCallsMap.put(player, new HashMap<>());
-        for (ChallengeObject effect : Challenge.getChallenges()) {
-            countOfInARowCallsMap.get(player).put(effect, 0);
-            //for (ChallengeObject challenge : Challenge.getChallengesInCurrentWeather()) Message.sendMessage2Player(challenge.getTriggerMessage(), player);
+        playersAddList.add(player);
+    }
+    public static void addPlayersTask() {
+        for (ServerPlayerEntity player : playersAddList) {
+            countOfInARowCallsMap.put(player, new HashMap<>());
+            for (ChallengeObject effect : Challenge.getChallenges()) {
+                countOfInARowCallsMap.get(player).put(effect, 0);
+                //for (ChallengeObject challenge : Challenge.getChallengesInCurrentWeather()) Message.sendMessage2Player(challenge.getTriggerMessage(), player);
+            }
+            players.add(player);
         }
-        players.add(player);
+        playersAddList.clear();
     }
 
     public static void removePlayer(ServerPlayerEntity player) {
-        countOfInARowCallsMap.remove(player);
-        players.remove(player);
+        playersRemoveList.add(player);
+    }
+    public static void removePlayersTask() {
+        for (ServerPlayerEntity player : playersRemoveList) {
+            countOfInARowCallsMap.remove(player);
+            players.remove(player);
+        }
+        playersRemoveList.clear();
     }
 
     public static void addChallenge(ChallengeObject challenge) {

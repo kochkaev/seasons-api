@@ -1,19 +1,29 @@
 package ru.kochkaev.Seasons4Fabric.object;
 
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
+import ru.kochkaev.Seasons4Fabric.IFunc;
+import ru.kochkaev.Seasons4Fabric.IFuncRet;
 import ru.kochkaev.Seasons4Fabric.Main;
+import ru.kochkaev.Seasons4Fabric.mixin.LivingEntityMixin;
 import ru.kochkaev.Seasons4Fabric.service.Event;
+import ru.kochkaev.Seasons4Fabric.service.Task;
 import ru.kochkaev.Seasons4Fabric.service.Weather;
 import ru.kochkaev.Seasons4Fabric.util.Message;
 import ru.kochkaev.Seasons4Fabric.WeatherDamageType;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * It's ChallengeObject, object for create your own challenges.<br><br>
@@ -71,14 +81,21 @@ public abstract class ChallengeObject {
      * You can use this method for damage player.
      * @param player player, who we will damage
      * @param amount (optional) amount of damage (hp) | default = 1.0f
+     * @param key (optional) damage type
      */
-    protected void damage(ServerPlayerEntity player, float amount) {
-        Main.getLogger().info("Damage!");
-        DamageSource type = WeatherDamageType.of(player.getServerWorld(), WeatherDamageType.WEATHER_DAMAGE_TYPE);
+    protected void damage(ServerPlayerEntity player, float amount, RegistryKey<DamageType> key) {
+        DamageSource type = WeatherDamageType.of(player.getServerWorld(), key);
         player.damage(type, amount);
     }
-    /** See {@link  #damage(ServerPlayerEntity, float)} */
-    protected void damage(ServerPlayerEntity player) { damage(player, 1.0f); }
+    /** See {@link  #damage(ServerPlayerEntity, float, RegistryKey)} */
+    protected void damage(ServerPlayerEntity player, RegistryKey<DamageType> key) { damage(player, 1.0f, key); }
+
+    /** See {@link  #damage(ServerPlayerEntity, float, RegistryKey)} */
+    protected void damageCold(ServerPlayerEntity player) { damage(player, 1.0f, WeatherDamageType.WEATHER_COLDS_DAMAGE_TYPE); }
+    /** See {@link  #damage(ServerPlayerEntity, float, RegistryKey)} */
+    protected void damageHot(ServerPlayerEntity player) { damage(player, 1.0f, WeatherDamageType.WEATHER_HOTS_DAMAGE_TYPE); }
+    /** See {@link  #damage(ServerPlayerEntity, float, RegistryKey)} */
+    protected void damageStorm(ServerPlayerEntity player) { damage(player, 1.0f, WeatherDamageType.WEATHER_STORMY_DAMAGE_TYPE); }
 
     /**
      * You can use this method for give player effect.
@@ -99,8 +116,8 @@ public abstract class ChallengeObject {
     protected void giveEffect(ServerPlayerEntity player, RegistryEntry<StatusEffect> effect) { giveEffect(player, effect, -1, 0, false); }
     /**
      * You can use this method for remove player effect.
-     * @param player player, who we will give effect
-     * @param effect effect, who we will give (you can use StatusEffects.EFFECT_NAME)
+     * @param player player, who we will remove effect
+     * @param effect effect, who we will remove (you can use StatusEffects.EFFECT_NAME)
      */
     protected void removeEffect(ServerPlayerEntity player, RegistryEntry<StatusEffect> effect)  {
         Main.getLogger().info(String.valueOf(player.removeStatusEffect(effect)));
@@ -116,10 +133,43 @@ public abstract class ChallengeObject {
      * @param method method, who we will call.
      * @return EventObject of target event.
      */
-    protected EventObject registerOnEventMethod(String eventID, Consumer<Object> method) {
+    protected EventObject registerOnEventMethod(String eventID, IFunc method) {
         EventObject event = Event.getEventByID(eventID);
         event.addMethod(method);
         return event;
+    }
+
+    /**
+     * You can use this method for give player freezing effect (blue hurts and snowflakes on the screen).<br>
+     * @param player player, who we will give effect.
+     * @return task method.
+     */
+    protected IFuncRet giveFrozen(ServerPlayerEntity player) {
+        IFuncRet task1 = (args) -> {
+            ServerPlayerEntity playr = (ServerPlayerEntity) args.getFirst();
+            playr.setFrozenTicks(140);
+            return args;
+        };
+        IFuncRet task = (args) -> {
+            int count = (int) args.getFirst();
+            ServerPlayerEntity playr = (ServerPlayerEntity) args.get(1);
+            IFuncRet tsk = (IFuncRet) args.get(2);
+            IFuncRet tsk1 = (IFuncRet) args.get(3);
+            playr.setFrozenTicks(count);
+            if (count < 140) return Arrays.asList(count+1, playr, tsk, tsk1);
+            Task.removeTask(tsk);
+            Task.addTask(tsk1, Collections.singletonList(playr));
+            return new ArrayList<>();
+        };
+        Task.addTask(task, Arrays.asList(1, player, task, task1));
+        return task1;
+    }
+    /**
+     * You can use this method for remove player freeze effect.<br>
+     * @param task task, who we will remove.
+     */
+    protected void removeFrozen(IFuncRet task) {
+        Task.removeTask(task);
     }
 
     /**

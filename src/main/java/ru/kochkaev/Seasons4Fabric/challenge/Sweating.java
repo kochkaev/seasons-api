@@ -28,7 +28,7 @@ public class Sweating extends ChallengeObject {
         if (isFullArmor) {
             if (countOfInARowCalls == 0) sendMessage(player, Config.getLang().getString("lang.effect.sweating.message.get"));
             else if (countOfInARowCalls == ticksPerAction) giveEffect(player, StatusEffects.MINING_FATIGUE);
-            else if (countOfInARowCalls%ticksPerAction == 0) damage(player);
+            else if (countOfInARowCalls%ticksPerAction == 0) damageHot(player);
             return countOfInARowCalls + 1;
         }
         else if (countOfInARowCalls > 0 && !isFullArmor) {

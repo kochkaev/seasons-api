@@ -36,7 +36,7 @@ public class StrongCurrent extends ChallengeObject {
                 giveEffect(player, StatusEffects.NAUSEA);
                 giveEffect(player, StatusEffects.MINING_FATIGUE);
             }
-            else if (countOfInARowCalls%ticksPerAction == 0) damage(player);
+            else if (countOfInARowCalls%ticksPerAction == 0) damageStorm(player);
             return countOfInARowCalls + 1;
         }
         else if (player.getSteppingBlockState().getBlock() != Blocks.WATER) {

@@ -9,6 +9,7 @@ import ru.kochkaev.Seasons4Fabric.object.ChallengeObject;
 import ru.kochkaev.Seasons4Fabric.service.Weather;
 
 import java.util.Collections;
+import java.util.List;
 
 public class WarmingStew extends ChallengeObject {
 
@@ -26,8 +27,8 @@ public class WarmingStew extends ChallengeObject {
         return 0;
     }
 
-    public void onConsume(Object... args) {
-        ServerPlayerEntity player = (ServerPlayerEntity) ((Object[]) args[0])[0];
+    public void onConsume(List<Object> args) {
+        ServerPlayerEntity player = (ServerPlayerEntity) args.get(0);
         for (ItemStack stew : stews) if (player.getActiveItem() == stew) {
             sendMessage(player, Config.getLang().getString("lang.effect.warmingStew.message.get"));
             giveEffect(player, StatusEffects.REGENERATION, 20*10, 0);

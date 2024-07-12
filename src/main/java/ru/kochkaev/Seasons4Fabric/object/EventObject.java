@@ -1,8 +1,11 @@
 package ru.kochkaev.Seasons4Fabric.object;
 
+import ru.kochkaev.Seasons4Fabric.IFunc;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * It's EventObject, object for create your own events.<br><br>
@@ -22,7 +25,7 @@ import java.util.function.Consumer;
 public abstract class EventObject {
 
     /** It's list of methods for invoke on event. */
-    private final List<Consumer<Object>> methods = new ArrayList<>();
+    private final List<IFunc> methods = new ArrayList<>();
 
     /** It's object, returned by method */
     private Object returned;
@@ -49,31 +52,31 @@ public abstract class EventObject {
      * You can use this method to add method for invoke on event.
      * @param method method for invoke on event.
      */
-    public void addMethod(Consumer<Object> method) {
+    public void addMethod(IFunc method) {
         methods.add(method);
     }
 
     /**
      * This method will be called on event. <br>
      * You must realize this method in your event. Use {@code @Override} annotation for this method. <br>
-     * Use {@link #invokeMethods(Object... args)} for invoke methods.<br>
+     * Use {@link #invokeMethods(List args)} for invoke methods.<br>
      * {@code invokeMethods(args)}<br><br>
      * You can invoke this method from your mixin:<br>
      * {@code Event.getEventByID("EVENT_ID").onEvent(yourArgumentIfItsNeeded, yourSecondOptArg);}
      *
      * @param args additional arguments for invoke on event.
      */
-    public abstract void onEvent(Object... args);
+    public abstract void onEvent(List<Object> args);
 
     /**
      * You can use this method to invoke methods. <br>
-     * For add method for invoke on event you can use {@link #addMethod(Consumer method)}.
+     * For add method for invoke on event you can use {@link #addMethod(IFunc method)}.
      * @param args additional arguments for invoke on event.
      */
-    protected void invokeMethods(Object... args)  {
-        for (Consumer<Object> method : methods) {
+    protected void invokeMethods(List<Object> args)  {
+        for (IFunc method : methods) {
             try {
-                method.accept(args);
+                method.function(args);
             } catch (Exception e) {
                 e.printStackTrace();
             }

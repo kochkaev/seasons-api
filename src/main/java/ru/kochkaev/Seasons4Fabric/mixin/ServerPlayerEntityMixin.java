@@ -1,9 +1,11 @@
 package ru.kochkaev.Seasons4Fabric.mixin;
 
 import com.mojang.authlib.GameProfile;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -11,8 +13,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import ru.kochkaev.Seasons4Fabric.ChallengesTicker;
+import ru.kochkaev.Seasons4Fabric.Main;
 import ru.kochkaev.Seasons4Fabric.object.EventObject;
 import ru.kochkaev.Seasons4Fabric.service.Event;
+
+import java.util.Collections;
 
 @Mixin(ServerPlayerEntity.class)
 public class ServerPlayerEntityMixin extends PlayerEntity {
@@ -34,10 +39,33 @@ public class ServerPlayerEntityMixin extends PlayerEntity {
     protected void consumeItem(CallbackInfo ci){
         if (!this.activeItemStack.isEmpty() && this.isUsingItem()) {
             EventObject onConsumeEvent = Event.getEventByID("ON_CONSUME");
-            onConsumeEvent.onEvent((ServerPlayerEntity) (Object) this);
+            onConsumeEvent.onEvent(Collections.singletonList((ServerPlayerEntity) (Object) this));
             if (onConsumeEvent.isCancelledAndReset()) return;
         }
     }
+
+    @Inject(method = "onDeath", at = @At("HEAD"))
+    public void onDeath(DamageSource damageSource, CallbackInfo ci) {
+        ChallengesTicker.removePlayer((ServerPlayerEntity) (Object) this);
+//        Main.getLogger().info("Player " + this.getName().getString() + " died");
+    }
+
+    @Inject(method = "onSpawn", at = @At("HEAD"))
+    public void onSpawn(CallbackInfo ci) {
+        ChallengesTicker.addPlayer((ServerPlayerEntity) (Object) this);
+//        Main.getLogger().info("Player " + this.getName().getString() + " spawned");
+    }
+
+//    @Inject(method = "getRespawnTarget", at = @At("RETURN"))
+//    public TeleportTarget getRespawnTarget(boolean alive, TeleportTarget.PostDimensionTransition postDimensionTransition, CallbackInfo ci) {
+//        ChallengesTicker.addPlayer((ServerPlayerEntity) (Object) this);
+//        return null;
+//    }
+
+//    @Inject(method = "teleportTo" , at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerCommonNetworkHandler;sendPacket()V"))
+//    private void onRespawn(CallbackInfo ci) {
+//        ChallengesTicker.addPlayer((ServerPlayerEntity) (Object) this);
+//    }
 
     public boolean isSpectator() {
         return false;

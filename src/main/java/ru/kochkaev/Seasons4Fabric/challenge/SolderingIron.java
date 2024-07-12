@@ -32,7 +32,7 @@ public class SolderingIron extends ChallengeObject {
             return countOfInARowCalls+1;
         }
         else if (countOfInARowCalls == ticksPerAction) {
-            damage(player);
+            damageHot(player);
         }
         return 0;
     }

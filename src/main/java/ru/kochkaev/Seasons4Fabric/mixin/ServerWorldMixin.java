@@ -23,9 +23,11 @@ import ru.kochkaev.Seasons4Fabric.config.Config;
 import ru.kochkaev.Seasons4Fabric.Main;
 import ru.kochkaev.Seasons4Fabric.object.EventObject;
 import ru.kochkaev.Seasons4Fabric.service.Event;
+import ru.kochkaev.Seasons4Fabric.service.Task;
 import ru.kochkaev.Seasons4Fabric.service.Weather;
 import ru.kochkaev.Seasons4Fabric.util.Title;
 
+import java.util.Arrays;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -49,12 +51,13 @@ public abstract class ServerWorldMixin
         if ((this.properties.getTimeOfDay()%24000L >= Config.getConfig().getLong("conf.tick.day.end")) && (!Weather.isNight())) Weather.setNight(this.toServerWorld());
         Title.showActionBar(this.getServer().getPlayerManager());
         if ((this.worldProperties.isRaining()!=Weather.getCurrent().getRaining()) || (this.worldProperties.isThundering()!=Weather.getCurrent().getThundering())) this.setWeather(-1, -1, false, false);
+        Task.runTasks();
     }
 
     @Inject(method = "onBlockChanged", at = @At("HEAD"))
     public void onBlockChanged(BlockPos pos, BlockState oldBlock, BlockState newBlock, CallbackInfo ci){
         EventObject onBlockChangeEvent = Event.getEventByID("ON_BLOCK_CHANGE");
-        onBlockChangeEvent.onEvent(pos, oldBlock, newBlock);
+        onBlockChangeEvent.onEvent(Arrays.asList(pos, oldBlock, newBlock));
         if (onBlockChangeEvent.isCancelledAndReset()) return;
         if (onBlockChangeEvent.isReturnedAndReset()) newBlock = (BlockState) onBlockChangeEvent.getReturned();
     }
