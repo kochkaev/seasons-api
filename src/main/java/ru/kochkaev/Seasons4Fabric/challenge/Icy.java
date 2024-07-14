@@ -5,7 +5,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -61,6 +63,8 @@ public class Icy extends ChallengeObject {
                         if (player.getServerWorld().getBlockState(pos).getBlock() == Blocks.WATER) {
                             player.getServerWorld().setBlockState(pos, Blocks.ICE.getDefaultState());
                             Message.sendMessage2Player(Config.getLang().getString("lang.effect.icy.message.get"), player);
+                            player.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE);
+                            player.getServerWorld().spawnParticles(ParticleTypes.CLOUD, pos.getX(), pos.getY(), pos.getZ(), 5, pos.getX(), pos.getY(), pos.getZ(), 0.1);
                         }
                         Task.removeTask(tsk);
                         return new ArrayList<>();
@@ -87,6 +91,8 @@ public class Icy extends ChallengeObject {
                         if (player.getInventory().getMainHandStack().getItem() == Items.WATER_BUCKET) {
                             player.getInventory().setStack(player.getInventory().selectedSlot, Items.BUCKET.getDefaultStack());
                             Message.sendMessage2Player(Config.getLang().getString("lang.effect.icy.message.remove"), player);
+                            player.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 1, 0);
+                            spawnParticles(player, ParticleTypes.CLOUD, false, 0, 5);
                         }
                         Task.removeTask(tsk);
                         return new ArrayList<>();

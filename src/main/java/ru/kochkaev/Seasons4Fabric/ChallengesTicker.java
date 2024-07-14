@@ -27,6 +27,7 @@ public class ChallengesTicker {
     private static final List<ChallengeObject> allowedChallenges = new ArrayList<>();
     private static final List<ChallengeObject> noMoreAllowedChallenges = new ArrayList<>();
     private static boolean newDay = false;
+    private static boolean shutdown = false;
 
     public static void start() {
         isTicking = true;
@@ -36,7 +37,8 @@ public class ChallengesTicker {
 
     public static void stop()  {
         isTicking = false;
-        executorService.shutdown();
+        noMoreAllowedChallenges.addAll(allowedChallenges);
+        shutdown = true;
     }
 
     public static void tick() {
@@ -67,8 +69,10 @@ public class ChallengesTicker {
             List<ChallengeObject> challengeObjects = Challenge.getChallengesInCurrentWeather();
             allowedChallenges.addAll(challengeObjects);
             newDay = false;
+            Main.getLogger().info(allowedChallenges.toString());
         }
         Main.getLogger().info("Challenges ticker is ticking");
+        if (shutdown) executorService.shutdown();
     }
 
 
@@ -92,6 +96,11 @@ public class ChallengesTicker {
     }
     public static void removePlayersTask() {
         for (ServerPlayerEntity player : playersRemoveList) {
+            for (ChallengeObject challenge : allowedChallenges) {
+                if (countOfInARowCallsMap.get(player).get(challenge) != 0) {
+                    challenge.challengeEnd(player);
+                }
+            }
             countOfInARowCallsMap.remove(player);
             players.remove(player);
         }

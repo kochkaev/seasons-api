@@ -4,6 +4,8 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -179,6 +181,15 @@ public abstract class ChallengeObject {
      */
     protected void removeFrozen(IFuncRet task) {
         Task.removeTask(task);
+    }
+
+    /**
+     * You can use this method for spawn particles.<br>
+     * @param player player for whom will spawn particles.
+     * @param particles spawn particle type.
+     */
+    protected void spawnParticles(ServerPlayerEntity player, ParticleEffect particles, boolean falling, double offsetY, int count) {
+        player.getServerWorld().spawnParticles(particles, player.getX(), player.getY()+offsetY, player.getZ(), count, 0, falling ? -1 : 1, 0, 0.1);
     }
 
     /**

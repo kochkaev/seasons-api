@@ -3,6 +3,7 @@ package ru.kochkaev.Seasons4Fabric.challenge;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import ru.kochkaev.Seasons4Fabric.config.Config;
 import ru.kochkaev.Seasons4Fabric.object.ChallengeObject;
@@ -28,11 +29,13 @@ public class FluffyCoat extends ChallengeObject {
             if (countOfInARowCalls == 0) {
                 sendMessage(player, Config.getLang().getString("lang.effect.fluffyCoat.message.get"));
                 giveEffect(player, StatusEffects.RESISTANCE);
+                spawnParticles(player, ParticleTypes.HAPPY_VILLAGER, false, 1, 10);
             }
             return countOfInARowCalls+1;
         }
         else if (doNotWearArmor && countOfInARowCalls>0) {
             sendMessage(player, Config.getLang().getString("lang.effect.fluffyCoat.message.remove"));
+            spawnParticles(player, ParticleTypes.ANGRY_VILLAGER, false, 1, 2);
             removeEffect(player, StatusEffects.RESISTANCE);
         }
         return 0;

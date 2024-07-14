@@ -3,6 +3,7 @@ package ru.kochkaev.Seasons4Fabric.challenge;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import ru.kochkaev.Seasons4Fabric.Main;
 import ru.kochkaev.Seasons4Fabric.config.Config;
@@ -35,7 +36,10 @@ public class SolderingIron extends ChallengeObject {
         boolean contains = items.contains(player.getInventory().getMainHandStack().getItem());
         if (contains) {
             if (countOfInARowCalls == 0) sendMessage(player, Config.getLang().getString("lang.effect.solderingIron.message.get"));
-            else damageHot(player);
+            else {
+                spawnParticles(player, ParticleTypes.SMALL_FLAME, false, 0,10);
+                damageHot(player);
+            }
             return countOfInARowCalls+1;
         }
         return 0;

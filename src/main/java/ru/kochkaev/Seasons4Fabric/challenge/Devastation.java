@@ -1,7 +1,9 @@
 package ru.kochkaev.Seasons4Fabric.challenge;
 
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import ru.kochkaev.Seasons4Fabric.IFunc;
 import ru.kochkaev.Seasons4Fabric.Main;
@@ -41,6 +43,7 @@ public class Devastation extends ChallengeObject {
         if (isAllowed()){
             LivingEntity entity = (LivingEntity) args.get(0);
             if (!entity.hasStatusEffect(StatusEffects.REGENERATION)) {
+                if (entity.getType() == EntityType.PLAYER) spawnParticles((ServerPlayerEntity) entity, ParticleTypes.ANGRY_VILLAGER, false, 1, 2);
                 onHeal.cancelEvent();
             }
         }

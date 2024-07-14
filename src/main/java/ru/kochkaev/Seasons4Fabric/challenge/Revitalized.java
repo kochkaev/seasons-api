@@ -1,6 +1,7 @@
 package ru.kochkaev.Seasons4Fabric.challenge;
 
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import ru.kochkaev.Seasons4Fabric.config.Config;
 import ru.kochkaev.Seasons4Fabric.object.ChallengeObject;
@@ -26,11 +27,13 @@ public class Revitalized extends ChallengeObject {
             if (countOfInARowCalls == 0) {
                 sendMessage(player, Config.getLang().getString("lang.effect.revitalized.message.get"));
                 giveEffect(player, StatusEffects.REGENERATION);
+                spawnParticles(player, ParticleTypes.HAPPY_VILLAGER, false, 1, 10);
             }
             return 1;
         }
         else if ((player.getServerWorld() != player.getServerWorld().getServer().getOverworld()) && countOfInARowCalls == 1) {
             removeEffect(player, StatusEffects.REGENERATION);
+            spawnParticles(player, ParticleTypes.ANGRY_VILLAGER, false, 1, 2);
             sendMessage(player, Config.getLang().getString("lang.effect.revitalized.message.remove"));
         }
         return 0;

@@ -4,6 +4,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import ru.kochkaev.Seasons4Fabric.Main;
 import ru.kochkaev.Seasons4Fabric.config.Config;
@@ -32,11 +33,13 @@ public class PrimitiveHeating extends ChallengeObject {
         if (isHot && countOfInARowCalls==0) {
             sendMessage(player, Config.getLang().getString("lang.effect.primitiveHeating.message.get"));
             giveEffect(player, StatusEffects.RESISTANCE);
+            spawnParticles(player, ParticleTypes.SMALL_FLAME, false, 0, 10);
             return countOfInARowCalls+1;
         }
         else if (!isHot && countOfInARowCalls>0) {
             sendMessage(player, Config.getLang().getString("lang.effect.primitiveHeating.message.remove"));
             removeEffect(player, StatusEffects.RESISTANCE);
+            spawnParticles(player, ParticleTypes.ANGRY_VILLAGER, false, 1, 2);
         }
         else if (countOfInARowCalls > 0) {
             return countOfInARowCalls+1;

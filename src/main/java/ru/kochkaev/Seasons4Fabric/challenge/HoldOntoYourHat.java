@@ -4,6 +4,7 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import ru.kochkaev.Seasons4Fabric.Main;
 import ru.kochkaev.Seasons4Fabric.config.Config;
@@ -34,10 +35,11 @@ public class HoldOntoYourHat extends ChallengeObject {
                 break;
             }
         }
-        Main.getLogger().info(String.valueOf(haveLeatherHelmet));
+//        Main.getLogger().info(String.valueOf(haveLeatherHelmet));
         if (haveLeatherHelmet && new Random().nextInt(100) <= 10) {
             player.dropStack(helmet);
             player.getInventory().removeOne(helmet);
+            spawnParticles(player, ParticleTypes.CLOUD, false, 1, 5);
             sendMessage(player, Config.getLang().getString("lang.effect.holdOntoYourHat.message.get"));
         }
         return 0;
