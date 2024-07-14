@@ -3,6 +3,7 @@ package ru.kochkaev.Seasons4Fabric.challenge;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import ru.kochkaev.Seasons4Fabric.config.Config;
 import ru.kochkaev.Seasons4Fabric.object.ChallengeObject;
@@ -22,19 +23,21 @@ public class WetMud extends ChallengeObject {
 
     @Override
     public void register() {
-        this.triggerMessage = Config.getLang().getString("lang.effect.wetMud.message.trigger");
-        this.weathers = Collections.singletonList(Weather.RAINY);
     }
 
     @Override
     public int logic(ServerPlayerEntity player, int countOfInARowCalls, int ticksPerAction) {
         if (muddy.contains(player.getSteppingBlockState().getBlock()) && !player.hasVehicle()) {
-            giveEffect(player, StatusEffects.SLOWNESS);
-            sendMessage(player, Config.getLang().getString("lang.effect.wetMud.message.get"));
+            if (countOfInARowCalls == 0) {
+                giveEffect(player, StatusEffects.SLOWNESS);
+                sendMessage(player, Config.getLang().getString("lang.effect.wetMud.message.get"));
+                spawnParticles(player, ParticleTypes.ANGRY_VILLAGER, true, 1, 2);
+            }
             return countOfInARowCalls+1;
         }
         else if (countOfInARowCalls>0) {
             removeEffect(player, StatusEffects.SLOWNESS);
+            spawnParticles(player, ParticleTypes.HAPPY_VILLAGER, false, 1, 10);
         }
         return 0;
     }

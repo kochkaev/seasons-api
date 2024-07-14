@@ -1,7 +1,9 @@
 package ru.kochkaev.Seasons4Fabric.challenge;
 
 import net.minecraft.block.Blocks;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
+import ru.kochkaev.Seasons4Fabric.IFuncRet;
 import ru.kochkaev.Seasons4Fabric.config.Config;
 import ru.kochkaev.Seasons4Fabric.object.ChallengeObject;
 import ru.kochkaev.Seasons4Fabric.service.Weather;
@@ -14,17 +16,26 @@ public class TheShivers extends ChallengeObject {
         super(Config.getLang().getString("lang.effect.theShivers.message.trigger"), Collections.singletonList(Weather.CHILLY), false);
     }
 
+    private IFuncRet task;
+
     @Override
     public void register() {
     }
 
     @Override
     public int logic(ServerPlayerEntity player, int countOfInARowCalls, int ticksPerAction) {
-        if (player.getSteppingBlockState().getBlock().equals(Blocks.WATER) && !player.hasVehicle()) {
-            if (countOfInARowCalls == 0) sendMessage(player, Config.getLang().getString("lang.effect.theShivers.message.get"));
-            if (countOfInARowCalls % ticksPerAction == 0) damageCold(player);
+        if (player.getBlockStateAtPos().getBlock().equals(Blocks.WATER) && !player.hasVehicle()) {
+            if (countOfInARowCalls == 0) {
+                sendMessage(player, Config.getLang().getString("lang.effect.theShivers.message.get"));
+                task = giveFrozen(player);
+            }
+            if (countOfInARowCalls % ticksPerAction == 0) {
+                damageCold(player);
+                spawnParticles(player, ParticleTypes.SNOWFLAKE, true, 0, 5);
+            }
             return countOfInARowCalls+1;
         }
+        else if (countOfInARowCalls > 0) removeFrozen(task);
         return 0;
     }
 

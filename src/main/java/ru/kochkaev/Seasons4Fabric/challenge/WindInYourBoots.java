@@ -1,6 +1,7 @@
 package ru.kochkaev.Seasons4Fabric.challenge;
 
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import ru.kochkaev.Seasons4Fabric.config.Config;
 import ru.kochkaev.Seasons4Fabric.object.ChallengeObject;
@@ -23,7 +24,10 @@ public class WindInYourBoots extends ChallengeObject {
     public int logic(ServerPlayerEntity player, int countOfInARowCalls, int ticksPerAction) {
         if (countOfInARowCalls >= 60 * 2) {
             int random = new Random().nextInt(10);
-            if (random < 5 && !player.hasStatusEffect(StatusEffects.SPEED)) giveEffect(player, StatusEffects.SPEED, 20*10, 0);
+            if (random < 5 && !player.hasStatusEffect(StatusEffects.SPEED)) {
+                giveEffect(player, StatusEffects.SPEED, 20*10, 0);
+                spawnParticles(player, ParticleTypes.HAPPY_VILLAGER, false, 1, 10);
+            }
             return 0;
         }
         else {
