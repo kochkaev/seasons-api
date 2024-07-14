@@ -1,8 +1,10 @@
 package ru.kochkaev.Seasons4Fabric.challenge;
 
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
+import ru.kochkaev.Seasons4Fabric.Main;
 import ru.kochkaev.Seasons4Fabric.config.Config;
 import ru.kochkaev.Seasons4Fabric.object.ChallengeObject;
 import ru.kochkaev.Seasons4Fabric.service.Weather;
@@ -13,27 +15,34 @@ import java.util.List;
 
 public class SolderingIron extends ChallengeObject {
 
-    private static final List<ItemStack> items = Arrays.asList(Items.BUCKET.getDefaultStack(), Items.IRON_INGOT.getDefaultStack(), Items.IRON_BLOCK.getDefaultStack(),
-            Items.IRON_DOOR.getDefaultStack(), Items.IRON_HELMET.getDefaultStack(), Items.IRON_CHESTPLATE.getDefaultStack(), Items.IRON_LEGGINGS.getDefaultStack(),
-            Items.IRON_BOOTS.getDefaultStack(), Items.ANVIL.getDefaultStack(), Items.IRON_NUGGET.getDefaultStack(), Items.IRON_BARS.getDefaultStack(), Items.IRON_TRAPDOOR.getDefaultStack(),
-            Items.CHAINMAIL_HELMET.getDefaultStack(), Items.CHAINMAIL_CHESTPLATE.getDefaultStack(), Items.CHAINMAIL_LEGGINGS.getDefaultStack(),
-            Items.CHAINMAIL_BOOTS.getDefaultStack(), Items.WATER_BUCKET.getDefaultStack(), Items.LAVA_BUCKET.getDefaultStack());
+    public SolderingIron() {
+        super(Config.getLang().getString("lang.effect.solderingIron.message.trigger"), Collections.singletonList(Weather.SCORCHING), false);
+    }
+
+    private static final List<Item> items = Arrays.asList(Items.BUCKET, Items.IRON_INGOT, Items.IRON_BLOCK,
+            Items.IRON_DOOR, Items.IRON_HELMET, Items.IRON_CHESTPLATE, Items.IRON_LEGGINGS,
+            Items.IRON_BOOTS, Items.ANVIL, Items.IRON_NUGGET, Items.IRON_BARS, Items.IRON_TRAPDOOR,
+            Items.CHAINMAIL_HELMET, Items.CHAINMAIL_CHESTPLATE, Items.CHAINMAIL_LEGGINGS,
+            Items.CHAINMAIL_BOOTS, Items.WATER_BUCKET, Items.LAVA_BUCKET);
     
     @Override
     public void register() {
-        this.triggerMessage = Config.getLang().getString("lang.effect.solderingIron.message.trigger");
-        this.weathers = Collections.singletonList(Weather.SCORCHING);
     }
 
     @Override
     public int logic(ServerPlayerEntity player, int countOfInARowCalls, int ticksPerAction) {
-        if (items.contains(player.getActiveItem())) {
+//        Main.getLogger().info(player.getInventory().getMainHandStack().getItem().toString());
+        boolean contains = items.contains(player.getInventory().getMainHandStack().getItem());
+        if (contains) {
             if (countOfInARowCalls == 0) sendMessage(player, Config.getLang().getString("lang.effect.solderingIron.message.get"));
+            else damageHot(player);
             return countOfInARowCalls+1;
         }
-        else if (countOfInARowCalls == ticksPerAction) {
-            damageHot(player);
-        }
         return 0;
+    }
+
+    @Override
+    public void challengeEnd(ServerPlayerEntity player) {
+
     }
 }

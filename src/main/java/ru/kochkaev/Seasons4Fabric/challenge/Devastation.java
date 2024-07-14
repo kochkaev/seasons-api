@@ -17,10 +17,13 @@ import java.util.function.Function;
 public class Devastation extends ChallengeObject {
 
     private static EventObject onHeal;
+
+    public Devastation() {
+        super(Config.getLang().getString("lang.effect.devastation.message.trigger"), Collections.singletonList(Weather.STORMY), true);
+    }
+
     @Override
     public void register() {
-        this.triggerMessage = Config.getLang().getString("lang.effect.devastation.message.trigger");
-        this.weathers = Collections.singletonList(Weather.STORMY);
         onHeal = registerOnEventMethod("ON_HEAL", this::onHeal);
     }
 
@@ -29,10 +32,17 @@ public class Devastation extends ChallengeObject {
         return 0;
     }
 
+    @Override
+    public void challengeEnd(ServerPlayerEntity player) {
+
+    }
+
     public void onHeal(List<Object> args) {
-        LivingEntity entity = (LivingEntity) args.get(0);
-        if (!entity.hasStatusEffect(StatusEffects.REGENERATION)) {
-            onHeal.cancelEvent();
+        if (isAllowed()){
+            LivingEntity entity = (LivingEntity) args.get(0);
+            if (!entity.hasStatusEffect(StatusEffects.REGENERATION)) {
+                onHeal.cancelEvent();
+            }
         }
     }
 }

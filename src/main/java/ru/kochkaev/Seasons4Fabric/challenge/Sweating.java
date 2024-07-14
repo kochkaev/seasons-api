@@ -11,10 +11,12 @@ import java.util.Collections;
 
 public class Sweating extends ChallengeObject {
 
+    public Sweating() {
+        super(Config.getLang().getString("lang.effect.sweating.message.trigger"), Collections.singletonList(Weather.HOT), false);
+    }
+
     @Override
     public void register() {
-        this.triggerMessage = Config.getLang().getString("lang.effect.sweating.message.trigger");
-        this.weathers = Collections.singletonList(Weather.HOT);
     }
 
     @Override
@@ -39,5 +41,10 @@ public class Sweating extends ChallengeObject {
             removeEffect(player, StatusEffects.MINING_FATIGUE);
         }
         return 0;
+    }
+
+    @Override
+    public void challengeEnd(ServerPlayerEntity player) {
+        removeEffect(player, StatusEffects.MINING_FATIGUE);
     }
 }

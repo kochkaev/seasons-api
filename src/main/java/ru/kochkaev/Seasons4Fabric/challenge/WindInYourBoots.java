@@ -11,10 +11,12 @@ import java.util.Random;
 
 public class WindInYourBoots extends ChallengeObject {
 
+    public WindInYourBoots() {
+        super(Config.getLang().getString("lang.effect.windInYourBoots.message.trigger"), Collections.singletonList(Weather.BREEZY), false);
+    }
+
     @Override
     public void register() {
-        this.triggerMessage = Config.getLang().getString("lang.effect.windInYourBoots.message.trigger");
-        this.weathers = Collections.singletonList(Weather.BREEZY);
     }
 
     @Override
@@ -27,5 +29,10 @@ public class WindInYourBoots extends ChallengeObject {
         else {
             return countOfInARowCalls+1;
         }
+    }
+
+    @Override
+    public void challengeEnd(ServerPlayerEntity player) {
+
     }
 }

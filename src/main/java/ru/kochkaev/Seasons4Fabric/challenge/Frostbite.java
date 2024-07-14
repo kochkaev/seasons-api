@@ -15,12 +15,14 @@ import java.util.Collections;
 
 public class Frostbite extends ChallengeObject {
 
+    public Frostbite() {
+        super(Config.getLang().getString("lang.effect.frostbite.message.trigger"), Arrays.asList(Weather.SNOWY, Weather.FREEZING), true);
+    }
+
     private IFuncRet task;
 
     @Override
     public void register() {
-        this.triggerMessage = Config.getLang().getString("lang.effect.frostbite.message.trigger");
-        this.weathers = Arrays.asList(Weather.SNOWY, Weather.FREEZING);
     }
 
     @Override
@@ -47,5 +49,11 @@ public class Frostbite extends ChallengeObject {
             removeFrozen(task);
         }
         return 0;
+    }
+
+    @Override
+    public void challengeEnd(ServerPlayerEntity player) {
+        player.setInPowderSnow(false);
+        removeFrozen(task);
     }
 }

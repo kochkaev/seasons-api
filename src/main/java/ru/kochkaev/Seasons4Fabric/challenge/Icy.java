@@ -1,25 +1,39 @@
 package ru.kochkaev.Seasons4Fabric.challenge;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3i;
+import ru.kochkaev.Seasons4Fabric.IFuncRet;
+import ru.kochkaev.Seasons4Fabric.Main;
 import ru.kochkaev.Seasons4Fabric.config.Config;
 import ru.kochkaev.Seasons4Fabric.object.ChallengeObject;
 import ru.kochkaev.Seasons4Fabric.object.EventObject;
+import ru.kochkaev.Seasons4Fabric.service.Task;
 import ru.kochkaev.Seasons4Fabric.service.Weather;
+import ru.kochkaev.Seasons4Fabric.util.Message;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class Icy extends ChallengeObject {
 
+    public Icy() {
+        super(Config.getLang().getString("lang.effect.icy.message.trigger"), Collections.singletonList(Weather.FREEZING), true);
+    }
+
     private EventObject onBlockChange;
 
     @Override
     public void register() {
-        this.triggerMessage = Config.getLang().getString("lang.effect.icy.message.trigger");
-        this.weathers = Collections.singletonList(Weather.FREEZING);
         onBlockChange = registerOnEventMethod("ON_BLOCK_CHANGE", this::onBlockChange);
     }
 
@@ -28,10 +42,67 @@ public class Icy extends ChallengeObject {
         return 0;
     }
 
-    public void onBlockChange(List<Object> args)  {
-        BlockState newBlock = (BlockState) args.get(2);
+    @Override
+    public void challengeEnd(ServerPlayerEntity player) {
 
-        if(newBlock.getBlock() == Blocks.WATER) onBlockChange.returnValue(Blocks.ICE.getDefaultState());
-        //sendMessage(Config.getLang().getString(player, "lang.effect.icy.message.get"));
+    }
+
+    public void onBlockChange(List<Object> args)  {
+        if (isAllowed()){
+            ItemStack item = (ItemStack) args.get(1);
+//        Main.getLogger().info("Block");
+            if (item.getItem() == Items.WATER_BUCKET) {
+                IFuncRet task = (arg) -> {
+                    int count = (Integer) arg.getFirst();
+                    ServerPlayerEntity player = (ServerPlayerEntity) arg.get(1);
+                    BlockPos pos = (BlockPos) arg.get(2);
+                    IFuncRet tsk = (IFuncRet) arg.get(3);
+                    if (count == 10) {
+                        if (player.getServerWorld().getBlockState(pos).getBlock() == Blocks.WATER) {
+                            player.getServerWorld().setBlockState(pos, Blocks.ICE.getDefaultState());
+                            Message.sendMessage2Player(Config.getLang().getString("lang.effect.icy.message.get"), player);
+                        }
+                        Task.removeTask(tsk);
+                        return new ArrayList<>();
+                    }
+                    return Arrays.asList(count + 1, player, pos, tsk);
+                };
+                onBlockChange.injectToEnd((arg) -> {
+                    ServerPlayerEntity player = (ServerPlayerEntity) arg.getFirst();
+                    BlockHitResult hitResult = (BlockHitResult) arg.get(1);
+                    BlockPos pos = hitResult.getBlockPos().offset(hitResult.getSide());
+                    Task.addTask(task, Arrays.asList(0, player, pos, task));
+                });
+            }
+            if (item.getItem() == Items.BUCKET) {
+//            Main.getLogger().info("Bucket");
+                IFuncRet task = (arg) -> {
+//                Main.getLogger().info("Task");
+                    int count = (Integer) arg.getFirst();
+                    ServerPlayerEntity player = (ServerPlayerEntity) arg.get(1);
+                    BlockPos pos = (BlockPos) arg.get(2);
+                    IFuncRet tsk = (IFuncRet) arg.get(3);
+                    if (count == 20) {
+//                    Main.getLogger().info(player.getInventory().getMainHandStack().toString());
+                        if (player.getInventory().getMainHandStack().getItem() == Items.WATER_BUCKET) {
+                            player.getInventory().setStack(player.getInventory().selectedSlot, Items.BUCKET.getDefaultStack());
+                            Message.sendMessage2Player(Config.getLang().getString("lang.effect.icy.message.remove"), player);
+                        }
+                        Task.removeTask(tsk);
+                        return new ArrayList<>();
+                    }
+                    return Arrays.asList(count + 1, player, pos, tsk);
+                };
+                onBlockChange.injectToEnd((arg) -> {
+                    ServerPlayerEntity player = (ServerPlayerEntity) arg.getFirst();
+                    BlockHitResult hitResult = (BlockHitResult) arg.get(1);
+                    BlockPos pos = hitResult.getBlockPos().offset(hitResult.getSide());
+                    Block block = player.getServerWorld().getBlockState(pos).getBlock();
+//                Main.getLogger().info(block.toString());
+                    if (block == Blocks.WATER || block == Blocks.CAULDRON)
+                        Task.addTask(task, Arrays.asList(0, player, pos, task));
+                });
+            }
+        }
     }
 }

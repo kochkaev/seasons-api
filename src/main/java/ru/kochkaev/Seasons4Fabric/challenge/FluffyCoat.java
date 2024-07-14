@@ -12,10 +12,12 @@ import java.util.Collections;
 
 public class FluffyCoat extends ChallengeObject {
 
+    public FluffyCoat() {
+        super(Config.getLang().getString("lang.effect.fluffyCoat.message.trigger"), Collections.singletonList(Weather.SNOWY), true);
+    }
+
     @Override
     public void register(){
-        this.triggerMessage = Config.getLang().getString("lang.effect.fluffyCoat.message.trigger");
-        this.weathers = Collections.singletonList(Weather.SNOWY);
     }
 
     @Override
@@ -34,6 +36,11 @@ public class FluffyCoat extends ChallengeObject {
             removeEffect(player, StatusEffects.RESISTANCE);
         }
         return 0;
+    }
+
+    @Override
+    public void challengeEnd(ServerPlayerEntity player) {
+        removeEffect(player, StatusEffects.RESISTANCE);
     }
 
 }

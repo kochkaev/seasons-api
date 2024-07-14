@@ -4,7 +4,6 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
-import ru.kochkaev.Seasons4Fabric.Main;
 import ru.kochkaev.Seasons4Fabric.config.Config;
 import ru.kochkaev.Seasons4Fabric.object.ChallengeObject;
 import ru.kochkaev.Seasons4Fabric.service.Weather;
@@ -13,10 +12,13 @@ import java.util.Collections;
 
 public class FeelsGood extends ChallengeObject {
 
+    public FeelsGood() {
+        super(Config.getLang().getString("lang.effect.feelsGood.message.trigger"), Collections.singletonList(Weather.WARM), true);
+    }
+
     @Override
     public void register(){
-        this.triggerMessage = Config.getLang().getString("lang.effect.feelsGood.message.trigger");
-        this.weathers = Collections.singletonList(Weather.WARM);
+
     }
 
     @Override
@@ -35,6 +37,11 @@ public class FeelsGood extends ChallengeObject {
             removeEffect(player, StatusEffects.SPEED);
         }
         return  0;
+    }
+
+    @Override
+    public void challengeEnd(ServerPlayerEntity player) {
+        removeEffect(player, StatusEffects.SPEED);
     }
 
 }

@@ -5,6 +5,7 @@ import net.minecraft.server.world.ServerWorld;
 import ru.kochkaev.Seasons4Fabric.config.Config;
 import ru.kochkaev.Seasons4Fabric.object.ChallengeObject;
 import ru.kochkaev.Seasons4Fabric.service.Challenge;
+import ru.kochkaev.Seasons4Fabric.service.Weather;
 import ru.kochkaev.Seasons4Fabric.util.Message;
 
 import java.util.*;
@@ -23,8 +24,13 @@ public class ChallengesTicker {
     private static final List<ServerPlayerEntity> playersRemoveList = new ArrayList<>();
     private static final List<ServerPlayerEntity> playersAddList = new ArrayList<>();
 
+    private static final List<ChallengeObject> allowedChallenges = new ArrayList<>();
+    private static final List<ChallengeObject> noMoreAllowedChallenges = new ArrayList<>();
+    private static boolean newDay = false;
+
     public static void start() {
         isTicking = true;
+//        allowedChallenges.addAll(Challenge.getChallengesInCurrentWeather());
         executorService.scheduleAtFixedRate(ChallengesTicker::tick, 0, Config.getConfig().getInt("conf.tick.secondsPerTick"), TimeUnit.SECONDS);
     }
 
@@ -35,10 +41,33 @@ public class ChallengesTicker {
 
     public static void tick() {
         for (ServerPlayerEntity player : players) {
-            for (ChallengeObject challenge : Challenge.getChallengesInCurrentWeather()) countOfInARowCallsMap.get(player).put(challenge, challenge.logic(player, countOfInARowCallsMap.get(player).get(challenge), ticksPerAction));
+            for (ChallengeObject challenge : allowedChallenges) {
+                countOfInARowCallsMap.get(player).put(
+                        challenge,
+                        challenge.logic(player, countOfInARowCallsMap.get(player).get(challenge), ticksPerAction));
+            }
         }
         if (!playersRemoveList.isEmpty()) removePlayersTask();
         if (!playersAddList.isEmpty()) addPlayersTask();
+        if (!noMoreAllowedChallenges.isEmpty()) {
+            for (ChallengeObject challenge : noMoreAllowedChallenges) {
+                for (ServerPlayerEntity player : players) {
+                    int count = countOfInARowCallsMap.get(player).get(challenge);
+                    if (count != 0) {
+                        countOfInARowCallsMap.get(player).put(challenge, 0);
+                        challenge.challengeEnd(player);
+                    }
+                }
+                allowedChallenges.remove(challenge);
+            }
+            noMoreAllowedChallenges.clear();
+        }
+        if (newDay) {
+            allowedChallenges.clear();
+            List<ChallengeObject> challengeObjects = Challenge.getChallengesInCurrentWeather();
+            allowedChallenges.addAll(challengeObjects);
+            newDay = false;
+        }
         Main.getLogger().info("Challenges ticker is ticking");
     }
 
@@ -71,6 +100,19 @@ public class ChallengesTicker {
 
     public static void addChallenge(ChallengeObject challenge) {
         for (ServerPlayerEntity player : players) countOfInARowCallsMap.get(player).put(challenge, 0);
+        if (challenge.isAllowed() && (!Weather.isNight() || challenge.isForNight())) allowedChallenges.add(challenge);
+    }
+
+    public static void setNight() {
+        for (ChallengeObject challenge : allowedChallenges){
+            if (!challenge.isForNight()) noMoreAllowedChallenges.add(challenge);
+        }
+    }
+    public static void setDay() {
+        noMoreAllowedChallenges.addAll(allowedChallenges);
+        newDay = true;
+//        allowedChallenges.clear();
+//        allowedChallenges.addAll(Challenge.getChallengesInCurrentWeather());
     }
 
 //    public static void setWorld(ServerWorld world){

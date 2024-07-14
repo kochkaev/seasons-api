@@ -1,6 +1,7 @@
 package ru.kochkaev.Seasons4Fabric.object;
 
 import ru.kochkaev.Seasons4Fabric.IFunc;
+import ru.kochkaev.Seasons4Fabric.IFuncVoid;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,11 @@ public abstract class EventObject {
     private Object returned;
     private boolean isReturned = false;
 
-    private boolean isCancelled= false;
+    /** It's object, returned by method */
+    private final List<IFunc> injected = new ArrayList<>();
+    private boolean isInjected = false;
+
+    private boolean isCancelled = false;
 
     /** It's event id.
      * You must assign event id in your event. You can use constructor for this: <br>
@@ -93,6 +98,15 @@ public abstract class EventObject {
     }
 
     /**
+     * You can use this method to inject your method to end of event.
+     * @param injected returned by method Object.
+     */
+    public void injectToEnd(IFunc injected) {
+        this.injected.add(injected);
+        this.isInjected = true;
+    }
+
+    /**
      * You can use this method to cancel event.
      */
     public void cancelEvent() {
@@ -111,6 +125,32 @@ public abstract class EventObject {
         boolean isReturned= this.isReturned;
         this.isReturned = false;
         return isReturned;
+    }
+
+    /** Invoke all injected method. */
+    public void invokeInjected(List<Object> args) {
+        for (IFunc method : injected) {
+            method.function(args);
+        }
+    }
+
+    /** Invoke all injected method and reset list of them. */
+    public void invokeInjectedAndReset(List<Object> args) {
+        for (IFunc method : injected) {
+            method.function(args);
+        }
+        injected.clear();
+    }
+
+    /** @return true if method injected any method. */
+    public boolean isInjected()  { return this.isInjected; }
+    /** Returns {@link #isReturned} and set it false (reset)
+     *  @return true if method was injected any method.
+     */
+    public boolean isInjectedAndReset()  {
+        boolean isInjected= this.isInjected;
+        this.isInjected = false;
+        return isInjected;
     }
 
     /** @return true if event was canceled by method. */

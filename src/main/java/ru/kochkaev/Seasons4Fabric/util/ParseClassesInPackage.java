@@ -14,8 +14,9 @@ public class ParseClassesInPackage<O> {
                 try {
                     //Class<O> obj = new Class<O>().newInstance();
                     //if (clazz.isAssignableFrom(obj.getClass())) {
-                    O object = (O) clazz.getDeclaredConstructor().newInstance();
-                    regMethod.accept(object);
+
+//                    O object = (O) clazz.getDeclaredConstructor().newInstance();
+                    regMethod.accept(clazz.getDeclaredConstructor().newInstance());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

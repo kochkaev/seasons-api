@@ -10,10 +10,12 @@ import java.util.Collections;
 
 public class TheShivers extends ChallengeObject {
 
+    public TheShivers() {
+        super(Config.getLang().getString("lang.effect.theShivers.message.trigger"), Collections.singletonList(Weather.CHILLY), false);
+    }
+
     @Override
     public void register() {
-        this.triggerMessage = Config.getLang().getString("lang.effect.theShivers.message.trigger");
-        this.weathers = Collections.singletonList(Weather.CHILLY);
     }
 
     @Override
@@ -24,5 +26,10 @@ public class TheShivers extends ChallengeObject {
             return countOfInARowCalls+1;
         }
         return 0;
+    }
+
+    @Override
+    public void challengeEnd(ServerPlayerEntity player) {
+
     }
 }

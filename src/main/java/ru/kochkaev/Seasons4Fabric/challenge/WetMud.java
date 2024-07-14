@@ -14,6 +14,10 @@ import java.util.List;
 
 public class WetMud extends ChallengeObject {
 
+    public WetMud() {
+        super(Config.getLang().getString("lang.effect.wetMud.message.trigger"), Collections.singletonList(Weather.RAINY), true);
+    }
+
     private final static List<Block> muddy = Arrays.asList(Blocks.MUD, Blocks.DIRT, Blocks.DIRT_PATH, Blocks.FARMLAND);
 
     @Override
@@ -33,5 +37,10 @@ public class WetMud extends ChallengeObject {
             removeEffect(player, StatusEffects.SLOWNESS);
         }
         return 0;
+    }
+
+    @Override
+    public void challengeEnd(ServerPlayerEntity player) {
+        removeEffect(player, StatusEffects.SLOWNESS);
     }
 }

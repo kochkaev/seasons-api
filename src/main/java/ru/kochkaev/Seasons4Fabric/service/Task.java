@@ -13,20 +13,25 @@ public class Task {
 
     private static final List<IFuncRet> tasks = new ArrayList<>();
     private static final Map<IFuncRet, List<Object>> tasksMap = new HashMap<>();
+    private static List<IFuncRet> forRemove = new ArrayList<>();
 
     public static void addTask(IFuncRet task, List<Object> args) {
         tasks.add(task);
         tasksMap.put(task, args);
     }
     public static void removeTask(IFuncRet task) {
-        tasks.remove(task);
-        tasksMap.remove(task);
+        forRemove.add(task);
     }
 
     public static void runTasks() {
         for (IFuncRet task : tasks) {
             tasksMap.put(task, task.function(tasksMap.get(task)));
         }
+        for (IFuncRet task : forRemove) {
+            tasks.remove(task);
+            tasksMap.remove(task);
+        }
+        forRemove.clear();
     }
 
 }

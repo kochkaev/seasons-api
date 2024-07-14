@@ -2,10 +2,15 @@ package ru.kochkaev.Seasons4Fabric.mixin;
 
 import net.fabricmc.fabric.api.attachment.v1.AttachmentTarget;
 import net.minecraft.block.BlockState;
+import net.minecraft.item.ItemStack;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.MutableWorldProperties;
@@ -16,9 +21,12 @@ import net.minecraft.world.level.ServerWorldProperties;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import ru.kochkaev.Seasons4Fabric.config.Config;
 import ru.kochkaev.Seasons4Fabric.Main;
 import ru.kochkaev.Seasons4Fabric.object.EventObject;
@@ -45,6 +53,9 @@ public abstract class ServerWorldMixin
     @Shadow
     private final ServerWorldProperties worldProperties;
 
+//    @Unique
+//    private static final EventObject onBlockChangeEvent = Event.getEventByID("ON_BLOCK_CHANGE");
+
     @Inject(method = "tick", at = @At("HEAD"))
     public void tick(BooleanSupplier shouldKeepTicking, CallbackInfo ci){
         if ((this.properties.getTimeOfDay()%24000L >= Config.getConfig().getLong("conf.tick.day.start")) && (Weather.isNight()) && (Config.getConfig().getLong("conf.tick.day.end") > this.properties.getTimeOfDay()%24000L)) Weather.setDay(this.toServerWorld());
@@ -54,13 +65,26 @@ public abstract class ServerWorldMixin
         Task.runTasks();
     }
 
-    @Inject(method = "onBlockChanged", at = @At("HEAD"))
-    public void onBlockChanged(BlockPos pos, BlockState oldBlock, BlockState newBlock, CallbackInfo ci){
-        EventObject onBlockChangeEvent = Event.getEventByID("ON_BLOCK_CHANGE");
-        onBlockChangeEvent.onEvent(Arrays.asList(pos, oldBlock, newBlock));
-        if (onBlockChangeEvent.isCancelledAndReset()) return;
-        if (onBlockChangeEvent.isReturnedAndReset()) newBlock = (BlockState) onBlockChangeEvent.getReturned();
-    }
+//    @Inject(method = "onBlockChanged", at = @At("HEAD"))
+//    public void onBlockChanged(BlockPos pos, BlockState oldBlock, BlockState newBlock, CallbackInfo ci){
+//        EventObject onBlockChangeEvent = Event.getEventByID("ON_BLOCK_CHANGE");
+//        onBlockChangeEvent.onEvent(Arrays.asList(pos, oldBlock, newBlock));
+//        if (onBlockChangeEvent.isCancelledAndReset()) return;
+//        if (onBlockChangeEvent.isReturnedAndReset()) newBlock = (BlockState) onBlockChangeEvent.getReturned();
+//    }
+
+//    @Inject(at = @At("HEAD"), method = "onBlockChanged", cancellable = true)
+//    public void onBlockChanged(BlockPos pos, BlockState oldBlock, BlockState newBlock, CallbackInfo ci) {
+//        onBlockChangeEvent.onEvent(Arrays.asList(oldBlock, newBlock));
+//        if (onBlockChangeEvent.isCancelledAndReset()) {
+//            return;
+//        }
+//    }
+//    @ModifyVariable(at = @At("HEAD"), method = "onBlockChanged", ordinal = 1)
+//    public BlockState onBlockChangedEvent(BlockState newBlock) {
+//        if (onBlockChangeEvent.isReturnedAndReset()) return (BlockState) onBlockChangeEvent.getReturned();
+//        return newBlock;
+//    }
 
     /**
      * @author

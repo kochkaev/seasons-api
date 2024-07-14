@@ -6,7 +6,8 @@
 		"ServerWorldMixin",
 		"PlayerManagerMixin",
 		"ServerPlayerEntityMixin",
-		"LivingEntityMixin"
+		"LivingEntityMixin",
+		"ServerPlayerInteractionManagerMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

@@ -32,8 +32,9 @@ public class LivingEntityMixin {
      * @author Kochkaev
      * @reason
      */
-    @Overwrite
-    public void heal(float amount)  {
+//    @Overwrite
+    @Inject(method = "heal", at = @At("HEAD"), cancellable = true)
+    public void heal(float amount, CallbackInfo ci)  {
         LivingEntity entity = (LivingEntity) (Object) this;
         if (entity.getType() == EntityType.PLAYER) {
             EventObject onHealEvent = Event.getEventByID("ON_HEAL");
@@ -42,10 +43,10 @@ public class LivingEntityMixin {
                 return;
             }
         }
-        float f = entity.getHealth();
-        if (f > 0.0F) {
-            entity.setHealth(f + amount);
-        }
+//        float f = entity.getHealth();
+//        if (f > 0.0F) {
+//            entity.setHealth(f + amount);
+//        }
     }
 
 //    @Inject(method = "tick", at = @At("HEAD"))

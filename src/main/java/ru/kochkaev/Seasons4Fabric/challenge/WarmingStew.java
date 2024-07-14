@@ -13,6 +13,10 @@ import java.util.List;
 
 public class WarmingStew extends ChallengeObject {
 
+    public WarmingStew() {
+        super(Config.getLang().getString("lang.effect.warmingStew.message.trigger"), Collections.singletonList(Weather.COLD), true);
+    }
+
     private ItemStack[] stews = { Items.BEETROOT_SOUP.getDefaultStack(), Items.MUSHROOM_STEW.getDefaultStack(), Items.RABBIT_STEW.getDefaultStack() };
 
     @Override
@@ -27,11 +31,19 @@ public class WarmingStew extends ChallengeObject {
         return 0;
     }
 
+    @Override
+    public void challengeEnd(ServerPlayerEntity player) {
+
+    }
+
     public void onConsume(List<Object> args) {
-        ServerPlayerEntity player = (ServerPlayerEntity) args.get(0);
-        for (ItemStack stew : stews) if (player.getActiveItem() == stew) {
-            sendMessage(player, Config.getLang().getString("lang.effect.warmingStew.message.get"));
-            giveEffect(player, StatusEffects.REGENERATION, 20*10, 0);
+        if (isAllowed()){
+            ServerPlayerEntity player = (ServerPlayerEntity) args.get(0);
+            for (ItemStack stew : stews)
+                if (player.getActiveItem() == stew) {
+                    sendMessage(player, Config.getLang().getString("lang.effect.warmingStew.message.get"));
+                    giveEffect(player, StatusEffects.REGENERATION, 20 * 10, 0);
+                }
         }
     }
 }

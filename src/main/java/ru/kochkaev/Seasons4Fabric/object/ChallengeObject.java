@@ -1,6 +1,5 @@
 package ru.kochkaev.Seasons4Fabric.object;
 
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.effect.StatusEffect;
@@ -10,8 +9,6 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import ru.kochkaev.Seasons4Fabric.IFunc;
 import ru.kochkaev.Seasons4Fabric.IFuncRet;
-import ru.kochkaev.Seasons4Fabric.Main;
-import ru.kochkaev.Seasons4Fabric.mixin.LivingEntityMixin;
 import ru.kochkaev.Seasons4Fabric.service.Event;
 import ru.kochkaev.Seasons4Fabric.service.Task;
 import ru.kochkaev.Seasons4Fabric.service.Weather;
@@ -22,8 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * It's ChallengeObject, object for create your own challenges.<br><br>
@@ -49,18 +44,33 @@ public abstract class ChallengeObject {
     protected String triggerMessage;
     /** weathers contains weathers, that available this challenge. */
     protected List<Weather> weathers;
+    /** Set true if this challenge is available for night. */
+    protected boolean forNight;
+
+    /**
+     * That's constructor.<br><br>
+     * Use this for set challenge data (call from your class constructor).<br>
+     * <code>
+     *     public YourClass() { super("Your message", Arrays.asList(Weather.FIRST_WEATHER, Weather.SECOND_WEATHER), false); }<br>
+     * </code>
+     * You can also create anonymous class for create challenge.<br>
+     * <code>
+     *     ChallengeObject yourChallenge = new ChallengeObject("Your message", Arrays.asList(Weather.FIRST_WEATHER, Weather.SECOND_WEATHER), false) { public void register() { ... } public void logic(ServerPlayerEntity player, int countOfInARowCalls, int ticksPerAction) { ... } public void challengeEnd(ServerPlayerEntity player) { ... } };<br>
+     * </code>
+     * @param triggerMessage {@link #triggerMessage}
+     * @param weathers {@link #weathers}
+     * @param forNight {@link #forNight}
+     */
+    public ChallengeObject(String triggerMessage, List<Weather> weathers, boolean forNight) {
+        this.triggerMessage = triggerMessage;
+        this.weathers = weathers;
+        this.forNight = forNight;
+    }
 
     /**
      * Challenge registration.<br><br>
      * This method will be called during registration.
-     * Method must contain challenge data.<br>
-     * <code>
-     *     this.triggerMessage = "Your message";<br>
-     *     this.weathers = Arrays.asList(Weather.FIRST_WEATHER, Weather.SECOND_WEATHER);<br>
-     * </code>
-     * or<br>
-     * {@code this.weathers = Collections.singletonList(Weather.WEATHER);}<br><br>
-     * This method must be realized in your challenge. Use {@code @Override} annotation for this method.<br>
+     * You must realize this method in your challenge. Use {@code @Override} annotation for this method.<br>
      * {@code public void register() { ... }}
      */
     public abstract void register();
@@ -76,6 +86,14 @@ public abstract class ChallengeObject {
      * @return new value for countOfInARowCalls
      */
     public abstract int logic(ServerPlayerEntity player, int countOfInARowCalls, int ticksPerAction);
+
+    /**
+     * Challenge end.<br><br>
+     * This method will be called on weather change or when night coming (if {@link #forNight} = false) on condition countOfInARowCalls != 0.
+     * You must realize this method in your challenge. Use {@code @Override} annotation for this method.<br>
+     * @param player player to whom the logic applies.
+     */
+    public abstract void challengeEnd(ServerPlayerEntity player);
 
     /**
      * You can use this method for damage player.
@@ -120,7 +138,7 @@ public abstract class ChallengeObject {
      * @param effect effect, who we will remove (you can use StatusEffects.EFFECT_NAME)
      */
     protected void removeEffect(ServerPlayerEntity player, RegistryEntry<StatusEffect> effect)  {
-        Main.getLogger().info(String.valueOf(player.removeStatusEffect(effect)));
+        player.removeStatusEffect(effect);
     }
 
     /**
@@ -145,24 +163,15 @@ public abstract class ChallengeObject {
      * @return task method.
      */
     protected IFuncRet giveFrozen(ServerPlayerEntity player) {
-        IFuncRet task1 = (args) -> {
-            ServerPlayerEntity playr = (ServerPlayerEntity) args.getFirst();
-            playr.setFrozenTicks(140);
-            return args;
-        };
         IFuncRet task = (args) -> {
             int count = (int) args.getFirst();
             ServerPlayerEntity playr = (ServerPlayerEntity) args.get(1);
-            IFuncRet tsk = (IFuncRet) args.get(2);
-            IFuncRet tsk1 = (IFuncRet) args.get(3);
             playr.setFrozenTicks(count);
-            if (count < 140) return Arrays.asList(count+1, playr, tsk, tsk1);
-            Task.removeTask(tsk);
-            Task.addTask(tsk1, Collections.singletonList(playr));
-            return new ArrayList<>();
+            if (count < 140) return Arrays.asList(count+1, playr);
+            return args;
         };
-        Task.addTask(task, Arrays.asList(1, player, task, task1));
-        return task1;
+        Task.addTask(task, Arrays.asList(1, player));
+        return task;
     }
     /**
      * You can use this method for remove player freeze effect.<br>
@@ -188,6 +197,10 @@ public abstract class ChallengeObject {
      * @return true, if {@link #weathers} contains current weather | false, if not.
      */
     public boolean isAllowed() { return weathers.contains(Weather.getCurrent()); }
+    /** This method check this challenge available in night.
+     * @return {@link #forNight}
+     */
+    public boolean isForNight() { return forNight; }
     /**
      * @return {@link #triggerMessage}
      */

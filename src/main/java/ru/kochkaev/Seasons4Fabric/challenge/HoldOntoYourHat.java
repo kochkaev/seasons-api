@@ -15,15 +15,16 @@ import java.util.Random;
 
 public class HoldOntoYourHat extends ChallengeObject {
 
+    public HoldOntoYourHat() {
+        super(Config.getLang().getString("lang.effect.holdOntoYourHat.message.trigger"), Collections.singletonList(Weather.BREEZY), true);
+    }
+
     @Override
     public void register() {
-        this.triggerMessage = Config.getLang().getString("lang.effect.holdOntoYourHat.message.trigger");
-        this.weathers = Collections.singletonList(Weather.BREEZY);
     }
 
     @Override
     public int logic(ServerPlayerEntity player, int countOfInARowCalls, int ticksPerAction) {
-        Main.getLogger().info("HoldOntoYourHat logic");
         boolean haveLeatherHelmet = false;
         ItemStack helmet = Items.LEATHER_HELMET.getDefaultStack();
         for (ItemStack item : player.getArmorItems()){
@@ -35,11 +36,15 @@ public class HoldOntoYourHat extends ChallengeObject {
         }
         Main.getLogger().info(String.valueOf(haveLeatherHelmet));
         if (haveLeatherHelmet && new Random().nextInt(100) <= 10) {
-            player.getWorld().spawnEntity(new ItemEntity(player.getWorld(), player.getX(), player.getY(), player.getZ(), helmet));
-            //player.getInventory().offerOrDrop(helmet);
+            player.dropStack(helmet);
             player.getInventory().removeOne(helmet);
             sendMessage(player, Config.getLang().getString("lang.effect.holdOntoYourHat.message.get"));
         }
         return 0;
+    }
+
+    @Override
+    public void challengeEnd(ServerPlayerEntity player) {
+
     }
 }

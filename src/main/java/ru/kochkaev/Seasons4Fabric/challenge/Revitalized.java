@@ -9,6 +9,11 @@ import ru.kochkaev.Seasons4Fabric.service.Weather;
 import java.util.Collections;
 
 public class Revitalized extends ChallengeObject {
+
+    public Revitalized() {
+        super(Config.getLang().getString("lang.effect.revitalized.message.trigger"), Collections.singletonList(Weather.BEAUTIFUL), false);
+    }
+
     @Override
     public void register() {
         this.triggerMessage = Config.getLang().getString("lang.effect.revitalized.message.trigger");
@@ -17,15 +22,22 @@ public class Revitalized extends ChallengeObject {
 
     @Override
     public int logic(ServerPlayerEntity player, int countOfInARowCalls, int ticksPerAction) {
-        if (player.getServerWorld().getTimeOfDay() < Config.getConfig().getLong("conf.time.day.end")-1) {
-            sendMessage(player, Config.getLang().getString("lang.effect.revitalized.message.get"));
-            giveEffect(player, StatusEffects.REGENERATION);
-            return countOfInARowCalls+1;
+        if (player.getServerWorld() == player.getServerWorld().getServer().getOverworld()) {
+            if (countOfInARowCalls == 0) {
+                sendMessage(player, Config.getLang().getString("lang.effect.revitalized.message.get"));
+                giveEffect(player, StatusEffects.REGENERATION);
+            }
+            return 1;
         }
-        else if (player.getServerWorld().getTimeOfDay() == Config.getConfig().getLong("conf.time.day.end")) {
-            sendMessage(player, Config.getLang().getString("lang.effect.revitalized.message.remove"));
+        else if ((player.getServerWorld() != player.getServerWorld().getServer().getOverworld()) && countOfInARowCalls == 1) {
             removeEffect(player, StatusEffects.REGENERATION);
+            sendMessage(player, Config.getLang().getString("lang.effect.revitalized.message.remove"));
         }
         return 0;
+    }
+
+    @Override
+    public void challengeEnd(ServerPlayerEntity player) {
+        removeEffect(player, StatusEffects.REGENERATION);
     }
 }

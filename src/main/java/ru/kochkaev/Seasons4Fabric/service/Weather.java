@@ -2,6 +2,7 @@ package ru.kochkaev.Seasons4Fabric.service;
 
 //import ru.kochkaev.Seasons4Fabric.Config.OldConfig;
 import net.minecraft.server.world.ServerWorld;
+import ru.kochkaev.Seasons4Fabric.ChallengesTicker;
 import ru.kochkaev.Seasons4Fabric.config.Config;
 import ru.kochkaev.Seasons4Fabric.object.ChallengeObject;
 import ru.kochkaev.Seasons4Fabric.util.Message;
@@ -162,6 +163,7 @@ public enum Weather {
         Message.sendMessage2Server(weather.getMessage(), world.getServer().getPlayerManager());
         WeatherUtils.setWeather(weather, world);
         Challenge.updateChallengesInCurrentWeather();
+        ChallengesTicker.setDay();
         for (ChallengeObject effect : Challenge.getChallengesInCurrentWeather()) Message.sendMessage2Server(effect.getTriggerMessage(), world.getServer().getPlayerManager());
     }
 
@@ -173,6 +175,7 @@ public enum Weather {
 
     public static void setNight(ServerWorld world) {
         isNight = true;
+        ChallengesTicker.setNight();
         Message.sendMessage2Server(Weather.NIGHT.getMessage(), world.getServer().getPlayerManager());
     }
     public static void setDay(ServerWorld world) {

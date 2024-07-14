@@ -28,6 +28,7 @@ public class Main implements ModInitializer {
 		Season.restoreCurrentFromConfig();
 		CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> Seasons4FabricCommand.register(dispatcher)));
 		Challenge.updateChallengesInCurrentWeather();
+		ChallengesTicker.setDay();
 		ChallengesTicker.start();
 
 		ServerLifecycleEvents.SERVER_STOPPED.register((server) -> onShutdown());
