@@ -13,7 +13,7 @@ import java.util.Random;
 public class WindInYourBoots extends ChallengeObject {
 
     public WindInYourBoots() {
-        super(Config.getLang().getString("lang.effect.windInYourBoots.message.trigger"), Collections.singletonList(Weather.BREEZY), false);
+        super(Config.getLang().getString("lang.effect.windInYourBoots.message.trigger"), Collections.singletonList(Weather.getWeatherByID("BREEZY")), false);
     }
 
     @Override

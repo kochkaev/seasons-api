@@ -9,8 +9,7 @@ public class Event {
 
     private static final Map<String, EventObject> events = new HashMap<>();
 
-    public static void register(Object... args) {
-        EventObject event = (EventObject) args[0];
+    public static void register(EventObject event) {
         events.put(event.getEventID(), event);
     }
 

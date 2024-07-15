@@ -4,6 +4,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import org.apache.logging.log4j.core.jmx.Server;
+
+import java.util.List;
 
 public abstract class Message {
     //public Message(MinecraftServer server, ServerWorld world, GameProfile profile, SyncedClientOptions clientOptions) {
@@ -23,6 +26,12 @@ public abstract class Message {
     public static void sendMessage2Server(String message, PlayerManager players){
         String formattedMessage = MessageFormat.formatMessage(message);
         for (PlayerEntity player : players.getPlayerList()) player.sendMessage(Text.of(formattedMessage));
+        //ServerPlayerEntity.sendMessage(Text.of(formattedMessage));
+    }
+
+    public static void sendMessage2Players(String message, List<ServerPlayerEntity> players){
+        String formattedMessage = MessageFormat.formatMessage(message);
+        for (PlayerEntity player : players) player.sendMessage(Text.of(formattedMessage));
         //ServerPlayerEntity.sendMessage(Text.of(formattedMessage));
     }
 

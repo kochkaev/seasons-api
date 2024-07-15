@@ -1,6 +1,4 @@
-package ru.kochkaev.Seasons4Fabric;
-
-import java.util.List;
+package ru.kochkaev.Seasons4Fabric.util.functional;
 
 @FunctionalInterface
 public interface IFuncVoid {

@@ -5,21 +5,18 @@ import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.particle.ParticleEffect;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
-import ru.kochkaev.Seasons4Fabric.IFunc;
-import ru.kochkaev.Seasons4Fabric.IFuncRet;
+import ru.kochkaev.Seasons4Fabric.util.functional.IFunc;
+import ru.kochkaev.Seasons4Fabric.util.functional.IFuncRet;
 import ru.kochkaev.Seasons4Fabric.service.Event;
 import ru.kochkaev.Seasons4Fabric.service.Task;
 import ru.kochkaev.Seasons4Fabric.service.Weather;
 import ru.kochkaev.Seasons4Fabric.util.Message;
 import ru.kochkaev.Seasons4Fabric.WeatherDamageType;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -45,9 +42,9 @@ public abstract class ChallengeObject {
      */
     protected String triggerMessage;
     /** weathers contains weathers, that available this challenge. */
-    protected List<Weather> weathers;
-    /** Set true if this challenge is available for night. */
-    protected boolean forNight;
+    protected List<WeatherObject> weathers;
+    /** Set true if this challenge is available if {@link #weathers} contains previous weather (night is also the weather). */
+    protected boolean allowIfPrevious;
 
     /**
      * That's constructor.<br><br>
@@ -61,12 +58,12 @@ public abstract class ChallengeObject {
      * </code>
      * @param triggerMessage {@link #triggerMessage}
      * @param weathers {@link #weathers}
-     * @param forNight {@link #forNight}
+     * @param allowIfPrevious {@link #allowIfPrevious}
      */
-    public ChallengeObject(String triggerMessage, List<Weather> weathers, boolean forNight) {
+    public ChallengeObject(String triggerMessage, List<WeatherObject> weathers, boolean allowIfPrevious) {
         this.triggerMessage = triggerMessage;
         this.weathers = weathers;
-        this.forNight = forNight;
+        this.allowIfPrevious = allowIfPrevious;
     }
 
     /**
@@ -91,7 +88,7 @@ public abstract class ChallengeObject {
 
     /**
      * Challenge end.<br><br>
-     * This method will be called on weather change or when night coming (if {@link #forNight} = false) on condition countOfInARowCalls != 0.
+     * This method will be called on weather change and if {@link #weathers} don't contain this weather (only if {@link #allowIfPrevious} == true), on condition countOfInARowCalls != 0.
      * You must realize this method in your challenge. Use {@code @Override} annotation for this method.<br>
      * @param player player to whom the logic applies.
      */
@@ -204,14 +201,16 @@ public abstract class ChallengeObject {
      */
     protected void sendMessage(ServerPlayerEntity player, String message) { Message.sendMessage2Player(message, player); }
 
-    /** This method check this challenge available in current weather.
-     * @return true, if {@link #weathers} contains current weather | false, if not.
+    /** This method check this challenge available in current weather (or if {@link #allowIfPrevious} == true and {@link #weathers} contains previous weather).
+     * @return true, if {@link #weathers} contains current weather or {@link #allowIfPrevious} == true and {@link #weathers} contains previous weather | false, if not.
      */
-    public boolean isAllowed() { return weathers.contains(Weather.getCurrent()); }
-    /** This method check this challenge available in night.
-     * @return {@link #forNight}
-     */
-    public boolean isForNight() { return forNight; }
+    public boolean isAllowed() {
+        return this.weathers.contains(Weather.getCurrent()) || (this.allowIfPrevious && this.weathers.contains(Weather.getPreviousCurrent()));
+    }
+//    /** This method check this challenge available in night.
+//     * @return {@link #forNight}
+//     */
+//    public boolean isForNight() { return forNight; }
     /**
      * @return {@link #triggerMessage}
      */
@@ -219,5 +218,5 @@ public abstract class ChallengeObject {
     /** This method returns weathers, that available this challenge.
      * @return {@link #weathers}
      */
-    public List<Weather> getWeathers() { return this.weathers; }
+    public List<WeatherObject> getWeathers() { return this.weathers; }
 }

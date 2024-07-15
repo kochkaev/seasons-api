@@ -12,13 +12,11 @@ import java.util.Collections;
 public class Revitalized extends ChallengeObject {
 
     public Revitalized() {
-        super(Config.getLang().getString("lang.effect.revitalized.message.trigger"), Collections.singletonList(Weather.BEAUTIFUL), false);
+        super(Config.getLang().getString("lang.effect.revitalized.message.trigger"), Collections.singletonList(Weather.getWeatherByID("BEAUTIFUL")), false);
     }
 
     @Override
     public void register() {
-        this.triggerMessage = Config.getLang().getString("lang.effect.revitalized.message.trigger");
-        this.weathers = Collections.singletonList(Weather.BEAUTIFUL);
     }
 
     @Override

@@ -16,7 +16,7 @@ import java.util.List;
 public class WetMud extends ChallengeObject {
 
     public WetMud() {
-        super(Config.getLang().getString("lang.effect.wetMud.message.trigger"), Collections.singletonList(Weather.RAINY), true);
+        super(Config.getLang().getString("lang.effect.wetMud.message.trigger"), Collections.singletonList(Weather.getWeatherByID("RAINY")), true);
     }
 
     private final static List<Block> muddy = Arrays.asList(Blocks.MUD, Blocks.DIRT, Blocks.DIRT_PATH, Blocks.FARMLAND);

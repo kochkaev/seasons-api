@@ -13,8 +13,7 @@ public class Challenge {
     private static final List<ChallengeObject> challengesInCurrentWeather = new ArrayList<>();
 
 
-    public static void register(Object... args) {
-        ChallengeObject challenge = (ChallengeObject) args[0];
+    public static void register(ChallengeObject challenge) {
         challenge.register();
         challenges.add(challenge);
         if (ChallengesTicker.isTicking()) ChallengesTicker.addChallenge(challenge);

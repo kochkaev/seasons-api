@@ -10,6 +10,8 @@ import ru.kochkaev.Seasons4Fabric.command.Seasons4FabricCommand;
 import ru.kochkaev.Seasons4Fabric.config.Config;
 import ru.kochkaev.Seasons4Fabric.object.ChallengeObject;
 import ru.kochkaev.Seasons4Fabric.object.EventObject;
+import ru.kochkaev.Seasons4Fabric.object.SeasonObject;
+import ru.kochkaev.Seasons4Fabric.object.WeatherObject;
 import ru.kochkaev.Seasons4Fabric.service.Challenge;
 import ru.kochkaev.Seasons4Fabric.service.Event;
 import ru.kochkaev.Seasons4Fabric.service.Season;
@@ -22,16 +24,18 @@ public class Main implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		Config.init__();
-		new ParseClassesInPackage<EventObject>("ru.kochkaev.Seasons4Fabric.event", Event::register);
-		new ParseClassesInPackage<ChallengeObject>("ru.kochkaev.Seasons4Fabric.challenge", Challenge::register);
-		Weather.restoreCurrentFromConfig();
-		Season.restoreCurrentFromConfig();
+		new ParseClassesInPackage<SeasonObject>("ru.kochkaev.Seasons4Fabric.season", SeasonObject.class, Season::register);
+		new ParseClassesInPackage<WeatherObject>("ru.kochkaev.Seasons4Fabric.weather", WeatherObject.class, Weather::register);
+		new ParseClassesInPackage<EventObject>("ru.kochkaev.Seasons4Fabric.event", EventObject.class, Event::register);
+		new ParseClassesInPackage<ChallengeObject>("ru.kochkaev.Seasons4Fabric.challenge", ChallengeObject.class, Challenge::register);
+		Season.onServerStartup();
 		CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> Seasons4FabricCommand.register(dispatcher)));
 		Challenge.updateChallengesInCurrentWeather();
-		ChallengesTicker.setDay();
+		ChallengesTicker.changeWeather();
 		ChallengesTicker.start();
 
 		ServerLifecycleEvents.SERVER_STOPPED.register((server) -> onShutdown());
+		ServerLifecycleEvents.SERVER_STARTED.register((server) -> Weather.onServerStartup(server.getOverworld()));
 	}
 
 	private void onShutdown() {

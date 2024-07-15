@@ -1,12 +1,9 @@
 package ru.kochkaev.Seasons4Fabric.object;
 
-import ru.kochkaev.Seasons4Fabric.IFunc;
-import ru.kochkaev.Seasons4Fabric.IFuncVoid;
+import ru.kochkaev.Seasons4Fabric.util.functional.IFunc;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * It's EventObject, object for create your own events.<br><br>

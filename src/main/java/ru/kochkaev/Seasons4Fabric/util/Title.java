@@ -7,6 +7,7 @@ import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
+import ru.kochkaev.Seasons4Fabric.object.WeatherObject;
 import ru.kochkaev.Seasons4Fabric.service.Season;
 import ru.kochkaev.Seasons4Fabric.service.Weather;
 
@@ -22,7 +23,7 @@ public class Title{
 
     public static void showActionBar(PlayerManager players) {
         Function<Text, Packet<?>> constructor = OverlayMessageS2CPacket::new;
-        Weather weather = Weather.isNight() ? Weather.NIGHT : Weather.getCurrent();
+        WeatherObject weather = Weather.getCurrent();
         Text title = Text.of((Season.getCurrent().getName() + " &7• " + weather.getName()).replaceAll("&", "§"));
         for (ServerPlayerEntity player : players.getPlayerList()) {
             //Main.getLogger().info(player.getName().getString());

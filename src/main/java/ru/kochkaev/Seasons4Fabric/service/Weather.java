@@ -2,103 +2,42 @@ package ru.kochkaev.Seasons4Fabric.service;
 
 //import ru.kochkaev.Seasons4Fabric.Config.OldConfig;
 import net.minecraft.server.world.ServerWorld;
+import org.jetbrains.annotations.Nullable;
 import ru.kochkaev.Seasons4Fabric.ChallengesTicker;
 import ru.kochkaev.Seasons4Fabric.config.Config;
 import ru.kochkaev.Seasons4Fabric.object.ChallengeObject;
+import ru.kochkaev.Seasons4Fabric.object.SeasonObject;
+import ru.kochkaev.Seasons4Fabric.object.WeatherObject;
 import ru.kochkaev.Seasons4Fabric.util.Message;
-import ru.kochkaev.Seasons4Fabric.util.WeatherUtils;
 
 import java.util.*;
 
-public enum Weather {
-    
-    NIGHT("lang.weather.night.name",
-            "lang.weather.night.message",
-            false, false, false, "", Collections.emptyList()),
-    SNOWY("lang.weather.snowy.name",
-            "lang.weather.snowy.message",
-            false, true, false,
-            "conf.weather.snowy.chance",
-            Collections.singletonList(Season.WINTER)),
-    FREEZING("lang.weather.freezing.name",
-            "lang.weather.freezing.message",
-            true, false, false,
-            "conf.weather.freezing.chance",
-            Collections.singletonList(Season.WINTER)),
-    STORMY("lang.weather.stormy.name",
-            "lang.weather.stormy.message",
-            true, true, true,
-            "conf.weather.stormy.chance",
-            Collections.singletonList(Season.FALL)),
-    COLD("lang.weather.cold.name",
-            "lang.weather.cold.message",
-            false, false, false,
-            "conf.weather.cold.chance",
-            Arrays.asList(Season.WINTER, Season.FALL)),
-    WARM("lang.weather.warm.name",
-            "lang.weather.warm.message",
-            false, false, false,
-            "conf.weather.warm.chance",
-            Collections.singletonList(Season.SUMMER)),
-    HOT("lang.weather.hot.name",
-            "lang.weather.hot.message",
-            false, false, false,
-            "conf.weather.hot.chance",
-            Collections.singletonList(Season.SUMMER)),
-    SCORCHING("lang.weather.scorching.name",
-            "lang.weather.scorching.message",
-            false, false, false,
-            "conf.weather.scorching.chance",
-            Collections.singletonList(Season.SUMMER)),
-    RAINY("lang.weather.rainy.name",
-            "lang.weather.rainy.message",
-            false, true, false,
-            "conf.weather.rainy.chance",
-            Arrays.asList(Season.WINTER, Season.SPRING, Season.FALL)),
-    CHILLY("lang.weather.chilly.name",
-            "lang.weather.chilly.message",
-            false, false, false,
-            "conf.weather.chilly.chance",
-            Collections.singletonList(Season.SPRING)),
-    BREEZY("lang.weather.breezy.name",
-            "lang.weather.breezy.message",
-            false, false, false,
-            "conf.weather.breezy.chance",
-            Arrays.asList(Season.SPRING, Season.FALL)),
-    BEAUTIFUL("lang.weather.beautiful.name",
-            "lang.weather.beautiful.message",
-            false, false, false,
-            "conf.weather.beautiful.chance",
-            Arrays.asList(Season.SPRING, Season.SUMMER));
+public class Weather {
 
     private static final Random random = new Random();
 
-    private final String nameKey; // Default name shown to players
-    private final String messageKey; // Default message to show the weather changing
-    private final boolean catastrophic; // Is there is a high risk of this weather killing a player?
-    private final boolean raining; // Whether there should be rain
-    private final boolean thundering; // Whether the rain should be thunderous
-    private final String chanceKey;
-    private final List<Season> seasons; // List of seasons this weather can be triggered on
-
-    private static Weather CURRENT_WEATHER;
+    private static WeatherObject CURRENT_WEATHER;
+    private static WeatherObject CURRENT_WEATHER_PREVIOUS;
+    private static final List<WeatherObject> dailyWeathers = new ArrayList<>();
+    private static final List<WeatherObject> nightlyWeathers = new ArrayList<>();
+    private static final List<WeatherObject> allWeathers = new ArrayList<>();
     private static boolean isNight;
 
-    Weather(String nameKey, String messageKey, boolean catastrophic, boolean raining, boolean thundering, String chanceKey, List<Season> seasons) {
-        this.nameKey = nameKey;
-        this.messageKey = messageKey;
-        this.catastrophic = catastrophic;
-        this.raining = raining;
-        this.thundering = thundering;
-        this.chanceKey = chanceKey;
-        this.seasons = seasons;
+    public static void register(WeatherObject weather) {
+        allWeathers.add(weather);
+        @Nullable
+        Boolean nightly = weather.isNightly();
+        if (nightly != null) {
+            if (nightly) nightlyWeathers.add(weather);
+            else dailyWeathers.add(weather);
+        }
     }
 
-    public static Weather getChancedWeather(Season season){
-        List<Weather> weathers = getSeasonWeathers(season);
+    public static WeatherObject getChancedWeather(List<WeatherObject> weathers){
+//        List<WeatherObject> weathers = isNight ? getSeasonNightlyWeathers(season) : getSeasonDailyWeathers(season);
         List<Integer> chances = new ArrayList<>();
         int maxChance = 0;
-        for (Weather weather : weathers){
+        for (WeatherObject weather : weathers){
             chances.add(weather.getChance());
             maxChance += weather.getChance();
         }
@@ -110,73 +49,131 @@ public enum Weather {
         return null;
     }
 
-    public static List<Weather> getSeasonWeathers(Season season){
-        List<Weather> weathers = new ArrayList<>();
-        for (Weather weather : values()){
-            if (weather.getSeasons().contains(season)) { weathers.add(weather); }
+    public static List<WeatherObject> getSeasonDailyWeathers(SeasonObject season){
+        List<WeatherObject> weathers = new ArrayList<>();
+        for (WeatherObject weather : dailyWeathers){
+            if (weather.getSeasons() != null) {
+                assert weather.getSeasons() != null;
+                if ((weather.getSeasons().contains(season)) && (weather.getChance() > 0)) {
+                    weathers.add(weather);
+                }
+            }
+        }
+        return weathers;
+    }
+    public static List<WeatherObject> getSeasonNightlyWeathers(SeasonObject season){
+        List<WeatherObject> weathers = new ArrayList<>();
+        for (WeatherObject weather : nightlyWeathers){
+            if (weather.getSeasons() != null) {
+                assert weather.getSeasons() != null;
+                if ((weather.getSeasons().contains(season)) && (weather.getChance() > 0)) {
+                    weathers.add(weather);
+                }
+            }
         }
         return weathers;
     }
 
-    public static Weather getCurrent(){
+    public static WeatherObject getCurrent(){
         return CURRENT_WEATHER;
     }
+    public static WeatherObject getPreviousCurrent(){
+        return CURRENT_WEATHER_PREVIOUS;
+    }
 
-    public static void setCurrent(Weather weather){
+    public static void setCurrent(WeatherObject weather){
+        CURRENT_WEATHER_PREVIOUS = CURRENT_WEATHER;
         CURRENT_WEATHER = weather;
+        if (CURRENT_WEATHER.isNightly() == CURRENT_WEATHER_PREVIOUS.isNightly()) {
+            SeasonObject season = Season.getCurrent();
+            CURRENT_WEATHER_PREVIOUS = getChancedWeather(Boolean.TRUE.equals(CURRENT_WEATHER.isNightly()) ? getSeasonDailyWeathers(season) : getSeasonNightlyWeathers(season));
+        }
         saveCurrentToConfig();
     }
 
-    public static void restoreCurrentFromConfig(){
+    public static void onServerStartup(ServerWorld world){
         String currentStr = Config.getCurrent("weather");
-        CURRENT_WEATHER = valueOf(currentStr);
+        String prevCurrentStr = Config.getCurrent("previous-weather");
+        if (currentStr.equals("NULL")) {
+            boolean isDay = world.getTimeOfDay() % 24000L < Config.getConfig().getLong("conf.tick.day.end");
+            if (prevCurrentStr.equals("NULL")){
+                SeasonObject season = Season.getCurrent();
+                CURRENT_WEATHER = getChancedWeather(isDay ? getSeasonDailyWeathers(season) : getSeasonNightlyWeathers(season));
+            }
+            if (isDay) {
+                setDay(world);
+            }
+            else setNight(world);
+        }
+        if (!prevCurrentStr.equals(currentStr)) CURRENT_WEATHER_PREVIOUS = getWeatherByID(prevCurrentStr);
+        else {
+            SeasonObject season = Season.getCurrent();
+            CURRENT_WEATHER_PREVIOUS = getChancedWeather(Boolean.TRUE.equals(Objects.requireNonNull(Weather.getWeatherByID(currentStr)).isNightly()) ? getSeasonDailyWeathers(season) : getSeasonNightlyWeathers(season));
+        }
+        CURRENT_WEATHER = getWeatherByID(currentStr);
+        assert CURRENT_WEATHER != null;
+        isNight = Boolean.TRUE.equals(CURRENT_WEATHER.isNightly());
     }
     public static void saveCurrentToConfig(){
-        String currentStr = CURRENT_WEATHER.toString();
+        String currentStr = CURRENT_WEATHER.getId();
+        String prevCurrentStr = CURRENT_WEATHER_PREVIOUS.getId();
         Config.writeCurrent("weather", currentStr);
+        Config.writeCurrent("previous-weather", prevCurrentStr);
         Config.saveCurrent();
     }
 
     public static void reloadFromConfig(ServerWorld world) {
         String currentStr = Config.getCurrent("weather");
-        if (CURRENT_WEATHER != valueOf(currentStr)) {
-            setWeather(valueOf(currentStr), world);
+        String prevCurrentStr = Config.getCurrent("previous-weather");
+        WeatherObject curWeather = null;
+        WeatherObject curWeatherPrev = null;
+        for (WeatherObject weather : allWeathers) {
+            String id = weather.getId();
+            if (id.equals(prevCurrentStr)) curWeatherPrev = weather;
+            else if (id.equals(currentStr)) curWeather = weather;
+        }
+        if (CURRENT_WEATHER != curWeather) {
+            assert curWeather != null;
+            setWeather(curWeather, world);
+        }
+        if (CURRENT_WEATHER_PREVIOUS != curWeatherPrev) {
+            assert curWeatherPrev != null;
+            CURRENT_WEATHER_PREVIOUS = curWeatherPrev;
         }
     }
 
     public static void setChancedWeatherInCurrentSeason(ServerWorld world){
-        Season currentSeason = Season.getCurrent();
-        Weather weather = Weather.getChancedWeather(currentSeason);
+        SeasonObject currentSeason = Season.getCurrent();
+        WeatherObject weather = getChancedWeather(isNight ? getSeasonNightlyWeathers(currentSeason) : getSeasonDailyWeathers(currentSeason));
+        assert weather != null;
         setWeather(weather, world);
     }
 
-    public String getName() { return Config.getLang().getString(this.nameKey); }
-    public String  getMessage() { return Config.getLang().getString(this.messageKey); }
-    public int  getChance() { return Config.getConfig().getInt(this.chanceKey); }
-    public boolean getRaining() { return this.raining; }
-    public boolean getThundering() { return this.thundering; }
-    public List<Season> getSeasons() { return this.seasons; }
-
     public static Boolean isNight() { return isNight; }
-    public static void setWeather(Weather weather, ServerWorld world) {
+
+    public static void setWeather(WeatherObject weather, ServerWorld world) {
+        CURRENT_WEATHER.onWeatherRemove();
         Weather.setCurrent(weather);
         Message.sendMessage2Server(weather.getMessage(), world.getServer().getPlayerManager());
-        WeatherUtils.setWeather(weather, world);
+        weather.onWeatherSet();
+        world.setWeather(-1, -1, weather.getRaining(), weather.getThundering());
         Challenge.updateChallengesInCurrentWeather();
-        ChallengesTicker.setDay();
-        for (ChallengeObject effect : Challenge.getChallengesInCurrentWeather()) Message.sendMessage2Server(effect.getTriggerMessage(), world.getServer().getPlayerManager());
+        ChallengesTicker.changeWeather();
+        //for (ChallengeObject effect : Challenge.getChallengesInCurrentWeather()) Message.sendMessage2Server(effect.getTriggerMessage(), world.getServer().getPlayerManager());
     }
 
-    public static Weather getWeatherByID(String id) { return valueOf(id); }
+    public static WeatherObject getWeatherByID(String id) {
+        for (WeatherObject weather : allWeathers) if (weather.getId().equals(id)) return weather;
+        return null;
+    }
 
-    public static Weather[] getAll() {
-        return values();
+    public static List<WeatherObject> getAll() {
+        return allWeathers;
     }
 
     public static void setNight(ServerWorld world) {
         isNight = true;
-        ChallengesTicker.setNight();
-        Message.sendMessage2Server(Weather.NIGHT.getMessage(), world.getServer().getPlayerManager());
+        setChancedWeatherInCurrentSeason(world);
     }
     public static void setDay(ServerWorld world) {
         isNight = false;

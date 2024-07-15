@@ -1,8 +1,6 @@
 package ru.kochkaev.Seasons4Fabric.service;
 
-import net.minecraft.server.network.ServerPlayerEntity;
-import ru.kochkaev.Seasons4Fabric.IFuncRet;
-import ru.kochkaev.Seasons4Fabric.Main;
+import ru.kochkaev.Seasons4Fabric.util.functional.IFuncRet;
 
 import java.util.ArrayList;
 import java.util.HashMap;

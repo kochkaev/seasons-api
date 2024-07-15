@@ -6,21 +6,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.Vec3d;
-import ru.kochkaev.Seasons4Fabric.IFuncRet;
-import ru.kochkaev.Seasons4Fabric.Main;
+import ru.kochkaev.Seasons4Fabric.util.functional.IFuncRet;
 import ru.kochkaev.Seasons4Fabric.config.Config;
 import ru.kochkaev.Seasons4Fabric.object.ChallengeObject;
 import ru.kochkaev.Seasons4Fabric.service.Weather;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class Frostbite extends ChallengeObject {
 
     public Frostbite() {
-        super(Config.getLang().getString("lang.effect.frostbite.message.trigger"), Arrays.asList(Weather.SNOWY, Weather.FREEZING), true);
+        super(Config.getLang().getString("lang.effect.frostbite.message.trigger"), Arrays.asList(Weather.getWeatherByID("SNOWY"), Weather.getWeatherByID("FREEZING")), true);
     }
 
     private static final List<Block> waters = Arrays.asList(Blocks.WATER, Blocks.WATER_CAULDRON);

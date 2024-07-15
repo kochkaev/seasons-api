@@ -1,4 +1,4 @@
-package ru.kochkaev.Seasons4Fabric;
+package ru.kochkaev.Seasons4Fabric.util.functional;
 
 import java.util.List;
 

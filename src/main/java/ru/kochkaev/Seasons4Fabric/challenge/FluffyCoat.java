@@ -14,7 +14,7 @@ import java.util.Collections;
 public class FluffyCoat extends ChallengeObject {
 
     public FluffyCoat() {
-        super(Config.getLang().getString("lang.effect.fluffyCoat.message.trigger"), Collections.singletonList(Weather.SNOWY), true);
+        super(Config.getLang().getString("lang.effect.fluffyCoat.message.trigger"), Collections.singletonList(Weather.getWeatherByID("SNOWY")), true);
     }
 
     @Override

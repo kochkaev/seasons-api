@@ -14,7 +14,7 @@ import java.util.Collections;
 public class FeelsGood extends ChallengeObject {
 
     public FeelsGood() {
-        super(Config.getLang().getString("lang.effect.feelsGood.message.trigger"), Collections.singletonList(Weather.WARM), true);
+        super(Config.getLang().getString("lang.effect.feelsGood.message.trigger"), Collections.singletonList(Weather.getWeatherByID("WARM")), true);
     }
 
     @Override

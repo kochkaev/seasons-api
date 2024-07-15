@@ -17,7 +17,7 @@ import java.util.List;
 public class SolderingIron extends ChallengeObject {
 
     public SolderingIron() {
-        super(Config.getLang().getString("lang.effect.solderingIron.message.trigger"), Collections.singletonList(Weather.SCORCHING), false);
+        super(Config.getLang().getString("lang.effect.solderingIron.message.trigger"), Collections.singletonList(Weather.getWeatherByID("SCORCHING")), false);
     }
 
     private static final List<Item> items = Arrays.asList(Items.BUCKET, Items.IRON_INGOT, Items.IRON_BLOCK,

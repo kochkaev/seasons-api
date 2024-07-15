@@ -17,7 +17,7 @@ import java.util.List;
 public class WarmingStew extends ChallengeObject {
 
     public WarmingStew() {
-        super(Config.getLang().getString("lang.effect.warmingStew.message.trigger"), Collections.singletonList(Weather.COLD), true);
+        super(Config.getLang().getString("lang.effect.warmingStew.message.trigger"), Collections.singletonList(Weather.getWeatherByID("COLD")), true);
     }
 
     private final List<Item> stews = Arrays.asList(Items.BEETROOT_SOUP, Items.MUSHROOM_STEW, Items.RABBIT_STEW);

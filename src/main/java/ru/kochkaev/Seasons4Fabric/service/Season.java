@@ -3,62 +3,65 @@ package ru.kochkaev.Seasons4Fabric.service;
 //import ru.kochkaev.Seasons4Fabric.Config.OldConfig;
 
 import net.minecraft.server.PlayerManager;
+import org.jetbrains.annotations.Nullable;
 import ru.kochkaev.Seasons4Fabric.config.Config;
+import ru.kochkaev.Seasons4Fabric.object.SeasonObject;
+import ru.kochkaev.Seasons4Fabric.object.WeatherObject;
 import ru.kochkaev.Seasons4Fabric.util.Message;
 
-public enum Season {
+import java.util.ArrayList;
+import java.util.List;
 
-    WINTER("lang.season.winter.name", "lang.season.winter.message"),
-    SPRING("lang.season.spring.name", "lang.season.spring.message"),
-    SUMMER("lang.season.summer.name", "lang.season.summer.message"),
-    FALL("lang.season.fall.name", "lang.season.fall.message");
+public class Season {
 
-    private final String nameKey;
-    private final String messageKey;
+    private static SeasonObject CURRENT_SEASON;
+    private static final List<SeasonObject> allSeasons = new ArrayList<>();
 
-    Season(String nameKey, String messageKey){
-        this.nameKey = nameKey;
-        this.messageKey = messageKey;
+    public static void register(SeasonObject season) {
+        allSeasons.add(season);
     }
 
-    private static Season CURRENT_SEASON;
-
-    public static Season getCurrent(){
+    public static SeasonObject getCurrent(){
         return CURRENT_SEASON;
     }
 
-    public static void setCurrent(Season season){
+    public static void setCurrent(SeasonObject season){
         CURRENT_SEASON = season;
         saveCurrentToConfig();
     }
 
-    public static void restoreCurrentFromConfig(){
+    public static void onServerStartup(){
         String currentStr = Config.getCurrent("season");
-        CURRENT_SEASON = valueOf(currentStr);
+        CURRENT_SEASON = getSeasonByID(currentStr);
     }
+
     public static void saveCurrentToConfig(){
-        String currentStr = CURRENT_SEASON.toString();
+        String currentStr = CURRENT_SEASON.getId();
         Config.writeCurrent("season", currentStr);
         Config.saveCurrent();
     }
 
     public static void reloadFromConfig(PlayerManager players) {
         String currentStr = Config.getCurrent("season");
-        if (CURRENT_SEASON != valueOf(currentStr)) {
-            setSeason(valueOf(currentStr), players);
+        SeasonObject season = getSeasonByID(currentStr);
+        if (CURRENT_SEASON != season) {
+            setSeason(season, players);
         }
     }
 
-    public static void setSeason(Season season, PlayerManager players) {
+    public static void setSeason(SeasonObject season, PlayerManager players) {
+        CURRENT_SEASON.onSeasonRemove();
         setCurrent(season);
+        season.onSeasonSet();
         Message.sendMessage2Server(season.getMessage(), players);
     }
 
-    public String getName(){ return Config.getLang().getString(this.nameKey); }
-    public String getMessage(){ return Config.getLang().getString(this.messageKey); }
 
-    public static Season getSeasonByID(String id) { return valueOf(id); }
+    public static SeasonObject getSeasonByID(String id) {
+        for (SeasonObject season : allSeasons) if (season.getId().equals(id)) return season;
+        return null;
+    }
 
-    public static Season[] getAll() {
-        return values();
+    public static List<SeasonObject> getAll() {
+        return allSeasons;
     }}

@@ -16,7 +16,7 @@ import java.util.List;
 public class HotSand extends ChallengeObject {
 
     public HotSand() {
-        super(Config.getLang().getString("lang.effect.hotSand.message.trigger"), Collections.singletonList(Weather.SCORCHING), false);
+        super(Config.getLang().getString("lang.effect.hotSand.message.trigger"), Collections.singletonList(Weather.getWeatherByID("SCORCHING")), false);
     }
 
     private static final List<Block> hots = Arrays.asList(Blocks.SAND, Blocks.RED_SAND);

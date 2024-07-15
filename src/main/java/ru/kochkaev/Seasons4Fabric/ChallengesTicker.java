@@ -25,8 +25,7 @@ public class ChallengesTicker {
     private static final List<ServerPlayerEntity> playersAddList = new ArrayList<>();
 
     private static final List<ChallengeObject> allowedChallenges = new ArrayList<>();
-    private static final List<ChallengeObject> noMoreAllowedChallenges = new ArrayList<>();
-    private static boolean newDay = false;
+    private static boolean changeWeather = false;
     private static boolean shutdown = false;
 
     public static void start() {
@@ -37,8 +36,19 @@ public class ChallengesTicker {
 
     public static void stop()  {
         isTicking = false;
-        noMoreAllowedChallenges.addAll(allowedChallenges);
         shutdown = true;
+    }
+    private static void shutdownTask() {
+        for (ChallengeObject challenge : allowedChallenges) {
+            for (ServerPlayerEntity player : players) {
+                int count = countOfInARowCallsMap.get(player).get(challenge);
+                if (count != 0) {
+                    countOfInARowCallsMap.get(player).put(challenge, 0);
+                    challenge.challengeEnd(player);
+                }
+            }
+        }
+        executorService.shutdown();
     }
 
     public static void tick() {
@@ -51,28 +61,9 @@ public class ChallengesTicker {
         }
         if (!playersRemoveList.isEmpty()) removePlayersTask();
         if (!playersAddList.isEmpty()) addPlayersTask();
-        if (!noMoreAllowedChallenges.isEmpty()) {
-            for (ChallengeObject challenge : noMoreAllowedChallenges) {
-                for (ServerPlayerEntity player : players) {
-                    int count = countOfInARowCallsMap.get(player).get(challenge);
-                    if (count != 0) {
-                        countOfInARowCallsMap.get(player).put(challenge, 0);
-                        challenge.challengeEnd(player);
-                    }
-                }
-                allowedChallenges.remove(challenge);
-            }
-            noMoreAllowedChallenges.clear();
-        }
-        if (newDay) {
-            allowedChallenges.clear();
-            List<ChallengeObject> challengeObjects = Challenge.getChallengesInCurrentWeather();
-            allowedChallenges.addAll(challengeObjects);
-            newDay = false;
-            Main.getLogger().info(allowedChallenges.toString());
-        }
+        if (changeWeather) changeWeatherTask();
         Main.getLogger().info("Challenges ticker is ticking");
-        if (shutdown) executorService.shutdown();
+        if (shutdown) shutdownTask();
     }
 
 
@@ -109,19 +100,30 @@ public class ChallengesTicker {
 
     public static void addChallenge(ChallengeObject challenge) {
         for (ServerPlayerEntity player : players) countOfInARowCallsMap.get(player).put(challenge, 0);
-        if (challenge.isAllowed() && (!Weather.isNight() || challenge.isForNight())) allowedChallenges.add(challenge);
+        if (challenge.isAllowed()) allowedChallenges.add(challenge);
     }
 
-    public static void setNight() {
-        for (ChallengeObject challenge : allowedChallenges){
-            if (!challenge.isForNight()) noMoreAllowedChallenges.add(challenge);
-        }
+    public static void changeWeather() {
+        changeWeather = true;
     }
-    public static void setDay() {
-        noMoreAllowedChallenges.addAll(allowedChallenges);
-        newDay = true;
-//        allowedChallenges.clear();
-//        allowedChallenges.addAll(Challenge.getChallengesInCurrentWeather());
+    private static void changeWeatherTask() {
+        List<ChallengeObject> challenges = Challenge.getChallengesInCurrentWeather();
+        for (ChallengeObject challenge : allowedChallenges) {
+            if (!challenges.contains(challenge)) {
+                for (ServerPlayerEntity player : players) {
+                    int count = countOfInARowCallsMap.get(player).get(challenge);
+                    if (count != 0) {
+                        countOfInARowCallsMap.get(player).put(challenge, 0);
+                        challenge.challengeEnd(player);
+                    }
+                }
+            }
+        }
+        for (ChallengeObject challenge : challenges) if (!allowedChallenges.contains(challenge)) Message.sendMessage2Players(challenge.getTriggerMessage(), players);
+        allowedChallenges.clear();
+        allowedChallenges.addAll(challenges);
+        changeWeather = false;
+        Main.getLogger().info(allowedChallenges.toString());
     }
 
 //    public static void setWorld(ServerWorld world){

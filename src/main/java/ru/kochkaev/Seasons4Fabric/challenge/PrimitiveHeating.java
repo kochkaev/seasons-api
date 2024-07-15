@@ -16,7 +16,7 @@ import java.util.Collections;
 public class PrimitiveHeating extends ChallengeObject {
 
     public PrimitiveHeating() {
-        super(Config.getLang().getString("lang.effect.primitiveHeating.message.trigger"), Collections.singletonList(Weather.COLD), true);
+        super(Config.getLang().getString("lang.effect.primitiveHeating.message.trigger"), Collections.singletonList(Weather.getWeatherByID("COLD")), true);
     }
 
     private static Item[] hots = {Items.LAVA_BUCKET, Items.BLAZE_POWDER, Items.BLAZE_ROD,

@@ -13,7 +13,7 @@ public class Config {
 
         String defaultConfig = DefaultTXTConfig.init__();
         config = new ConfigObject(TXTConfigCore.openOrCreate("Seasons4Fabric/config", defaultConfig));
-        String defaultCurrent = "{ \"season\": WINTER, \"weather\": NIGHT, \"language\": RU_ru }";
+        String defaultCurrent = "{ \"season\": WINTER, \"weather\": NULL, \"previous-weather\": NULL, \"language\": RU_ru }";
         jsonCore = JSONConfigCore.openOrCreate("Seasons4Fabric/current", defaultCurrent);
         current = jsonCore.getJsonObject();
         TXTConfigCore.createIfDoNotExists("Seasons4Fabric/lang/RU_ru", DefaultTXTLangRU.init__());
@@ -67,6 +67,9 @@ class DefaultTXTConfig {
         /// Chances of weather
         gen.addVoid();
         gen.addComment("* WEATHER CHANCE");
+        // Night
+        gen.addComment("Night");
+        gen.addValueAndCommentDefault("conf.weather.night.chance", "1");
         // Snowy
         gen.addComment("Snowy");
         gen.addValueAndCommentDefault("conf.weather.snowy.chance", "15");

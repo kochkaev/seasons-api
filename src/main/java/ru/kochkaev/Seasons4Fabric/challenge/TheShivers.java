@@ -3,7 +3,7 @@ package ru.kochkaev.Seasons4Fabric.challenge;
 import net.minecraft.block.Blocks;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
-import ru.kochkaev.Seasons4Fabric.IFuncRet;
+import ru.kochkaev.Seasons4Fabric.util.functional.IFuncRet;
 import ru.kochkaev.Seasons4Fabric.config.Config;
 import ru.kochkaev.Seasons4Fabric.object.ChallengeObject;
 import ru.kochkaev.Seasons4Fabric.service.Weather;
@@ -13,7 +13,7 @@ import java.util.Collections;
 public class TheShivers extends ChallengeObject {
 
     public TheShivers() {
-        super(Config.getLang().getString("lang.effect.theShivers.message.trigger"), Collections.singletonList(Weather.CHILLY), false);
+        super(Config.getLang().getString("lang.effect.theShivers.message.trigger"), Collections.singletonList(Weather.getWeatherByID("CHILLY")), false);
     }
 
     private IFuncRet task;

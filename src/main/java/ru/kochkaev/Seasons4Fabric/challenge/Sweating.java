@@ -21,7 +21,7 @@ import java.util.List;
 public class Sweating extends ChallengeObject {
 
     public Sweating() {
-        super(Config.getLang().getString("lang.effect.sweating.message.trigger"), Collections.singletonList(Weather.HOT), false);
+        super(Config.getLang().getString("lang.effect.sweating.message.trigger"), Collections.singletonList(Weather.getWeatherByID("HOT")), false);
     }
 
     private static final List<Block> waters = Arrays.asList(Blocks.WATER, Blocks.WATER_CAULDRON);

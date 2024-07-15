@@ -30,12 +30,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import ru.kochkaev.Seasons4Fabric.config.Config;
 import ru.kochkaev.Seasons4Fabric.Main;
 import ru.kochkaev.Seasons4Fabric.object.EventObject;
+import ru.kochkaev.Seasons4Fabric.object.WeatherObject;
 import ru.kochkaev.Seasons4Fabric.service.Event;
 import ru.kochkaev.Seasons4Fabric.service.Task;
 import ru.kochkaev.Seasons4Fabric.service.Weather;
 import ru.kochkaev.Seasons4Fabric.util.Title;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -60,7 +62,7 @@ public abstract class ServerWorldMixin
     public void tick(BooleanSupplier shouldKeepTicking, CallbackInfo ci){
         if ((this.properties.getTimeOfDay()%24000L >= Config.getConfig().getLong("conf.tick.day.start")) && (Weather.isNight()) && (Config.getConfig().getLong("conf.tick.day.end") > this.properties.getTimeOfDay()%24000L)) Weather.setDay(this.toServerWorld());
         if ((this.properties.getTimeOfDay()%24000L >= Config.getConfig().getLong("conf.tick.day.end")) && (!Weather.isNight())) Weather.setNight(this.toServerWorld());
-        Title.showActionBar(this.getServer().getPlayerManager());
+        Title.showActionBar(Objects.requireNonNull(this.getServer()).getPlayerManager());
         if ((this.worldProperties.isRaining()!=Weather.getCurrent().getRaining()) || (this.worldProperties.isThundering()!=Weather.getCurrent().getThundering())) this.setWeather(-1, -1, false, false);
         Task.runTasks();
     }
@@ -102,8 +104,9 @@ public abstract class ServerWorldMixin
 
     @Overwrite
     public void setWeather(int clearDuration, int rainDuration, boolean raining, boolean thundering) {
-        Weather weather = Weather.getCurrent();
-        Main.getLogger().info(String.valueOf(weather));
+        WeatherObject weather = Weather.getCurrent();
+        WeatherObject prevWeather = Weather.getPreviousCurrent();
+        //Main.getLogger().info(String.valueOf(weather));
         this.worldProperties.setClearWeatherTime(-1);
         this.worldProperties.setRainTime(-1);
         this.worldProperties.setThunderTime(-1);

@@ -17,7 +17,7 @@ import java.util.Random;
 public class HoldOntoYourHat extends ChallengeObject {
 
     public HoldOntoYourHat() {
-        super(Config.getLang().getString("lang.effect.holdOntoYourHat.message.trigger"), Collections.singletonList(Weather.BREEZY), true);
+        super(Config.getLang().getString("lang.effect.holdOntoYourHat.message.trigger"), Collections.singletonList(Weather.getWeatherByID("BREEZY")), true);
     }
 
     @Override

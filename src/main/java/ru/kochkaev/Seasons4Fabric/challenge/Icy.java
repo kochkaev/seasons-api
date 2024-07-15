@@ -1,7 +1,6 @@
 package ru.kochkaev.Seasons4Fabric.challenge;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -10,10 +9,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3i;
-import ru.kochkaev.Seasons4Fabric.IFuncRet;
-import ru.kochkaev.Seasons4Fabric.Main;
+import ru.kochkaev.Seasons4Fabric.util.functional.IFuncRet;
 import ru.kochkaev.Seasons4Fabric.config.Config;
 import ru.kochkaev.Seasons4Fabric.object.ChallengeObject;
 import ru.kochkaev.Seasons4Fabric.object.EventObject;
@@ -29,7 +25,7 @@ import java.util.List;
 public class Icy extends ChallengeObject {
 
     public Icy() {
-        super(Config.getLang().getString("lang.effect.icy.message.trigger"), Collections.singletonList(Weather.FREEZING), true);
+        super(Config.getLang().getString("lang.effect.icy.message.trigger"), Collections.singletonList(Weather.getWeatherByID("FREEZING")), true);
     }
 
     private EventObject onBlockChange;
