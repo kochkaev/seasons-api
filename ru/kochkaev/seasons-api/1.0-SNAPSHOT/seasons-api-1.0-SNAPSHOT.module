@@ -1,0 +1,96 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "ru.kochkaev",
+    "module": "seasons-api",
+    "version": "1.0-SNAPSHOT",
+    "attributes": {
+      "org.gradle.status": "integration"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.8"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 21,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "seasons-api-1.0-SNAPSHOT.jar",
+          "url": "seasons-api-1.0-SNAPSHOT.jar",
+          "size": 77663,
+          "sha512": "f1a731e6817ce0756192a6c0afcc3aecf73ba175a1d5b96dd2463ab2a73417e67ce84336f4c2b7d5cb499d3d9b23fb198983e0c3d5259d6f749ba69b6089a36c",
+          "sha256": "5cd841a7a103aa7642d4dcec174921de830e33d2425e1fb5256a14fad5807c4f",
+          "sha1": "b5a5cc5f158fe47250ce7cf4b747ea38622f0cc4",
+          "md5": "e2f8c6d1968e4486b770cc2885e9271e"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 21,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "net.fabricmc",
+          "module": "fabric-loader",
+          "version": {
+            "requires": "0.16.0"
+          }
+        },
+        {
+          "group": "net.fabricmc.fabric-api",
+          "module": "fabric-api",
+          "version": {
+            "requires": "0.100.7+1.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "seasons-api-1.0-SNAPSHOT.jar",
+          "url": "seasons-api-1.0-SNAPSHOT.jar",
+          "size": 77663,
+          "sha512": "f1a731e6817ce0756192a6c0afcc3aecf73ba175a1d5b96dd2463ab2a73417e67ce84336f4c2b7d5cb499d3d9b23fb198983e0c3d5259d6f749ba69b6089a36c",
+          "sha256": "5cd841a7a103aa7642d4dcec174921de830e33d2425e1fb5256a14fad5807c4f",
+          "sha1": "b5a5cc5f158fe47250ce7cf4b747ea38622f0cc4",
+          "md5": "e2f8c6d1968e4486b770cc2885e9271e"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "seasons-api-1.0-SNAPSHOT-sources.jar",
+          "url": "seasons-api-1.0-SNAPSHOT-sources.jar",
+          "size": 52758,
+          "sha512": "b6afb1edaaee3feb4c0d1fba7025373b819d19307d6e57ce856a7e9d3711b25154051dc799ae27927fbb7cf16ce785404f3f1698040eeb7451d027011d0d6f31",
+          "sha256": "15b7f76078d24bacbb6245fcba181f195a9b568009416c5bb2c18064034144c9",
+          "sha1": "1b1c032b761b369aa90599e3d430e14a63cc413b",
+          "md5": "54529863a404516f6081fa82698dfc58"
+        }
+      ]
+    }
+  ]
+}
