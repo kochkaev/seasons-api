@@ -1,8 +1,8 @@
 {
   "replace": false,
   "values": [
-    "seasons4fabric:weather_colds",
-    "seasons4fabric:weather_hots",
-    "seasons4fabric:weather_stormy"
+    "seasons-api:weather_colds",
+    "seasons-api:weather_hots",
+    "seasons-api:weather_stormy"
   ]
 }

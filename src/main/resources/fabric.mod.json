@@ -1,33 +1,25 @@
 {
 	"schemaVersion": 1,
-	"id": "seasons4fabric",
+	"id": "seasons-api",
 	"version": "${version}",
-	"name": "Seasons4Fabric",
+	"name": "Seasons API",
 	"description": "This is an example description! Tell everyone what your mod is about!",
 	"authors": [
-		"Me!"
+		"kochkaev"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/kochkaev/Seasons4Fabric"
+		"sources": "https://github.com/kochkaev/seasons-api"
 	},
 	"license": "CC0-1.0",
-	"icon": "assets/seasons4fabric/icon.png",
+	"icon": "assets/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"ru.kochkaev.Seasons4Fabric.Main"
-		],
-		"client": [
-			"ru.kochkaev.Seasons4Fabric.MainClient"
+          "ru.kochkaev.api.seasons.Main"
 		]
 	},
 	"mixins": [
-		"seasons4fabric.mixins.json",
-		{
-			"config": "seasons4fabric.client.mixins.json",
-			"environment": "client"
-		}
+		"seasons-api.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.15.11",

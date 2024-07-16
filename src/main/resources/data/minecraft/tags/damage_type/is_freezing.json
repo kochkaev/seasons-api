@@ -1,6 +1,6 @@
 {
   "replace": false,
   "values": [
-    "seasons4fabric:weather_colds"
+    "seasons-api:weather_colds"
   ]
 }
