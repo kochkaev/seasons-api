@@ -19,8 +19,6 @@ import java.util.Collections;
 @Mixin(ServerPlayerEntity.class)
 public class ServerPlayerEntityMixin extends PlayerEntity {
 
-    //@Unique
-    //private final EventObject onConsumeEvent = Event.getEventByID("ON_CONSUME");
 
     public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
         super(world, pos, yaw, gameProfile);
@@ -32,37 +30,25 @@ public class ServerPlayerEntityMixin extends PlayerEntity {
         ChallengesTicker.removePlayer((ServerPlayerEntity) (Object) this);
     }
 
-    @Inject(method = "consumeItem", at = @At("HEAD"))
+    @Inject(method = "consumeItem", at = @At("HEAD"), cancellable = true)
     protected void consumeItem(CallbackInfo ci){
         if (!this.activeItemStack.isEmpty() && this.isUsingItem()) {
             EventObject onConsumeEvent = Event.getEventByID("ON_CONSUME");
-            onConsumeEvent.onEvent(Collections.singletonList((ServerPlayerEntity) (Object) this));
-            if (onConsumeEvent.isCancelledAndReset()) return;
+            onConsumeEvent.onEvent(Collections.singletonList(this));
+            if (onConsumeEvent.isCancelledAndReset()) ci.cancel();
         }
     }
 
     @Inject(method = "onDeath", at = @At("HEAD"))
     public void onDeath(DamageSource damageSource, CallbackInfo ci) {
         ChallengesTicker.removePlayer((ServerPlayerEntity) (Object) this);
-//        Main.getLogger().info("Player " + this.getName().getString() + " died");
     }
 
     @Inject(method = "onSpawn", at = @At("HEAD"))
     public void onSpawn(CallbackInfo ci) {
         ChallengesTicker.addPlayer((ServerPlayerEntity) (Object) this);
-//        Main.getLogger().info("Player " + this.getName().getString() + " spawned");
     }
 
-//    @Inject(method = "getRespawnTarget", at = @At("RETURN"))
-//    public TeleportTarget getRespawnTarget(boolean alive, TeleportTarget.PostDimensionTransition postDimensionTransition, CallbackInfo ci) {
-//        ChallengesTicker.addPlayer((ServerPlayerEntity) (Object) this);
-//        return null;
-//    }
-
-//    @Inject(method = "teleportTo" , at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerCommonNetworkHandler;sendPacket()V"))
-//    private void onRespawn(CallbackInfo ci) {
-//        ChallengesTicker.addPlayer((ServerPlayerEntity) (Object) this);
-//    }
 
     public boolean isSpectator() {
         return false;

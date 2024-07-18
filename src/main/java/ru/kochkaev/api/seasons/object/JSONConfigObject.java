@@ -1,4 +1,4 @@
-package ru.kochkaev.api.seasons.config;
+package ru.kochkaev.api.seasons.object;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -9,14 +9,35 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-class JSONConfigCoreTools {
+public class JSONConfigObject {
 
     private final Path path;
     private JsonObject jsonObject;
     static Gson gson = new Gson();
 
+    public static JSONConfigObject openOrCreate(String filename, String defaults) {
+        Path path = FabricLoader.getInstance().getConfigDir().toAbsolutePath().resolve(filename+".json");
+        String pathStr = path.toString();
+        try {
+            File json = new File(pathStr);
+            long jsonLen = json.length();
+            if (!json.exists()){
+                boolean uselessly = json.getParentFile().mkdirs();
+                boolean uselessly1 = json.createNewFile();
+            }
+            BufferedReader reader = Files.newBufferedReader(path.toRealPath());
+            JSONConfigObject instance;
+            if (jsonLen != 0L) instance = new JSONConfigObject(path, reader);
+            else instance = new JSONConfigObject(path, defaults);
+            return instance;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
     // If file isn't empty
-    JSONConfigCoreTools(Path path, BufferedReader reader) {
+    JSONConfigObject(Path path, BufferedReader reader) {
         this.jsonObject = JsonParser.parseReader(reader).getAsJsonObject();
         this.path = path;
         try {
@@ -27,7 +48,7 @@ class JSONConfigCoreTools {
     }
 
     // If file empty
-    JSONConfigCoreTools(Path path, String defaults) {
+    JSONConfigObject(Path path, String defaults) {
         this.jsonObject = (JsonObject) JsonParser.parseString(defaults);
         this.path = path;
     }
@@ -45,28 +66,6 @@ class JSONConfigCoreTools {
             Writer writer = Files.newBufferedWriter(path.toRealPath());
             writer.write(gson.toJson(jsonObject));
             writer.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-}
-
-public class JSONConfigCore {
-    public static JSONConfigCoreTools openOrCreate(String filename, String defaults) {
-        Path path = FabricLoader.getInstance().getConfigDir().toAbsolutePath().resolve(filename+".json");
-        String pathStr = path.toString();
-        try {
-            File json = new File(pathStr);
-            long jsonLen = json.length();
-            if (!json.exists()){
-                json.getParentFile().mkdirs();
-                json.createNewFile();
-            }
-            BufferedReader reader = Files.newBufferedReader(path.toRealPath());
-            JSONConfigCoreTools instance;
-            if (jsonLen != 0L) instance = new JSONConfigCoreTools(path, reader);
-            else instance = new JSONConfigCoreTools(path, defaults);
-            return instance;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

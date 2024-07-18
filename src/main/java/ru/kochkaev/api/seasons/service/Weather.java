@@ -33,17 +33,19 @@ public class Weather {
     }
 
     public static WeatherObject getChancedWeather(List<WeatherObject> weathers){
-//        List<WeatherObject> weathers = isNight ? getSeasonNightlyWeathers(season) : getSeasonDailyWeathers(season);
-        List<Integer> chances = new ArrayList<>();
+        Map<WeatherObject, Integer> chances = new HashMap<>();
         int maxChance = 0;
         for (WeatherObject weather : weathers){
-            chances.add(weather.getChance());
-            maxChance += weather.getChance();
+            int chance = weather.getChance();
+            if (weather.isEnabled() && chance > 0){
+                chances.put(weather, chance);
+                maxChance += chance;
+            }
         }
         int randInt = (int) (random.nextFloat() * (maxChance - 1) + 1);
-        for (int i = 0; i<weathers.size(); i++){
-            if (maxChance - randInt <= chances.get(i)) { return weathers.get(i); }
-            else maxChance -= chances.get(i);
+        for (WeatherObject weather : chances.keySet()){
+            if (maxChance - randInt <= chances.get(weather)) { return weather; }
+            else maxChance -= chances.get(weather);
         }
         return null;
     }
@@ -94,7 +96,7 @@ public class Weather {
         String currentStr = Config.getCurrent("weather");
         String prevCurrentStr = Config.getCurrent("previous-weather");
         if (currentStr.equals("NONE")) {
-            boolean isDay = world.getTimeOfDay() % 24000L < Config.getConfig().getLong("conf.tick.day.end");
+            boolean isDay = world.getTimeOfDay() % 24000L < Config.getModConfig("API").getConfig().getLong("conf.tick.day.end");
             if (prevCurrentStr.equals("NONE")){
                 SeasonObject season = Season.getCurrent();
                 CURRENT_WEATHER = getChancedWeather(isDay ? getSeasonDailyWeathers(season) : getSeasonNightlyWeathers(season));

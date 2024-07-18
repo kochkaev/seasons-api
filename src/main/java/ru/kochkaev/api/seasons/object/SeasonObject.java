@@ -25,6 +25,9 @@ public abstract class SeasonObject {
     /** Message, who sends to chat when this season is coming. */
     protected String message;
 
+    /** It's season enabled. */
+    protected boolean enabled = true;
+
     /**
      * That's constructor.<br><br>
      * Use this for set weather data (call from your class constructor).<br>
@@ -68,5 +71,8 @@ public abstract class SeasonObject {
      * @return {@link #message}
      */
     public String  getMessage() { return this.message; }
+
+    public boolean isEnabled() { return this.enabled; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
 
 }

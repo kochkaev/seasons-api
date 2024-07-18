@@ -14,14 +14,6 @@ import java.util.*;
 @Mixin(LivingEntity.class)
 public class LivingEntityMixin {
 
-    //@Unique
-    //private static final EventObject onHealEvent = Event.getEventByID("ON_HEAL");
-
-    /**
-     * @author Kochkaev
-     * @reason
-     */
-//    @Overwrite
     @Inject(method = "heal", at = @At("HEAD"), cancellable = true)
     public void heal(float amount, CallbackInfo ci)  {
         LivingEntity entity = (LivingEntity) (Object) this;
@@ -29,17 +21,8 @@ public class LivingEntityMixin {
             EventObject onHealEvent = Event.getEventByID("ON_HEAL");
             onHealEvent.onEvent(Collections.singletonList(entity));
             if (onHealEvent.isCancelledAndReset()) {
-                return;
+                ci.cancel();
             }
         }
-//        float f = entity.getHealth();
-//        if (f > 0.0F) {
-//            entity.setHealth(f + amount);
-//        }
     }
-
-//    @Inject(method = "tick", at = @At("HEAD"))
-//    public void tick(CallbackInfo ci) {
-//
-//    }
 }

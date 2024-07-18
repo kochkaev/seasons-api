@@ -36,15 +36,13 @@ import java.util.List;
  */
 public abstract class ChallengeObject {
 
-    /**
-     * This message sends to chat on set available weather.
-     * @see #sendMessage(ServerPlayerEntity, String)
-     */
-    protected String triggerMessage;
     /** weathers contains weathers, that available this challenge. */
     protected List<WeatherObject> weathers;
     /** Set true if this challenge is available if {@link #weathers} contains previous weather (night is also the weather). */
     protected boolean allowIfPrevious;
+
+    /** It's challenge enabled. */
+    protected boolean enabled = true;
 
     /**
      * That's constructor.<br><br>
@@ -56,12 +54,10 @@ public abstract class ChallengeObject {
      * <code>
      *     ChallengeObject yourChallenge = new ChallengeObject("Your message", Arrays.asList(Weather.FIRST_WEATHER, Weather.SECOND_WEATHER), false) { public void register() { ... } public void logic(ServerPlayerEntity player, int countOfInARowCalls, int ticksPerAction) { ... } public void challengeEnd(ServerPlayerEntity player) { ... } };<br>
      * </code>
-     * @param triggerMessage {@link #triggerMessage}
      * @param weathers {@link #weathers}
      * @param allowIfPrevious {@link #allowIfPrevious}
      */
-    public ChallengeObject(String triggerMessage, List<WeatherObject> weathers, boolean allowIfPrevious) {
-        this.triggerMessage = triggerMessage;
+    public ChallengeObject(List<WeatherObject> weathers, boolean allowIfPrevious) {
         this.weathers = weathers;
         this.allowIfPrevious = allowIfPrevious;
     }
@@ -87,12 +83,19 @@ public abstract class ChallengeObject {
     public abstract int logic(ServerPlayerEntity player, int countOfInARowCalls, int ticksPerAction);
 
     /**
+     * Challenge start event.<br><br>
+     * This method will be called on this challenge starts.
+     * You must realize this method in your challenge. Use {@code @Override} annotation for this method.<br>
+     * @param player player to whom the logic applies.
+     */
+    public abstract void onChallengeStart(ServerPlayerEntity player);
+    /**
      * Challenge end.<br><br>
      * This method will be called on weather change and if {@link #weathers} don't contain this weather (only if {@link #allowIfPrevious} == true), on condition countOfInARowCalls != 0.
      * You must realize this method in your challenge. Use {@code @Override} annotation for this method.<br>
      * @param player player to whom the logic applies.
      */
-    public abstract void challengeEnd(ServerPlayerEntity player);
+    public abstract void onChallengeEnd(ServerPlayerEntity player);
 
     /**
      * You can use this method for damage player.
@@ -205,18 +208,14 @@ public abstract class ChallengeObject {
      * @return true, if {@link #weathers} contains current weather or {@link #allowIfPrevious} == true and {@link #weathers} contains previous weather | false, if not.
      */
     public boolean isAllowed() {
-        return this.weathers.contains(Weather.getCurrent()) || (this.allowIfPrevious && this.weathers.contains(Weather.getPreviousCurrent()));
+        return (this.weathers.contains(Weather.getCurrent()) || (this.allowIfPrevious && this.weathers.contains(Weather.getPreviousCurrent()))) && this.enabled;
     }
-//    /** This method check this challenge available in night.
-//     * @return {@link #forNight}
-//     */
-//    public boolean isForNight() { return forNight; }
-    /**
-     * @return {@link #triggerMessage}
-     */
-    public String getTriggerMessage() { return this.triggerMessage; }
     /** This method returns weathers, that available this challenge.
      * @return {@link #weathers}
      */
     public List<WeatherObject> getWeathers() { return this.weathers; }
+
+    public boolean isEnabled() { return this.enabled; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
+
 }

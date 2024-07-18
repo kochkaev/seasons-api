@@ -50,6 +50,9 @@ public abstract class WeatherObject {
     @Nullable
     protected Boolean nightly;
 
+    /** It's weather enabled. */
+    protected boolean enabled = true;
+
     /**
      * That's constructor.<br><br>
      * Use this for set weather data (call from your class constructor).<br>
@@ -129,5 +132,8 @@ public abstract class WeatherObject {
      * @return {@link #nightly}
      */
     public @Nullable Boolean isNightly() { return this.nightly; }
+
+    public boolean isEnabled() { return this.enabled; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
 
 }

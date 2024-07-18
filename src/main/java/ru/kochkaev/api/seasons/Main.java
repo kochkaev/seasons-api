@@ -8,15 +8,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.kochkaev.api.seasons.command.Seasons4FabricCommand;
 import ru.kochkaev.api.seasons.config.Config;
-import ru.kochkaev.api.seasons.object.ChallengeObject;
-import ru.kochkaev.api.seasons.object.EventObject;
-import ru.kochkaev.api.seasons.object.SeasonObject;
-import ru.kochkaev.api.seasons.object.WeatherObject;
+import ru.kochkaev.api.seasons.config.DefaultTXTConfig;
+import ru.kochkaev.api.seasons.config.lang.DefaultTXTLangRU;
 import ru.kochkaev.api.seasons.service.Challenge;
-import ru.kochkaev.api.seasons.service.Event;
 import ru.kochkaev.api.seasons.service.Season;
 import ru.kochkaev.api.seasons.service.Weather;
-import ru.kochkaev.api.seasons.util.ParseClassesInPackage;
 
 public class Main implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger("Seasons");
@@ -24,11 +20,8 @@ public class Main implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		Config.init__();
-//		new ParseClassesInPackage<SeasonObject>("ru.kochkaev.seasons-api.season", SeasonObject.class, Season::register);
-//		new ParseClassesInPackage<WeatherObject>("ru.kochkaev.seasons-api.weather", WeatherObject.class, Weather::register);
-//		new ParseClassesInPackage<EventObject>("ru.kochkaev.seasons-api.event", EventObject.class, Event::register);
-//		new ParseClassesInPackage<ChallengeObject>("ru.kochkaev.seasons-api.challenge", ChallengeObject.class, Challenge::register);
-		for (Object event : ParseClassesInPackage.getAllClassesInPackage("ru.kochkaev.seasons-api.event")) Event.register((EventObject) event);
+		Config.regModConfig(new Config("API", new DefaultTXTConfig(), new DefaultTXTLangRU()));
+		Register.registerAllInPackage("ru.kochkaev.seasons-api.event");
 		Season.onServerStartup();
 		CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> Seasons4FabricCommand.register(dispatcher)));
 		Challenge.updateChallengesInCurrentWeather();

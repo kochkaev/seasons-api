@@ -22,24 +22,20 @@ public class ServerPlayerInteractionManagerMixin {
     @Unique
     private static final EventObject onBlockChangeEvent = Event.getEventByID("ON_BLOCK_CHANGE");
 
-    @Inject(at = @At("HEAD"), method = "interactBlock", cancellable = true)
+    @Inject(at = @At("HEAD"), method = "interactBlock"/*, cancellable = true*/)
     public void interactBlock(ServerPlayerEntity player, World world, ItemStack stack, Hand hand, BlockHitResult hitResult, CallbackInfoReturnable<ActionResult> cir) {
         onBlockChangeEvent.onEvent(Arrays.asList(player, stack));
         if (onBlockChangeEvent.isCancelledAndReset()) {
-            return;
+            cir.cancel();
         }
     }
 
-    @ModifyVariable(at = @At("HEAD"), method = "interactBlock", ordinal = 0)
+    @ModifyVariable(at = @At("HEAD"), method = "interactBlock", ordinal = 0, argsOnly = true)
     public ItemStack interactBlockEvent(ItemStack stack) {
         if (onBlockChangeEvent.isReturnedAndReset()) return (ItemStack) onBlockChangeEvent.getReturned();
         return stack;
     }
 
-//    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/advancement/criterion/Criteria;ITEM_USED_ON_BLOCK;trigger(ServerPlayerEntity,BlockPos,ItemStack)V", shift = At.Shift.AFTER))
-//    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/advancement/criterion/DefaultBlockUseCriterion;trigger(ServerPlayerEntity,BlockPos,ItemStack)V", shift = At.Shift.AFTER))
-//    @Inject(method = "interactBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/advancement/criterion/DefaultBlockUseCriterion;trigger()V", shift = At.Shift.AFTER))
-//    @Inject(method = "interactBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/advancement/criterion/Criteria/ITEM_USED_ON_BLOCK;trigger()V", shift = At.Shift.AFTER))
     @Inject(method = "interactBlock", at = @At("RETURN"))
     public void interactBlockRet(ServerPlayerEntity player, World world, ItemStack stack, Hand hand, BlockHitResult hitResult, CallbackInfoReturnable<ActionResult> cir) {
         onBlockChangeEvent.invokeInjectedAndReset(Arrays.asList(player, hitResult));

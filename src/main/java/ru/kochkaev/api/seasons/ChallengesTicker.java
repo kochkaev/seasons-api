@@ -4,7 +4,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import ru.kochkaev.api.seasons.config.Config;
 import ru.kochkaev.api.seasons.object.ChallengeObject;
 import ru.kochkaev.api.seasons.service.Challenge;
-import ru.kochkaev.api.seasons.util.Message;
 
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -13,11 +12,10 @@ import java.util.concurrent.TimeUnit;
 
 public class ChallengesTicker {
 
-    //private static ServerWorld overworld;
     private static final Map<ServerPlayerEntity, Map<ChallengeObject, Integer>> countOfInARowCallsMap = new HashMap<>();
     private static final List<ServerPlayerEntity> players = new ArrayList<>();
     private static boolean isTicking = false;
-    private static final int ticksPerAction = Config.getConfig().getInt("conf.tick.ticksPerAction");
+    private static final int ticksPerAction = Config.getModConfig("API").getConfig().getInt("conf.tick.ticksPerAction");
     private static final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private static final List<ServerPlayerEntity> playersRemoveList = new ArrayList<>();
     private static final List<ServerPlayerEntity> playersAddList = new ArrayList<>();
@@ -28,8 +26,7 @@ public class ChallengesTicker {
 
     public static void start() {
         isTicking = true;
-//        allowedChallenges.addAll(Challenge.getChallengesInCurrentWeather());
-        executorService.scheduleAtFixedRate(ChallengesTicker::tick, 0, Config.getConfig().getInt("conf.tick.secondsPerTick"), TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(ChallengesTicker::tick, 0, Config.getModConfig("API").getConfig().getInt("conf.tick.secondsPerTick"), TimeUnit.SECONDS);
     }
 
     public static void stop()  {
@@ -42,7 +39,7 @@ public class ChallengesTicker {
                 int count = countOfInARowCallsMap.get(player).get(challenge);
                 if (count != 0) {
                     countOfInARowCallsMap.get(player).put(challenge, 0);
-                    challenge.challengeEnd(player);
+                    challenge.onChallengeEnd(player);
                 }
             }
         }
@@ -70,12 +67,12 @@ public class ChallengesTicker {
     }
     public static void addPlayersTask() {
         for (ServerPlayerEntity player : playersAddList) {
-            countOfInARowCallsMap.put(player, new HashMap<>());
-            for (ChallengeObject effect : Challenge.getChallenges()) {
-                countOfInARowCallsMap.get(player).put(effect, 0);
-                //for (ChallengeObject challenge : Challenge.getChallengesInCurrentWeather()) Message.sendMessage2Player(challenge.getTriggerMessage(), player);
-            }
             players.add(player);
+            countOfInARowCallsMap.put(player, new HashMap<>());
+            for (ChallengeObject challenge : Challenge.getChallenges()) {
+                countOfInARowCallsMap.get(player).put(challenge, 0);
+                if (allowedChallenges.contains(challenge)) challenge.onChallengeStart(player);
+            }
         }
         playersAddList.clear();
     }
@@ -87,7 +84,7 @@ public class ChallengesTicker {
         for (ServerPlayerEntity player : playersRemoveList) {
             for (ChallengeObject challenge : allowedChallenges) {
                 if (countOfInARowCallsMap.get(player).get(challenge) != 0) {
-                    challenge.challengeEnd(player);
+                    challenge.onChallengeEnd(player);
                 }
             }
             countOfInARowCallsMap.remove(player);
@@ -112,21 +109,17 @@ public class ChallengesTicker {
                     int count = countOfInARowCallsMap.get(player).get(challenge);
                     if (count != 0) {
                         countOfInARowCallsMap.get(player).put(challenge, 0);
-                        challenge.challengeEnd(player);
+                        challenge.onChallengeEnd(player);
                     }
                 }
             }
         }
-        for (ChallengeObject challenge : challenges) if (!allowedChallenges.contains(challenge)) Message.sendMessage2Players(challenge.getTriggerMessage(), players);
+        for (ChallengeObject challenge : challenges) if (!allowedChallenges.contains(challenge)) for (ServerPlayerEntity player : players) challenge.onChallengeStart(player);
         allowedChallenges.clear();
         allowedChallenges.addAll(challenges);
         changeWeather = false;
         Main.getLogger().info(allowedChallenges.toString());
     }
-
-//    public static void setWorld(ServerWorld world){
-//        ChallengesTicker.overworld = world;
-//    }
 
     public static boolean isTicking() { return isTicking; }
 
