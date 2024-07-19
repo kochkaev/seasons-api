@@ -26,7 +26,9 @@ public abstract class Message {
     //}
 
     public static void sendMessage2Server(String message, PlayerManager players){
-        sendMessage2Server(message, players, new HashMap<>());
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("%message%", message);
+        sendMessage2Server(Config.getModConfig("API").getLang().getString("conf.format.chat.message"), players, placeholders);
     }
     public static void sendMessage2Server(String message, PlayerManager players, Map<String, String> map){
         map.put("%seasonsModDisplayName%", Config.getModConfig("API").getLang().getString("lang.message.seasonsModDisplayName"));
@@ -36,7 +38,9 @@ public abstract class Message {
     }
 
     public static void sendMessage2Players(String message, List<ServerPlayerEntity> players){
-        sendMessage2Players(message, players, new HashMap<>());
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("%message%", message);
+        sendMessage2Players(Config.getModConfig("API").getLang().getString("conf.format.chat.message"), players, placeholders);
     }
     public static void sendMessage2Players(String message, List<ServerPlayerEntity> players, Map<String, String> map){
         map.put("%seasonsModDisplayName%", Config.getModConfig("API").getLang().getString("lang.message.seasonsModDisplayName"));
@@ -46,7 +50,9 @@ public abstract class Message {
     }
 
     public static void sendMessage2Player(String message, ServerPlayerEntity player){
-        sendMessage2Player(message, player, new HashMap<>());
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("%message%", message);
+        sendMessage2Player(Config.getModConfig("API").getLang().getString("conf.format.chat.message"), player, placeholders);
     }
     public static void sendMessage2Player(String message, ServerPlayerEntity player, Map<String, String> map){
         map.put("%seasonsModDisplayName%", Config.getModConfig("API").getLang().getString("lang.message.seasonsModDisplayName"));
