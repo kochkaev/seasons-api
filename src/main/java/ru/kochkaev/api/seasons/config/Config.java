@@ -42,7 +42,7 @@ public class Config {
     }
 
     public void reloadLang() {
-        lang = TXTConfigObject.openOrDefault("Seasons/"+ modName +"/lang/"+current.get("language").getAsString(), "Seasons/lang/"+defaultLang);
+        lang = TXTConfigObject.openOrDefault("Seasons/"+ modName +"/lang/"+(current != null ? current.get("language").getAsString() : "EN_us"), "Seasons/lang/"+defaultLang);
     }
 
     public static void setLang(String lang) {
