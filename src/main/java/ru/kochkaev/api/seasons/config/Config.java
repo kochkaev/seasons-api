@@ -35,7 +35,7 @@ public class Config {
 
     public static Config getModConfig(String modName) { return mods.get(modName); }
     public static void regModConfig(Config config) {
-        if (current != null) mods.put(config.getModName(), config);
+        if (current.isEmpty()) mods.put(config.getModName(), config);
         else forRegister.add(() -> mods.put(config.getModName(), config));
     }
     public String getModName() { return this.modName; }

@@ -5,7 +5,10 @@ plugins {
 
 version = project.mod_version
 group = project.maven_group
-
+//String pass = System.getenv().findResult(findNameStartsWith('PASS'))
+ext {
+    pass = findProperty('pass') ?: ''
+}
 
 base {
     archivesName = project.archives_base_name
@@ -106,11 +109,16 @@ publishing {
             url = 'https://maven.pkg.github.com/kochkaev/seasons-api'
             credentials {
                 username = "kochkaev"
-                password = ""
+                password = pass
 //                password = tokensProp.properties.get('github_token')
             }
 
         }
 
     }
+
 }
+
+//static Closure findNameStartsWith(final String search) {
+//    { name, value -> name.startsWith(search) }
+//}
