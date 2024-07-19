@@ -5,6 +5,7 @@ import net.minecraft.server.world.ServerWorld;
 import org.jetbrains.annotations.Nullable;
 import ru.kochkaev.api.seasons.ChallengesTicker;
 import ru.kochkaev.api.seasons.config.Config;
+import ru.kochkaev.api.seasons.example.ExampleWeather;
 import ru.kochkaev.api.seasons.object.SeasonObject;
 import ru.kochkaev.api.seasons.object.WeatherObject;
 import ru.kochkaev.api.seasons.util.Message;
@@ -15,6 +16,7 @@ public class Weather {
 
     private static final Random random = new Random();
 
+//    private static WeatherObject CURRENT_WEATHER = new ExampleWeather();
     private static WeatherObject CURRENT_WEATHER;
     private static WeatherObject CURRENT_WEATHER_PREVIOUS;
     private static final List<WeatherObject> dailyWeathers = new ArrayList<>();
@@ -47,7 +49,7 @@ public class Weather {
             if (maxChance - randInt <= chances.get(weather)) { return weather; }
             else maxChance -= chances.get(weather);
         }
-        return null;
+        return getWeatherByID("example");
     }
 
     public static List<WeatherObject> getSeasonDailyWeathers(SeasonObject season){
@@ -95,23 +97,21 @@ public class Weather {
     public static void onServerStartup(ServerWorld world){
         String currentStr = Config.getCurrent("weather");
         String prevCurrentStr = Config.getCurrent("previous-weather");
-        if (currentStr.equals("NONE")) {
+        if (currentStr.equals("NONE") || currentStr.equals("example")) {
             boolean isDay = world.getTimeOfDay() % 24000L < Config.getModConfig("API").getConfig().getLong("conf.tick.day.end");
-            if (prevCurrentStr.equals("NONE")){
-                SeasonObject season = Season.getCurrent();
-                CURRENT_WEATHER = getChancedWeather(isDay ? getSeasonDailyWeathers(season) : getSeasonNightlyWeathers(season));
-            }
+            CURRENT_WEATHER = (prevCurrentStr.equals("NONE")) ? getChancedWeather(isDay ? getSeasonDailyWeathers(Season.getCurrent()) : getSeasonNightlyWeathers(Season.getCurrent())) : getWeatherByID(prevCurrentStr);
             if (isDay) {
                 setDay(world);
             }
             else setNight(world);
         }
-        if (!prevCurrentStr.equals(currentStr)) CURRENT_WEATHER_PREVIOUS = getWeatherByID(prevCurrentStr);
+        if (prevCurrentStr.equals("NONE") || !prevCurrentStr.equals(currentStr)) CURRENT_WEATHER_PREVIOUS = getWeatherByID(prevCurrentStr);
         else {
             SeasonObject season = Season.getCurrent();
             CURRENT_WEATHER_PREVIOUS = getChancedWeather(Boolean.TRUE.equals(Objects.requireNonNull(Weather.getWeatherByID(currentStr)).isNightly()) ? getSeasonDailyWeathers(season) : getSeasonNightlyWeathers(season));
         }
         CURRENT_WEATHER = getWeatherByID(currentStr);
+        if (CURRENT_WEATHER == null) CURRENT_WEATHER = getWeatherByID("example");
         assert CURRENT_WEATHER != null;
         isNight = Boolean.TRUE.equals(CURRENT_WEATHER.isNightly());
     }
@@ -146,7 +146,6 @@ public class Weather {
     public static void setChancedWeatherInCurrentSeason(ServerWorld world){
         SeasonObject currentSeason = Season.getCurrent();
         WeatherObject weather = getChancedWeather(isNight ? getSeasonNightlyWeathers(currentSeason) : getSeasonDailyWeathers(currentSeason));
-        assert weather != null;
         setWeather(weather, world);
     }
 
@@ -155,7 +154,10 @@ public class Weather {
     public static void setWeather(WeatherObject weather, ServerWorld world) {
         CURRENT_WEATHER.onWeatherRemove();
         Weather.setCurrent(weather);
-        Message.sendMessage2Server(weather.getMessage(), world.getServer().getPlayerManager());
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("%weather%", weather.getName());
+        placeholders.put("%message%",weather.getMessage());
+        Message.sendMessage2Server(Config.getModConfig("API").getConfig().getString("conf.format.chat.message"), world.getServer().getPlayerManager(), placeholders);
         weather.onWeatherSet();
         world.setWeather(-1, -1, weather.getRaining(), weather.getThundering());
         Challenge.updateChallengesInCurrentWeather();

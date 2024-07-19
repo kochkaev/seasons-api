@@ -30,7 +30,7 @@ public class Config {
     public String getModName() { return this.modName; }
 
     public static void init__() {
-        String defaultCurrent = "{ \"season\": WINTER, \"weather\": NONE, \"previous-weather\": NONE, \"language\": RU_ru }";
+        String defaultCurrent = "{ \"season\": NONE, \"weather\": NONE, \"previous-weather\": NONE, \"language\": RU_ru }";
         jsonCore = JSONConfigObject.openOrCreate("Seasons/current", defaultCurrent);
         current = jsonCore.getJsonObject();
     }

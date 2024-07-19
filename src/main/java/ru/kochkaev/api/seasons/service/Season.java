@@ -7,8 +7,7 @@ import ru.kochkaev.api.seasons.config.Config;
 import ru.kochkaev.api.seasons.object.SeasonObject;
 import ru.kochkaev.api.seasons.util.Message;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Season {
 
@@ -30,7 +29,8 @@ public class Season {
 
     public static void onServerStartup(){
         String currentStr = Config.getCurrent("season");
-        CURRENT_SEASON = getSeasonByID(currentStr);
+        CURRENT_SEASON = (currentStr.equals("NONE") || currentStr.equals("example")) ? getRandomSeason() : getSeasonByID(currentStr);
+        if (CURRENT_SEASON == null) CURRENT_SEASON = getSeasonByID("example");
     }
 
     public static void saveCurrentToConfig(){
@@ -51,13 +51,18 @@ public class Season {
         CURRENT_SEASON.onSeasonRemove();
         setCurrent(season);
         season.onSeasonSet();
-        Message.sendMessage2Server(season.getMessage(), players);
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("%season%", season.getName());
+        Message.sendMessage2Server(season.getMessage(), players, placeholders);
     }
 
 
     public static SeasonObject getSeasonByID(String id) {
         for (SeasonObject season : allSeasons) if (season.getId().equals(id)) return season;
         return null;
+    }
+    public static SeasonObject getRandomSeason() {
+        return allSeasons.get(new Random().nextInt(allSeasons.size()));
     }
 
     public static List<SeasonObject> getAll() {

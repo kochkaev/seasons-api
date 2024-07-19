@@ -1,7 +1,6 @@
 package ru.kochkaev.api.seasons.mixin;
 
 import com.google.common.annotations.VisibleForTesting;
-import net.fabricmc.fabric.api.attachment.v1.AttachmentTarget;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -36,7 +35,7 @@ public abstract class ServerWorldMixin
     }
 
 
-    @Unique
+    @Shadow
     private final ServerWorldProperties worldProperties;
 
 

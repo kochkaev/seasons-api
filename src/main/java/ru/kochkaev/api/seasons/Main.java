@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import ru.kochkaev.api.seasons.command.Seasons4FabricCommand;
 import ru.kochkaev.api.seasons.config.Config;
 import ru.kochkaev.api.seasons.config.DefaultTXTConfig;
+import ru.kochkaev.api.seasons.config.lang.DefaultTXTLangEN;
 import ru.kochkaev.api.seasons.config.lang.DefaultTXTLangRU;
 import ru.kochkaev.api.seasons.service.Challenge;
 import ru.kochkaev.api.seasons.service.Season;
@@ -20,9 +21,9 @@ public class Main implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		Config.init__();
-		Config.regModConfig(new Config("API", new DefaultTXTConfig(), new DefaultTXTLangRU()));
-		Register.registerAllInPackage("ru.kochkaev.seasons-api.event");
-		Season.onServerStartup();
+		Config.regModConfig(new Config("API", new DefaultTXTConfig(), new DefaultTXTLangRU(), new DefaultTXTLangEN()));
+		Register.registerAllInPackage("ru.kochkaev.api.seasons.event");
+		Register.registerAllInPackage("ru.kochkaev.api.seasons.example");
 		CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> Seasons4FabricCommand.register(dispatcher)));
 		Challenge.updateChallengesInCurrentWeather();
 		ChallengesTicker.changeWeather();
@@ -31,6 +32,7 @@ public class Main implements ModInitializer {
 		ServerLifecycleEvents.SERVER_STOPPED.register((server) -> onShutdown());
 		ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
 			Register.register();
+			Season.onServerStartup();
 			Weather.onServerStartup(server.getOverworld());
 		});
 	}

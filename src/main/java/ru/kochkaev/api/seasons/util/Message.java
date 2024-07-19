@@ -4,8 +4,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import ru.kochkaev.api.seasons.config.Config;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class Message {
     //public Message(MinecraftServer server, ServerWorld world, GameProfile profile, SyncedClientOptions clientOptions) {
@@ -23,19 +26,31 @@ public abstract class Message {
     //}
 
     public static void sendMessage2Server(String message, PlayerManager players){
-        String formattedMessage = MessageFormat.formatMessage(message);
+        sendMessage2Server(message, players, new HashMap<>());
+    }
+    public static void sendMessage2Server(String message, PlayerManager players, Map<String, String> map){
+        map.put("%seasonsModDisplayName%", Config.getModConfig("API").getLang().getString("lang.message.seasonsModDisplayName"));
+        String formattedMessage = MessageFormat.formatMessage(message, map);
         for (PlayerEntity player : players.getPlayerList()) player.sendMessage(Text.of(formattedMessage));
         //ServerPlayerEntity.sendMessage(Text.of(formattedMessage));
     }
 
     public static void sendMessage2Players(String message, List<ServerPlayerEntity> players){
-        String formattedMessage = MessageFormat.formatMessage(message);
+        sendMessage2Players(message, players, new HashMap<>());
+    }
+    public static void sendMessage2Players(String message, List<ServerPlayerEntity> players, Map<String, String> map){
+        map.put("%seasonsModDisplayName%", Config.getModConfig("API").getLang().getString("lang.message.seasonsModDisplayName"));
+        String formattedMessage = MessageFormat.formatMessage(message, map);
         for (PlayerEntity player : players) player.sendMessage(Text.of(formattedMessage));
         //ServerPlayerEntity.sendMessage(Text.of(formattedMessage));
     }
 
     public static void sendMessage2Player(String message, ServerPlayerEntity player){
-        String formattedMessage = MessageFormat.formatMessage(message);
+        sendMessage2Player(message, player, new HashMap<>());
+    }
+    public static void sendMessage2Player(String message, ServerPlayerEntity player, Map<String, String> map){
+        map.put("%seasonsModDisplayName%", Config.getModConfig("API").getLang().getString("lang.message.seasonsModDisplayName"));
+        String formattedMessage = MessageFormat.formatMessage(message, map);
         player.sendMessage(Text.of(formattedMessage));
         //ServerPlayerEntity.sendMessage(Text.of(formattedMessage));
     }

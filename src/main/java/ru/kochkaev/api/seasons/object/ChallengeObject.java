@@ -8,6 +8,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
+import ru.kochkaev.api.seasons.service.Season;
 import ru.kochkaev.api.seasons.util.functional.IFunc;
 import ru.kochkaev.api.seasons.util.functional.IFuncRet;
 import ru.kochkaev.api.seasons.service.Event;
@@ -17,7 +18,9 @@ import ru.kochkaev.api.seasons.util.Message;
 import ru.kochkaev.api.seasons.WeatherDamageType;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * It's ChallengeObject, object for create your own challenges.<br><br>
@@ -202,7 +205,12 @@ public abstract class ChallengeObject {
      * @param player player, who we will send message
      * @param message message, who we will send
      */
-    protected void sendMessage(ServerPlayerEntity player, String message) { Message.sendMessage2Player(message, player); }
+    protected void sendMessage(ServerPlayerEntity player, String message) {
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("%season%", Season.getCurrent().getName());
+        placeholders.put("%weather%", Weather.getCurrent().getName());
+        Message.sendMessage2Player(message, player, placeholders);
+    }
 
     /** This method check this challenge available in current weather (or if {@link #allowIfPrevious} == true and {@link #weathers} contains previous weather).
      * @return true, if {@link #weathers} contains current weather or {@link #allowIfPrevious} == true and {@link #weathers} contains previous weather | false, if not.

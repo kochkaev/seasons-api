@@ -19,7 +19,7 @@ public class TXTConfigObject {
     private String filename;
 
     protected TXTConfigObject(String modName, String filename, String type) {
-        this.filename = modName + (type.equals("lang") ? "/lang" : "/") + filename;
+        this.filename = modName + (type.equals("lang") ? "/lang/" : "/") + filename;
         this.type = type;
     }
 
