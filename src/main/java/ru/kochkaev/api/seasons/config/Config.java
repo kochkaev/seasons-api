@@ -3,6 +3,8 @@ package ru.kochkaev.api.seasons.config;
 import com.google.gson.JsonObject;
 import ru.kochkaev.api.seasons.object.JSONConfigObject;
 import ru.kochkaev.api.seasons.object.TXTConfigObject;
+import ru.kochkaev.api.seasons.util.functional.IFunc;
+import ru.kochkaev.api.seasons.util.functional.IFuncVoid;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +21,7 @@ public class Config {
     private final String modName;
     private final String defaultLang;
     private static final List<String> langs =  new ArrayList<>();
+    private static final List<IFuncVoid> forRegister =  new ArrayList<>();
 
     public Config(String modName, String defaultLang, TXTConfigObject... objects) {
         this.modName = modName;
@@ -32,13 +35,17 @@ public class Config {
     }
 
     public static Config getModConfig(String modName) { return mods.get(modName); }
-    public static void regModConfig(Config config) { mods.put(config.getModName(), config); }
+    public static void regModConfig(Config config) {
+        if (current != null) mods.put(config.getModName(), config);
+        else forRegister.add(() -> mods.put(config.getModName(), config));
+    }
     public String getModName() { return this.modName; }
 
     public static void init__() {
         String defaultCurrent = "{ \"season\": NONE, \"weather\": NONE, \"previous-weather\": NONE, \"language\": EN_us }";
         jsonCore = JSONConfigObject.openOrCreate("Seasons/current", defaultCurrent);
         current = jsonCore.getJsonObject();
+        for (IFuncVoid func : forRegister) func.function();
     }
 
     public void reloadLang() {
