@@ -6,7 +6,8 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.kochkaev.api.seasons.command.Seasons4FabricCommand;
+import ru.kochkaev.api.seasons.command.SeasonCommand;
+import ru.kochkaev.api.seasons.command.SeasonsCommand;
 import ru.kochkaev.api.seasons.config.Config;
 import ru.kochkaev.api.seasons.config.DefaultTXTConfig;
 import ru.kochkaev.api.seasons.config.lang.DefaultTXTLangEN;
@@ -21,10 +22,11 @@ public class Main implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		Config.init__();
-		Config.regModConfig(new Config("API", new DefaultTXTConfig(), new DefaultTXTLangRU(), new DefaultTXTLangEN()));
+		Config.regModConfig(new Config("API", "EN_us", new DefaultTXTConfig(), new DefaultTXTLangRU(), new DefaultTXTLangEN()));
 		Register.registerAllInPackage("ru.kochkaev.api.seasons.event");
 		Register.registerAllInPackage("ru.kochkaev.api.seasons.example");
-		CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> Seasons4FabricCommand.register(dispatcher)));
+		CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> SeasonsCommand.register(dispatcher)));
+		CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> SeasonCommand.register(dispatcher)));
 		Challenge.updateChallengesInCurrentWeather();
 		ChallengesTicker.changeWeather();
 		ChallengesTicker.start();

@@ -11,23 +11,25 @@ import ru.kochkaev.api.seasons.config.Config;
 import ru.kochkaev.api.seasons.service.Season;
 import ru.kochkaev.api.seasons.service.Weather;
 
-public class Seasons4FabricCommand {
+public class SeasonsCommand {
 
-    public Seasons4FabricCommand() {
+    public SeasonsCommand() {
     }
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(CommandManager.literal("seasons-api")
+        dispatcher.register(CommandManager.literal("seasons")
                 .then(CommandManager.literal("set")
                         .then(CommandManager.literal("season")
                                 .then(CommandManager.argument("season", StringArgumentType.string()).suggests(new SeasonSuggestionProvider()).executes(context -> setSeason(StringArgumentType.getString(context, "season"), context.getSource()))))
                         .then(CommandManager.literal("weather")
-                                .then(CommandManager.argument("weather", StringArgumentType.string()).suggests(new WeatherSuggestionProvider()).executes(context -> setWeather(StringArgumentType.getString(context, "weather"), context.getSource())))))
+                                .then(CommandManager.argument("weather", StringArgumentType.string()).suggests(new WeatherSuggestionProvider()).executes(context -> setWeather(StringArgumentType.getString(context, "weather"), context.getSource()))))
+                        .then(CommandManager.literal("lang")
+                                .then(CommandManager.argument("lang", StringArgumentType.string()).suggests(new LangSuggestionProvider()).executes(context -> setLang(StringArgumentType.getString(context, "lang"), context.getSource())))))
                 .then(CommandManager.literal("reload").executes(context -> reload(context.getSource())))
         );
     }
 
-    private static int setSeason(String seasonID, ServerCommandSource source) {
+    public static int setSeason(String seasonID, ServerCommandSource source) {
         PlayerManager players = source.getServer().getPlayerManager();
         Season.setSeason(Season.getSeasonByID(seasonID), players);
         source.sendFeedback(() -> Text.literal(("&7Successfully set season \"" + Season.getCurrent().getName() + "&7\"").replaceAll("&", "§")), true);
@@ -37,6 +39,11 @@ public class Seasons4FabricCommand {
         ServerWorld world = source.getServer().getOverworld();
         Weather.setWeather(Weather.getWeatherByID(weatherID), world);
         source.sendFeedback(() -> Text.literal(("&7Successfully set weather \"" + Weather.getCurrent().getName() + "&7\"").replaceAll("&", "§")), true);
+        return 0;
+    }
+    public static int setLang(String lang, ServerCommandSource source) {
+        Config.setLang(lang);
+        source.sendFeedback(() -> Text.literal(("&7Successfully set lang \"" + lang + "&7\"").replaceAll("&", "§")), true);
         return 0;
     }
 

@@ -1,20 +1,10 @@
 plugins {
     id 'fabric-loom' version '1.7-SNAPSHOT'
     id 'maven-publish'
-    id 'war'
 }
 
 version = project.mod_version
 group = project.maven_group
-var tokensProp
-
-war {
-//    from('<path-to-props-file>') {
-//        include 'tokens.properties'
-//        into('<target-path>')
-//    }
-    tokensProp = file('tokens.properties')
-}
 
 
 base {
@@ -116,7 +106,7 @@ publishing {
             url = 'https://maven.pkg.github.com/kochkaev/seasons-api'
             credentials {
                 username = "kochkaev"
-                password = ".ssenisub nwo ruoy dniM"
+                password = ""
 //                password = tokensProp.properties.get('github_token')
             }
 

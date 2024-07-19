@@ -4,7 +4,9 @@ import com.google.gson.JsonObject;
 import ru.kochkaev.api.seasons.object.JSONConfigObject;
 import ru.kochkaev.api.seasons.object.TXTConfigObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Config {
@@ -15,12 +17,16 @@ public class Config {
     private static JSONConfigObject jsonCore;
     private static final Map<String, Config> mods = new HashMap<>();
     private final String modName;
+    private final String defaultLang;
+    private static final List<String> langs =  new ArrayList<>();
 
-    public Config(String modName, TXTConfigObject... objects) {
+    public Config(String modName, String defaultLang, TXTConfigObject... objects) {
         this.modName = modName;
+        this.defaultLang = defaultLang;
         for (TXTConfigObject object : objects) {
             object.createIfDoNotExists();
             if (object.getType().equals("config")) this.config = object.open();
+            else if (!langs.contains(object.getSubType())) langs.add(object.getSubType());
         }
         reloadLang();
     }
@@ -30,14 +36,24 @@ public class Config {
     public String getModName() { return this.modName; }
 
     public static void init__() {
-        String defaultCurrent = "{ \"season\": NONE, \"weather\": NONE, \"previous-weather\": NONE, \"language\": RU_ru }";
+        String defaultCurrent = "{ \"season\": NONE, \"weather\": NONE, \"previous-weather\": NONE, \"language\": EN_us }";
         jsonCore = JSONConfigObject.openOrCreate("Seasons/current", defaultCurrent);
         current = jsonCore.getJsonObject();
     }
 
     public void reloadLang() {
-        lang = TXTConfigObject.open("Seasons/lang/"+current.get("language").getAsString());
+        lang = TXTConfigObject.openOrDefault("Seasons/lang/"+current.get("language").getAsString(), "Seasons/lang/"+defaultLang);
     }
+
+    public static void setLang(String lang) {
+        writeCurrent("language", lang);
+        saveCurrent();
+        for (Config mod : mods.values()) {
+            mod.reloadLang();
+        }
+    }
+
+    public static List<String> getLangs() { return langs; }
 
     public void reload() {
         config.reload();

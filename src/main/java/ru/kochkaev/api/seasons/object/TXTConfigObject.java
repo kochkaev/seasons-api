@@ -17,9 +17,11 @@ public class TXTConfigObject {
     private String type;
 
     private String filename;
+    private String subType;
 
     protected TXTConfigObject(String modName, String filename, String type) {
         this.filename = modName + (type.equals("lang") ? "/lang/" : "/") + filename;
+        this.subType = filename;
         this.type = type;
     }
 
@@ -88,6 +90,20 @@ public class TXTConfigObject {
         String pathStr = FabricLoader.getInstance().getConfigDir().toAbsolutePath().resolve(filename+".txt").toString();
         try {
             File txt = new File(pathStr);
+            Scanner reader = new Scanner(txt, StandardCharsets.UTF_8);
+            config = new TXTConfigObject(pathStr, reader);
+            reader.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return config;
+    }
+    public static TXTConfigObject openOrDefault(String filename, String defaultFilename){
+        TXTConfigObject config;
+        String pathStr = FabricLoader.getInstance().getConfigDir().toAbsolutePath().resolve(filename+".txt").toString();
+        try {
+            File txt = new File(pathStr);
+            if (!txt.exists()) txt = new File(FabricLoader.getInstance().getConfigDir().toAbsolutePath().resolve(defaultFilename+".txt").toString());
             Scanner reader = new Scanner(txt, StandardCharsets.UTF_8);
             config = new TXTConfigObject(pathStr, reader);
             reader.close();
@@ -183,6 +199,7 @@ public class TXTConfigObject {
 //    }
 
     public String getType() { return type; }
+    public String getSubType() { return subType; }
 
 }
 

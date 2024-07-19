@@ -57,7 +57,7 @@ public class ChallengesTicker {
         if (!playersRemoveList.isEmpty()) removePlayersTask();
         if (!playersAddList.isEmpty()) addPlayersTask();
         if (changeWeather) changeWeatherTask();
-        Main.getLogger().info("Challenges ticker is ticking");
+//        Main.getLogger().info("Challenges ticker is ticking");
         if (shutdown) shutdownTask();
     }
 
@@ -118,7 +118,7 @@ public class ChallengesTicker {
         allowedChallenges.clear();
         allowedChallenges.addAll(challenges);
         changeWeather = false;
-        Main.getLogger().info(allowedChallenges.toString());
+//        Main.getLogger().info(allowedChallenges.toString());
     }
 
     public static boolean isTicking() { return isTicking; }
