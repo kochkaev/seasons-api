@@ -15,7 +15,7 @@ public class MessageFormat {
 
         // Placeholders
         for (String placeholder : map.keySet()) {
-            message = message.replace(placeholder, map.get(placeholder));
+            message = message.replaceAll(placeholder, map.get(placeholder));
         }
 //        for (int i = 0; i < StringUtils.countMatches(message, "%"); i++) {
 //            String placeholder = message.substring(message.indexOf("%"), message.indexOf("%",1)+1);
