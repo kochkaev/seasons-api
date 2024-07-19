@@ -3,7 +3,6 @@ package ru.kochkaev.api.seasons.config;
 import com.google.gson.JsonObject;
 import ru.kochkaev.api.seasons.object.JSONConfigObject;
 import ru.kochkaev.api.seasons.object.TXTConfigObject;
-import ru.kochkaev.api.seasons.util.functional.IFunc;
 import ru.kochkaev.api.seasons.util.functional.IFuncVoid;
 
 import java.util.ArrayList;
@@ -49,7 +48,7 @@ public class Config {
     }
 
     public void reloadLang() {
-        lang = TXTConfigObject.openOrDefault("Seasons/"+ modName +"/lang/"+(current != null ? current.get("language").getAsString() : "EN_us"), "Seasons/lang/"+defaultLang);
+        lang = TXTConfigObject.openOrDefault("Seasons/"+ modName +"/lang/"+(current.isEmpty() ? current.get("language").getAsString() : "EN_us"), "Seasons/lang/"+defaultLang);
     }
 
     public static void setLang(String lang) {
