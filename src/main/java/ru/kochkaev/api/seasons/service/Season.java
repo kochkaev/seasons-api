@@ -60,7 +60,7 @@ public class Season {
 
     public static SeasonObject getSeasonByID(String id) {
         for (SeasonObject season : allSeasons) if (season.getId().equals(id)) return season;
-        return null;
+        return getSeasonByID("example");
     }
     public static SeasonObject getRandomSeason() {
         return allSeasons.get(new Random().nextInt(allSeasons.size()));

@@ -27,15 +27,15 @@ public class Main implements ModInitializer {
 		Register.registerAllInPackage("ru.kochkaev.api.seasons.example");
 		CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> SeasonsCommand.register(dispatcher)));
 		CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> SeasonCommand.register(dispatcher)));
-		Challenge.updateChallengesInCurrentWeather();
-		ChallengesTicker.changeWeather();
-		ChallengesTicker.start();
 
 		ServerLifecycleEvents.SERVER_STOPPED.register((server) -> onShutdown());
 		ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
 			Register.register();
 			Season.onServerStartup();
 			Weather.onServerStartup(server.getOverworld());
+			Challenge.updateChallengesInCurrentWeather();
+			ChallengesTicker.changeWeather();
+			ChallengesTicker.start();
 		});
 	}
 

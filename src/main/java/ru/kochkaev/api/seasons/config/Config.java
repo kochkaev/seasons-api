@@ -35,7 +35,7 @@ public class Config {
 
     public static Config getModConfig(String modName) { return mods.get(modName); }
     public static void regModConfig(Config config) {
-        if (current.isEmpty()) mods.put(config.getModName(), config);
+        if (!current.equals(new JsonObject())) mods.put(config.getModName(), config);
         else forRegister.add(() -> mods.put(config.getModName(), config));
     }
     public String getModName() { return this.modName; }
@@ -48,7 +48,7 @@ public class Config {
     }
 
     public void reloadLang() {
-        lang = TXTConfigObject.openOrDefault("Seasons/"+ modName +"/lang/"+(current.isEmpty() ? current.get("language").getAsString() : "EN_us"), "Seasons/lang/"+defaultLang);
+        lang = TXTConfigObject.openOrDefault("Seasons/"+ modName +"/lang/"+(!current.equals(new JsonObject()) ? current.get("language").getAsString() : "EN_us"), "Seasons/lang/"+defaultLang);
     }
 
     public static void setLang(String lang) {
