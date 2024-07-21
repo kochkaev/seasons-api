@@ -16,8 +16,11 @@ import ru.kochkaev.api.seasons.service.Challenge;
 import ru.kochkaev.api.seasons.service.Season;
 import ru.kochkaev.api.seasons.service.Weather;
 
+import java.lang.reflect.Constructor;
+
 public class Main implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger("Seasons");
+	private static boolean isLoaded = false;
 
 	@Override
 	public void onInitialize() {
@@ -33,6 +36,7 @@ public class Main implements ModInitializer {
 			Register.register();
 			Season.onServerStartup();
 			Weather.onServerStartup(server.getOverworld());
+			isLoaded = true;
 			Challenge.updateChallengesInCurrentWeather();
 			ChallengesTicker.changeWeather();
 			ChallengesTicker.start();
@@ -47,4 +51,5 @@ public class Main implements ModInitializer {
 	}
 
 	public static Logger getLogger() { return LOGGER; }
+	public static boolean isLoaded() { return isLoaded; }
 }

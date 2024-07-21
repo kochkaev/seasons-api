@@ -6,7 +6,7 @@ import ru.kochkaev.api.seasons.object.TXTConfigObject;
 public class DefaultTXTLangEN extends TXTConfigObject {
 
     public DefaultTXTLangEN() {
-        super("", "EN_us", "lang");
+        super("API", "EN_us", "lang");
         generate();
     }
 

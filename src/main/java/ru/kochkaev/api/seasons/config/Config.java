@@ -5,6 +5,8 @@ import ru.kochkaev.api.seasons.object.JSONConfigObject;
 import ru.kochkaev.api.seasons.object.TXTConfigObject;
 import ru.kochkaev.api.seasons.util.functional.IFuncVoid;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +22,7 @@ public class Config {
     private final String modName;
     private final String defaultLang;
     private static final List<String> langs =  new ArrayList<>();
-    private static final List<IFuncVoid> forRegister =  new ArrayList<>();
+    private static boolean isLoaded = false;
 
     public Config(String modName, String defaultLang, TXTConfigObject... objects) {
         this.modName = modName;
@@ -30,13 +32,12 @@ public class Config {
             if (object.getType().equals("config")) this.config = object.open();
             else if (!langs.contains(object.getSubType())) langs.add(object.getSubType());
         }
-        reloadLang();
+        if (isLoaded) reloadLang();
     }
 
     public static Config getModConfig(String modName) { return mods.get(modName); }
     public static void regModConfig(Config config) {
-        if (!current.equals(new JsonObject())) mods.put(config.getModName(), config);
-        else forRegister.add(() -> mods.put(config.getModName(), config));
+        mods.put(config.getModName(), config);
     }
     public String getModName() { return this.modName; }
 
@@ -44,11 +45,14 @@ public class Config {
         String defaultCurrent = "{ \"season\": NONE, \"weather\": NONE, \"previous-weather\": NONE, \"language\": EN_us }";
         jsonCore = JSONConfigObject.openOrCreate("Seasons/current", defaultCurrent);
         current = jsonCore.getJsonObject();
-        for (IFuncVoid func : forRegister) func.function();
+        for (Config mod : mods.values()){
+            mod.reloadLang();
+        }
+        isLoaded = true;
     }
 
     public void reloadLang() {
-        lang = TXTConfigObject.openOrDefault("Seasons/"+ modName +"/lang/"+(!current.equals(new JsonObject()) ? current.get("language").getAsString() : "EN_us"), "Seasons/lang/"+defaultLang);
+        lang = TXTConfigObject.openOrDefault(("Seasons/" + modName + "/lang/" + current.get("language").getAsString()), ("Seasons/" + modName + "/lang/" + defaultLang));
     }
 
     public static void setLang(String lang) {

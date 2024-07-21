@@ -23,7 +23,6 @@ public class Weather {
     private static final List<WeatherObject> nightlyWeathers = new ArrayList<>();
     private static final List<WeatherObject> allWeathers = new ArrayList<>();
     private static boolean isNight;
-    private static boolean isLoaded = false;
 
     public static void register(WeatherObject weather) {
         allWeathers.add(weather);
@@ -115,7 +114,6 @@ public class Weather {
         if (CURRENT_WEATHER == null) CURRENT_WEATHER = getWeatherByID("example");
         assert CURRENT_WEATHER != null;
         isNight = Boolean.TRUE.equals(CURRENT_WEATHER.isNightly());
-        isLoaded = true;
     }
     public static void saveCurrentToConfig(){
         String currentStr = CURRENT_WEATHER.getId();
@@ -184,7 +182,5 @@ public class Weather {
         isNight = false;
         setChancedWeatherInCurrentSeason(world);
     }
-
-    public static boolean isLoaded() { return isLoaded; }
 
 }

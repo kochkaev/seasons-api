@@ -5,7 +5,7 @@ import ru.kochkaev.api.seasons.object.TXTConfigObject;
 public class DefaultTXTConfig extends TXTConfigObject{
 
     public DefaultTXTConfig() {
-        super("", "api-config", "config");
+        super("API", "config", "config");
         generate();
     }
 
