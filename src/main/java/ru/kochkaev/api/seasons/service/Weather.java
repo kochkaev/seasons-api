@@ -154,11 +154,7 @@ public class Weather {
     public static void setWeather(WeatherObject weather, ServerWorld world) {
         CURRENT_WEATHER.onWeatherRemove();
         Weather.setCurrent(weather);
-        Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("%message%",weather.getMessage());
-        placeholders.put("%weather%", weather.getName());
-        Message.sendMessage2Server(Config.getModConfig("API").getConfig().getString("conf.format.chat.message"), world.getServer().getPlayerManager(), placeholders);
-        weather.onWeatherSet();
+        weather.onWeatherSet(world.getServer());
         world.setWeather(-1, -1, weather.getRaining(), weather.getThundering());
         Challenge.updateChallengesInCurrentWeather();
         ChallengesTicker.changeWeather();

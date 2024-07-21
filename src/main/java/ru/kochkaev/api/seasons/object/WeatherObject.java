@@ -1,10 +1,15 @@
 package ru.kochkaev.api.seasons.object;
 
 
+import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.Nullable;
+import ru.kochkaev.api.seasons.config.Config;
 import ru.kochkaev.api.seasons.service.Weather;
+import ru.kochkaev.api.seasons.util.Message;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * It's WeatherObject, object for create your own weather.<br><br>
@@ -27,8 +32,6 @@ public abstract class WeatherObject {
     protected String id;
     /** Display weather name, sends to chat, title, etc. */
     protected String name;
-    /** Message, who sends to chat when this weather is coming. */
-    protected String message;
     /** Weather property, is it raining in this weather?
      * Can be null (if it shouldn't overwrite previous weather) */
     @Nullable
@@ -65,17 +68,15 @@ public abstract class WeatherObject {
      * </code>
      * @param id {@link #id}
      * @param name {@link #name}
-     * @param message {@link #message}
      * @param raining {@link #raining}
      * @param thundering {@link #thundering}
      * @param chance {@link #chance}
      * @param seasons {@link #seasons}
      * @param nightly {@link #nightly}
      */
-    public WeatherObject(String id, String name, String message, @Nullable Boolean raining, @Nullable Boolean thundering, @Nullable Integer chance, @Nullable List<SeasonObject> seasons, @Nullable Boolean nightly) {
+    public WeatherObject(String id, String name, @Nullable Boolean raining, @Nullable Boolean thundering, @Nullable Integer chance, @Nullable List<SeasonObject> seasons, @Nullable Boolean nightly) {
         this.id = id;
         this.name = name;
-        this.message = message;
         this.raining = raining;
         this.thundering = thundering;
         this.chance = chance;
@@ -87,7 +88,7 @@ public abstract class WeatherObject {
      * This method will be called when this weather is set.
      * You must realize this method in your weather.
      */
-    public abstract void onWeatherSet();
+    public abstract void onWeatherSet(MinecraftServer server);
     /**
      * This method will be called when this weather was removed.
      * You must realize this method in your weather.
@@ -102,10 +103,6 @@ public abstract class WeatherObject {
      * @return {@link #name}
      */
     public String getName() { return this.name; }
-    /** This method returns message, who sends to chat when this weather is coming.
-     * @return {@link #message}
-     */
-    public String  getMessage() { return this.message; }
     /** This method returns chance of this weather coming.
      * @return {@link #chance}
      */
@@ -124,6 +121,27 @@ public abstract class WeatherObject {
     public boolean getThundering() {
         return this.thundering != null ? this.thundering : Weather.getPreviousCurrent().getThundering();
     }
+
+    /**
+     * You can use this method for send message to server players.
+     * @param server Minecraft server.
+     * @param placeholders Map of placeholders.
+     */
+    protected void sendMessage(MinecraftServer server, Map<String, String> placeholders) {
+        Message.sendMessage2Server(Config.getModConfig("API").getConfig().getString("conf.format.chat.message"), server.getPlayerManager(), placeholders);
+    }
+    /**
+     * @See {@link #sendMessage(MinecraftServer, Map)}
+     * @param server Minecraft server.
+     * @param message message for send.
+     */
+    protected void sendMessage(MinecraftServer server, String message) {
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("%message%", message);
+        placeholders.put("%weather%", name);
+        sendMessage(server, placeholders);
+    }
+
     /** This method returns seasons-api, that this weather will available.
      * @return {@link #seasons}
      */

@@ -1,6 +1,13 @@
 package ru.kochkaev.api.seasons.object;
 
 
+import net.minecraft.server.MinecraftServer;
+import ru.kochkaev.api.seasons.config.Config;
+import ru.kochkaev.api.seasons.util.Message;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * It's SeasonObject, object for create your own season.<br><br>
  * For create weather you must extend SeasonObject.<br>
@@ -22,8 +29,6 @@ public abstract class SeasonObject {
     protected String id;
     /** Display season name, sends to chat, title, etc. */
     protected String name;
-    /** Message, who sends to chat when this season is coming. */
-    protected String message;
 
     /** It's season enabled. */
     protected boolean enabled = true;
@@ -40,19 +45,17 @@ public abstract class SeasonObject {
      * </code>
      * @param id {@link #id}
      * @param name {@link #name}
-     * @param message {@link #message}
      */
-    public SeasonObject(String id, String name, String message) {
+    public SeasonObject(String id, String name) {
         this.id = id;
         this.name = name;
-        this.message = message;
     }
 
     /**
      * This method will be called when this season is set.
      * You must realize this method in your season.
      */
-    public abstract void onSeasonSet();
+    public abstract void onSeasonSet(MinecraftServer server);
     /**
      * This method will be called when this season was removed.
      * You must realize this method in your season.
@@ -67,10 +70,27 @@ public abstract class SeasonObject {
      * @return {@link #name}
      */
     public String getName() { return this.name; }
-    /** This method returns message, who sends to chat when this weather is coming.
-     * @return {@link #message}
+
+    /**
+     * You can use this method for send message to server players.
+     * @param server Minecraft server.
+     * @param placeholders Map of placeholders.
      */
-    public String  getMessage() { return this.message; }
+    protected void sendMessage(MinecraftServer server, Map<String, String> placeholders) {
+        Message.sendMessage2Server(Config.getModConfig("API").getConfig().getString("conf.format.chat.message"), server.getPlayerManager(), placeholders);
+    }
+    /**
+     * @See {@link #sendMessage(MinecraftServer, Map)}
+     * @param server Minecraft server.
+     * @param message message for send.
+     */
+    protected void sendMessage(MinecraftServer server, String message) {
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("%message%", message);
+        placeholders.put("%season%", name);
+        sendMessage(server, placeholders);
+    }
+
 
     public boolean isEnabled() { return this.enabled; }
     public void setEnabled(boolean enabled) { this.enabled = enabled; }

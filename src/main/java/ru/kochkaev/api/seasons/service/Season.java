@@ -50,11 +50,7 @@ public class Season {
     public static void setSeason(SeasonObject season, PlayerManager players) {
         CURRENT_SEASON.onSeasonRemove();
         setCurrent(season);
-        season.onSeasonSet();
-        Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("%message%", season.getMessage());
-        placeholders.put("%season%", season.getName());
-        Message.sendMessage2Server(Config.getModConfig("API").getConfig().getString("conf.format.chat.message"), players, placeholders);
+        season.onSeasonSet(players.getServer());
     }
 
 
