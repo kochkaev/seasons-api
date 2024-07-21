@@ -7,8 +7,11 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import ru.kochkaev.api.seasons.config.Config;
 import ru.kochkaev.api.seasons.service.Season;
+import ru.kochkaev.api.seasons.util.MessageFormat;
 import ru.kochkaev.api.seasons.util.functional.IFunc;
 import ru.kochkaev.api.seasons.util.functional.IFuncRet;
 import ru.kochkaev.api.seasons.service.Event;
@@ -195,6 +198,18 @@ public abstract class ChallengeObject {
         player.getServerWorld().spawnParticles(particles, player.getX(), player.getY()+offsetY, player.getZ(), count, 0, falling ? -1 : 1, 0, 0.1);
     }
 
+
+    /**
+     * You can use this method for send message to server players.
+     * @param player player who we will send message.
+     * @param message message for send.
+     * @param placeholders Map of placeholders.
+     */
+    protected void sendMessage(ServerPlayerEntity player, String message, Map<String, String> placeholders) {
+        Map<String, String> placeholders1 = new HashMap<>();
+        placeholders1.put("%message%", MessageFormat.formatMessage(message, placeholders1));
+        Message.sendMessage2Player(Config.getModConfig("API").getConfig().getString("conf.format.chat.message"), player, placeholders1);
+    }
     /**
      * You can use this method for send a message to player chat.<br><br>
      *
@@ -204,12 +219,13 @@ public abstract class ChallengeObject {
      *     - {@code %weather%} for get current weather name from lang config.<br>
      * @param player player, who we will send message
      * @param message message, who we will send
+     * @see #sendMessage(ServerPlayerEntity, String, Map)
      */
     protected void sendMessage(ServerPlayerEntity player, String message) {
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("%season%", Season.getCurrent().getName());
         placeholders.put("%weather%", Weather.getCurrent().getName());
-        Message.sendMessage2Player(message, player, placeholders);
+        sendMessage(player, message, placeholders);
     }
 
     /** This method check this challenge available in current weather (or if {@link #allowIfPrevious} == true and {@link #weathers} contains previous weather).

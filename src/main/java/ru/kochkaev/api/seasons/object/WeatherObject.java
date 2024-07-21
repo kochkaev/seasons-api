@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import ru.kochkaev.api.seasons.config.Config;
 import ru.kochkaev.api.seasons.service.Weather;
 import ru.kochkaev.api.seasons.util.Message;
+import ru.kochkaev.api.seasons.util.MessageFormat;
 
 import java.util.HashMap;
 import java.util.List;
@@ -125,21 +126,23 @@ public abstract class WeatherObject {
     /**
      * You can use this method for send message to server players.
      * @param server Minecraft server.
+     * @param message message for send.
      * @param placeholders Map of placeholders.
      */
-    protected void sendMessage(MinecraftServer server, Map<String, String> placeholders) {
-        Message.sendMessage2Server(Config.getModConfig("API").getConfig().getString("conf.format.chat.message"), server.getPlayerManager(), placeholders);
+    protected void sendMessage(MinecraftServer server, String message, Map<String, String> placeholders) {
+        Map<String, String> placeholders1 = new HashMap<>();
+        placeholders1.put("%message%", MessageFormat.formatMessage(message, placeholders1));
+        Message.sendMessage2Server(Config.getModConfig("API").getConfig().getString("conf.format.chat.message"), server.getPlayerManager(), placeholders1);
     }
     /**
-     * @See {@link #sendMessage(MinecraftServer, Map)}
+     * @see #sendMessage(MinecraftServer, String, Map)
      * @param server Minecraft server.
      * @param message message for send.
      */
     protected void sendMessage(MinecraftServer server, String message) {
         Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("%message%", message);
         placeholders.put("%weather%", name);
-        sendMessage(server, placeholders);
+        sendMessage(server, message, placeholders);
     }
 
     /** This method returns seasons-api, that this weather will available.
