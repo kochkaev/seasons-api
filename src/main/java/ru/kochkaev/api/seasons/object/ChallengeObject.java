@@ -207,7 +207,7 @@ public abstract class ChallengeObject {
      */
     protected void sendMessage(ServerPlayerEntity player, String message, Map<String, String> placeholders) {
         Map<String, String> placeholders1 = new HashMap<>();
-        placeholders1.put("%message%", MessageFormat.formatMessage(message, placeholders1));
+        placeholders1.put("%message%", MessageFormat.formatMessage(message, placeholders));
         Message.sendMessage2Player(Config.getModConfig("API").getConfig().getString("conf.format.chat.message"), player, placeholders1);
     }
     /**

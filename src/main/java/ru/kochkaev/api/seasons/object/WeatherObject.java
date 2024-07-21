@@ -131,7 +131,7 @@ public abstract class WeatherObject {
      */
     protected void sendMessage(MinecraftServer server, String message, Map<String, String> placeholders) {
         Map<String, String> placeholders1 = new HashMap<>();
-        placeholders1.put("%message%", MessageFormat.formatMessage(message, placeholders1));
+        placeholders1.put("%message%", MessageFormat.formatMessage(message, placeholders));
         Message.sendMessage2Server(Config.getModConfig("API").getConfig().getString("conf.format.chat.message"), server.getPlayerManager(), placeholders1);
     }
     /**
