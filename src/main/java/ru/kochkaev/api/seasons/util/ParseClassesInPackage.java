@@ -5,9 +5,16 @@ import ru.kochkaev.api.seasons.util.functional.IFuncObjectReg;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Modifier;
+import java.net.JarURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarException;
+import java.util.jar.JarFile;
+import java.util.stream.Stream;
 
 public class ParseClassesInPackage {
 
@@ -39,9 +46,22 @@ public class ParseClassesInPackage {
                 if (directory.exists()) {
                     findClassesInDirectory(classes, directory, packageName);
                 }
+                else {
+                    JarURLConnection connection = (JarURLConnection) resource.openConnection();
+                    File file = new File(connection.getJarFileURL().toURI());
+                    if (file.getName().endsWith(".jar")) try (JarFile jar = new JarFile(file)) {
+                        getClassesInJar(classes, jar, packageName);
+                    }
+                }
+//                InputStream jarStream = jar.getInputStream(jar.getEntry(path));
+//                JarEntry jarStream = jar.getJarEntry(path);
+
             }
         } catch (IOException e) {
+            //noinspection CallToPrintStackTrace
             e.printStackTrace();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
         return classes;
     }
@@ -60,6 +80,7 @@ public class ParseClassesInPackage {
                             classes.add(clazz);
                         }
                     } catch (ClassNotFoundException e) {
+                        //noinspection CallToPrintStackTrace
                         e.printStackTrace();
                     }
                 }
@@ -67,4 +88,24 @@ public class ParseClassesInPackage {
         }
     }
 
+    private static void getClassesInJar(Set<Class<?>> classes, JarFile jarFile, String packageName) throws IOException {
+        Enumeration<JarEntry> entries = jarFile.entries();
+        while (entries.hasMoreElements()) {
+            JarEntry entry = entries.nextElement();
+            String name = entry.getName();
+            if (name.charAt(0) == '/') {
+                name = name.substring(1);
+            }
+            if (name.startsWith(packageName.replace(".", "/")) && name.endsWith(".class")) {
+                String className = name.replace("/", ".").substring(0, name.length() - 6);
+                try {
+                    classes.add(Class.forName(className));
+                } catch (ClassNotFoundException e) {
+                    //noinspection CallToPrintStackTrace
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }
+
