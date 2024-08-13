@@ -5,8 +5,6 @@
 	"mixins": [
       	"ServerWorldMixin",
 		"ServerPlayerEntityMixin",
-      	"LivingEntityMixin",
-      	"ServerPlayerInteractionManagerMixin",
 		"WeatherCommandMixin"
 	],
 	"injectors": {

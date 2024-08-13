@@ -19,7 +19,7 @@ import ru.kochkaev.api.seasons.service.Weather;
 import java.lang.reflect.Constructor;
 
 public class Main implements ModInitializer {
-    public static final Logger LOGGER = LoggerFactory.getLogger("Seasons");
+    private static final Logger LOGGER = LoggerFactory.getLogger("Seasons");
 	private static boolean isLoaded = false;
 
 	@Override
@@ -52,4 +52,5 @@ public class Main implements ModInitializer {
 
 	public static Logger getLogger() { return LOGGER; }
 	public static boolean isLoaded() { return isLoaded; }
+	public static void setLoaded(boolean loaded) { isLoaded = loaded; }
 }

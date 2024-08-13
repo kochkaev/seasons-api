@@ -1,22 +1,16 @@
 package ru.kochkaev.api.seasons.util;
 
-import com.google.common.reflect.ClassPath;
-import ru.kochkaev.api.seasons.util.functional.IFuncObjectReg;
-
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Modifier;
 import java.net.JarURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 import java.util.jar.JarEntry;
-import java.util.jar.JarException;
 import java.util.jar.JarFile;
-import java.util.stream.Stream;
 
-public class ParseClassesInPackage {
+public class Parse {
 
 //    public static List<Object> getAllClassesInPackage(String packageName) {
 //        try {

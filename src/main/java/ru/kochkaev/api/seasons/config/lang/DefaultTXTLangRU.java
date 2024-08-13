@@ -18,6 +18,10 @@ public class DefaultTXTLangRU extends TXTConfigObject {
         addString(copyright);
 
        addComment("Seasons mod name (used in chat messages as %seasonsModDisplayName% placeholder)");
-       addValueAndCommentDefault("lang.message.seasonsModDisplayName", "&eСезоны");
+       addValueAndCommentDefault("lang.message.seasonsModDisplayName", "&e&lСезоны");
+        addComment("New day title message (used in titles as %messageNewDay% placeholder)");
+        addValueAndCommentDefault("lang.message.messageNewDay", "&e&bНаступил новый день!");
+        addComment("Current weather and season title message (used in titles as %info% placeholder)");
+        addValueAndCommentDefault("lang.message.currentInfo", "%season%. &7Сегодня %weather%");
     }
 }

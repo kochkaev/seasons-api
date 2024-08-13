@@ -7,14 +7,10 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import ru.kochkaev.api.seasons.config.Config;
 import ru.kochkaev.api.seasons.service.Season;
-import ru.kochkaev.api.seasons.util.MessageFormat;
 import ru.kochkaev.api.seasons.util.functional.IFunc;
 import ru.kochkaev.api.seasons.util.functional.IFuncRet;
-import ru.kochkaev.api.seasons.service.Event;
 import ru.kochkaev.api.seasons.service.Task;
 import ru.kochkaev.api.seasons.service.Weather;
 import ru.kochkaev.api.seasons.util.Message;
@@ -50,6 +46,10 @@ public abstract class ChallengeObject {
     /** It's challenge enabled. */
     protected boolean enabled = true;
 
+    /** ID of this challenge. */
+    protected String id;
+
+
     /**
      * That's constructor.<br><br>
      * Use this for set challenge data (call from your class constructor).<br>
@@ -63,7 +63,8 @@ public abstract class ChallengeObject {
      * @param weathers {@link #weathers}
      * @param allowIfPrevious {@link #allowIfPrevious}
      */
-    public ChallengeObject(List<WeatherObject> weathers, boolean allowIfPrevious) {
+    public ChallengeObject(String id, List<WeatherObject> weathers, boolean allowIfPrevious) {
+        this.id = id;
         this.weathers = weathers;
         this.allowIfPrevious = allowIfPrevious;
     }
@@ -149,21 +150,21 @@ public abstract class ChallengeObject {
         player.removeStatusEffect(effect);
     }
 
-    /**
-     * You can use this for call your method on event.<br>
-     * {@code registerOnEventMethod("TARGET_EVENT_ID", this::yourMethod)  { ... }} <br><br>
-     * You can create onEffect method for event in this way:<br>
-     * {@code public void yourMethod(Object... args)  { ... }}
-     * <p>For get arguments of event, you can use <br>{@code Object arg = (Object) args[0];} <br>Object may be int, String, etc.</p>
-     * @param eventID id of target event.
-     * @param method method, who we will call.
-     * @return EventObject of target event.
-     */
-    protected EventObject registerOnEventMethod(String eventID, IFunc method) {
-        EventObject event = Event.getEventByID(eventID);
-        event.addMethod(method);
-        return event;
-    }
+//    /**
+//     * You can use this for call your method on event.<br>
+//     * {@code registerOnEventMethod("TARGET_EVENT_ID", this::yourMethod)  { ... }} <br><br>
+//     * You can create onEffect method for event in this way:<br>
+//     * {@code public void yourMethod(Object... args)  { ... }}
+//     * <p>For get arguments of event, you can use <br>{@code Object arg = (Object) args[0];} <br>Object may be int, String, etc.</p>
+//     * @param eventID id of target event.
+//     * @param method method, who we will call.
+//     * @return EventObject of target event.
+//     */
+//    protected EventObject registerOnEventMethod(String eventID, IFunc method) {
+//        EventObject event = Event.getEventByID(eventID);
+//        event.addMethod(method);
+//        return event;
+//    }
 
     /**
      * You can use this method for give player freezing effect (blue hurts and snowflakes on the screen).<br>
@@ -206,9 +207,7 @@ public abstract class ChallengeObject {
      * @param placeholders Map of placeholders.
      */
     protected void sendMessage(ServerPlayerEntity player, String message, Map<String, String> placeholders) {
-        Map<String, String> placeholders1 = new HashMap<>();
-        placeholders1.put("%message%", MessageFormat.formatMessage(message, placeholders));
-        Message.sendMessage2Player(Config.getModConfig("API").getConfig().getString("conf.format.chat.message"), player, placeholders1);
+        Message.sendMessage2Player(message, player, placeholders);
     }
     /**
      * You can use this method for send a message to player chat.<br><br>
@@ -238,6 +237,11 @@ public abstract class ChallengeObject {
      * @return {@link #weathers}
      */
     public List<WeatherObject> getWeathers() { return this.weathers; }
+
+    /** This method returns challenge id.
+     * @return {@link #id}
+     */
+    public String getID() { return this.id; }
 
     public boolean isEnabled() { return this.enabled; }
     public void setEnabled(boolean enabled) { this.enabled = enabled; }

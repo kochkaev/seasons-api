@@ -4,11 +4,13 @@ package ru.kochkaev.api.seasons.service;
 import net.minecraft.server.world.ServerWorld;
 import org.jetbrains.annotations.Nullable;
 import ru.kochkaev.api.seasons.ChallengesTicker;
+import ru.kochkaev.api.seasons.Main;
 import ru.kochkaev.api.seasons.config.Config;
 import ru.kochkaev.api.seasons.example.ExampleWeather;
 import ru.kochkaev.api.seasons.object.SeasonObject;
 import ru.kochkaev.api.seasons.object.WeatherObject;
 import ru.kochkaev.api.seasons.util.Message;
+import ru.kochkaev.api.seasons.util.Title;
 
 import java.util.*;
 
@@ -21,11 +23,11 @@ public class Weather {
     private static WeatherObject CURRENT_WEATHER_PREVIOUS;
     private static final List<WeatherObject> dailyWeathers = new ArrayList<>();
     private static final List<WeatherObject> nightlyWeathers = new ArrayList<>();
-    private static final List<WeatherObject> allWeathers = new ArrayList<>();
+    private static final Map<String, WeatherObject> allWeathers = new HashMap<>();
     private static boolean isNight;
 
     public static void register(WeatherObject weather) {
-        allWeathers.add(weather);
+        allWeathers.put(weather.getId(), weather);
         @Nullable
         Boolean nightly = weather.isNightly();
         if (nightly != null) {
@@ -105,16 +107,17 @@ public class Weather {
             }
             else setNight(world);
         }
+        else {
+            CURRENT_WEATHER = getWeatherByID(currentStr);
+        }
         if (prevCurrentStr.equals("NONE") || !prevCurrentStr.equals(currentStr)) CURRENT_WEATHER_PREVIOUS = getWeatherByID(prevCurrentStr);
         else {
             SeasonObject season = Season.getCurrent();
             CURRENT_WEATHER_PREVIOUS = getChancedWeather(Boolean.TRUE.equals(Objects.requireNonNull(Weather.getWeatherByID(currentStr)).isNightly()) ? getSeasonDailyWeathers(season) : getSeasonNightlyWeathers(season));
         }
-        CURRENT_WEATHER = getWeatherByID(currentStr);
-        if (CURRENT_WEATHER == null) CURRENT_WEATHER = getWeatherByID("example");
-        assert CURRENT_WEATHER != null;
         isNight = Boolean.TRUE.equals(CURRENT_WEATHER.isNightly());
     }
+
     public static void saveCurrentToConfig(){
         String currentStr = CURRENT_WEATHER.getId();
         String prevCurrentStr = CURRENT_WEATHER_PREVIOUS.getId();
@@ -126,21 +129,15 @@ public class Weather {
     public static void reloadFromConfig(ServerWorld world) {
         String currentStr = Config.getCurrent("weather");
         String prevCurrentStr = Config.getCurrent("previous-weather");
-        WeatherObject curWeather = null;
-        WeatherObject curWeatherPrev = null;
-        for (WeatherObject weather : allWeathers) {
-            String id = weather.getId();
-            if (id.equals(prevCurrentStr)) curWeatherPrev = weather;
-            else if (id.equals(currentStr)) curWeather = weather;
-        }
+        WeatherObject curWeather = getWeatherByID(currentStr);
+        WeatherObject curWeatherPrev = getWeatherByID(prevCurrentStr);
         if (CURRENT_WEATHER != curWeather) {
-            assert curWeather != null;
             setWeather(curWeather, world);
         }
         if (CURRENT_WEATHER_PREVIOUS != curWeatherPrev) {
-            assert curWeatherPrev != null;
             CURRENT_WEATHER_PREVIOUS = curWeatherPrev;
         }
+        Main.getLogger().info("Weathers was reloaded!");
     }
 
     public static void setChancedWeatherInCurrentSeason(ServerWorld world){
@@ -158,16 +155,17 @@ public class Weather {
         world.setWeather(-1, -1, weather.getRaining(), weather.getThundering());
         Challenge.updateChallengesInCurrentWeather();
         ChallengesTicker.changeWeather();
-        //for (ChallengeObject effect : Challenge.getChallengesInCurrentWeather()) Message.sendMessage2Server(effect.getTriggerMessage(), world.getServer().getPlayerManager());
+        Main.getLogger().info("Weather was set to \"{}\"", weather.getId());
+        if (Config.getModConfig("API").getConfig().getBoolean("conf.enable.title.title") && Boolean.FALSE.equals(weather.isNightly()))
+            Title.showTitle(world.getServer().getPlayerManager());
     }
 
     public static WeatherObject getWeatherByID(String id) {
-        for (WeatherObject weather : allWeathers) if (weather.getId().equals(id)) return weather;
-        return null;
+        return allWeathers.containsKey(id) ? allWeathers.get(id) : allWeathers.get("example");
     }
 
     public static List<WeatherObject> getAll() {
-        return allWeathers;
+        return allWeathers.values().stream().toList();
     }
 
     public static void setNight(ServerWorld world) {

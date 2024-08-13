@@ -6,10 +6,11 @@ import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
+import ru.kochkaev.api.seasons.Main;
 import ru.kochkaev.api.seasons.config.Config;
 import ru.kochkaev.api.seasons.service.Season;
 import ru.kochkaev.api.seasons.service.Weather;
+import ru.kochkaev.api.seasons.util.Message;
 
 public class SeasonsCommand {
 
@@ -32,26 +33,28 @@ public class SeasonsCommand {
     public static int setSeason(String seasonID, ServerCommandSource source) {
         PlayerManager players = source.getServer().getPlayerManager();
         Season.setSeason(Season.getSeasonByID(seasonID), players);
-        source.sendFeedback(() -> Text.literal(("&7Successfully set season \"" + Season.getCurrent().getName() + "&7\"").replaceAll("&", "§")), true);
+        source.sendFeedback((() -> Message.getFeedbackText("Successfully set season \"" + seasonID + "\"")), true);
         return 0;
     }
     public static int setWeather(String weatherID, ServerCommandSource source) {
         ServerWorld world = source.getServer().getOverworld();
         Weather.setWeather(Weather.getWeatherByID(weatherID), world);
-        source.sendFeedback(() -> Text.literal(("&7Successfully set weather \"" + Weather.getCurrent().getName() + "&7\"").replaceAll("&", "§")), true);
+        source.sendFeedback((() -> Message.getFeedbackText("Successfully set weather \"" + weatherID + "\"")), true);
         return 0;
     }
     public static int setLang(String lang, ServerCommandSource source) {
         Config.setLang(lang);
-        source.sendFeedback(() -> Text.literal(("&7Successfully set lang \"" + lang + "&7\"").replaceAll("&", "§")), true);
+        source.sendFeedback((() -> Message.getFeedbackText("Successfully set lang \"" + lang + "\"")), true);
         return 0;
     }
 
     public static int reload(ServerCommandSource source) {
-        Config.getModConfig("API").reload();
-        Weather.reloadFromConfig(source.getServer().getOverworld());
+        Main.setLoaded(false);
+        Config.reloadAll();
         Season.reloadFromConfig(source.getServer().getPlayerManager());
-        source.sendFeedback(() -> Text.literal(("&7Seasons4Fabric configs has been successfully reloaded!").replaceAll("&", "§")), true);
+        Weather.reloadFromConfig(source.getServer().getOverworld());
+        Main.setLoaded(true);
+        source.sendFeedback(() -> Message.getFeedbackText("Seasons configs successfully reloaded!"), true);
         return 0;
     }
 

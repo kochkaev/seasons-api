@@ -55,6 +55,9 @@ public class TXTConfigObject {
     public long getLong(String key) {
         return Long.parseLong(map.get(key));
     }
+    public Boolean getBoolean(String key) {
+        return Boolean.parseBoolean(map.get(key));
+    }
 
 
     public static TXTConfigObject openOrCreate(String filename, String defaults){

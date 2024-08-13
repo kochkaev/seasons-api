@@ -20,6 +20,9 @@ public class Challenge {
     }
 
     public static List<ChallengeObject> getChallenges() { return challenges; }
+    public static ChallengeObject getChallengeByID(String id){
+        return challenges.stream().filter(challenge -> challenge.getID().equals(id)).findFirst().orElse(null);
+    }
 
     public static List<ChallengeObject> getChallengesInCurrentWeather() { return challengesInCurrentWeather; }
     public static void updateChallengesInCurrentWeather() {

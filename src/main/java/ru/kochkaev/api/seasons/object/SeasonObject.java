@@ -4,7 +4,7 @@ package ru.kochkaev.api.seasons.object;
 import net.minecraft.server.MinecraftServer;
 import ru.kochkaev.api.seasons.config.Config;
 import ru.kochkaev.api.seasons.util.Message;
-import ru.kochkaev.api.seasons.util.MessageFormat;
+import ru.kochkaev.api.seasons.util.Format;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -79,9 +79,7 @@ public abstract class SeasonObject {
      * @param placeholders Map of placeholders.
      */
     protected void sendMessage(MinecraftServer server, String message, Map<String, String> placeholders) {
-        Map<String, String> placeholders1 = new HashMap<>();
-        placeholders1.put("%message%", MessageFormat.formatMessage(message, placeholders));
-        Message.sendMessage2Server(Config.getModConfig("API").getConfig().getString("conf.format.chat.message"), server.getPlayerManager(), placeholders1);
+        Message.sendMessage2Server(message, server.getPlayerManager(), placeholders);
     }
     /**
      * @see #sendMessage(MinecraftServer, String, Map)

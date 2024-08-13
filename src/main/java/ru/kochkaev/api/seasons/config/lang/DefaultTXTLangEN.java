@@ -18,6 +18,10 @@ public class DefaultTXTLangEN extends TXTConfigObject {
         addString(copyright);
 
        addComment("Seasons mod name (used in chat messages as %seasonsModDisplayName% placeholder)");
-       addValueAndCommentDefault("lang.message.seasonsModDisplayName", "&eSeasons");
+       addValueAndCommentDefault("lang.message.seasonsModDisplayName", "&e&lSeasons");
+       addComment("New day title message (used in titles as %messageNewDay% placeholder)");
+       addValueAndCommentDefault("lang.message.messageNewDay", "&e&bThat's new day!");
+       addComment("Current weather and season title message (used in titles as %info% placeholder)");
+       addValueAndCommentDefault("lang.message.currentInfo", "%season%. &7Today's %weather%");
     }
 }

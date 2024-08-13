@@ -1,6 +1,7 @@
 package ru.kochkaev.api.seasons.config;
 
 import com.google.gson.JsonObject;
+import ru.kochkaev.api.seasons.Main;
 import ru.kochkaev.api.seasons.object.JSONConfigObject;
 import ru.kochkaev.api.seasons.object.TXTConfigObject;
 import ru.kochkaev.api.seasons.util.functional.IFuncVoid;
@@ -33,6 +34,7 @@ public class Config {
             else if (!langs.contains(object.getSubType())) langs.add(object.getSubType());
         }
         if (isLoaded) reloadLang();
+        Main.getLogger().info("Loaded mod: {}", modName);
     }
 
     public static Config getModConfig(String modName) { return mods.get(modName); }
@@ -49,6 +51,7 @@ public class Config {
             mod.reloadLang();
         }
         isLoaded = true;
+        Main.getLogger().info("Configs loaded!");
     }
 
     public void reloadLang() {
@@ -61,10 +64,17 @@ public class Config {
         for (Config mod : mods.values()) {
             mod.reloadLang();
         }
+        Main.getLogger().info("Lang changed to: {}", lang);
     }
 
     public static List<String> getLangs() { return langs; }
 
+    public static void reloadAll() {
+        for (Config mod : mods.values()) {
+            mod.reload();
+        }
+        Main.getLogger().info("Configs was reloaded!");
+    }
     public void reload() {
         config.reload();
         reloadLang();

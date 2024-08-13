@@ -1,5 +1,5 @@
 # Seasons API
- ------------------------------------------------
+------------------------------------------------
 seasons-api
 ------------------------------------------------
 This mod was developed by analogy with the Spigot plugin "Seasons" specifically for the private Minecraft server "Zixa City" by its administrator (kochkaev, aka kleverdi). The idea of this mod was taken from Harieo.

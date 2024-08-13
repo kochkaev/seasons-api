@@ -23,7 +23,26 @@ public class DefaultTXTConfig extends TXTConfigObject{
         addValueAndCommentDefault("conf.format.chat.message", "%seasonsModDisplayName% &7• %message%");
         addComment("Actionbar title format");
         addComment("You can use placeholders: %season% for insert season name (from langs), %weather% for insert weather name (from langs) and & for insert color (replaces to paragraph symbol)");
-        addValueAndCommentDefault("conf.format.title.actionbar", "%season% &7• %weather%");
+        addValueAndCommentDefault("conf.format.title.actionbar", "%season% &r&7• %weather%");
+        addComment("Title (on weather changed) format");
+        addComment("You can use placeholders: %info% for insert info message (from langs, contains season and weather name), %messageNewDay% for insert title \"new day\" message (from langs) and & for insert color (replaces to paragraph symbol)");
+        addValueAndCommentDefault("conf.format.title.title", "%messageNewDay%");
+        addComment("Subtitle (on weather changed) format");
+        addComment("You can use placeholders: %info% for insert info message (from langs, contains season and weather name), %messageNewDay% for insert title \"new day\" message (from langs) and & for insert color (replaces to paragraph symbol)");
+        addValueAndCommentDefault("conf.format.title.subtitle", "%info%");
+        addComment("Command feedback format");
+        addComment("You can use placeholders: %message% for insert feedback message, & for insert color (replaces to paragraph symbol)");
+        addValueAndCommentDefault("conf.format.chat.feedback", "&7&oSeasons feedback: %message%");
+
+        // Enable/disable features
+        addVoid();
+        addComment("* ENABLE/DISABLE FEATURES");
+        addComment("Do enables/disables actionbar titles");
+        addValueAndCommentDefault("conf.enable.title.actionbar", "true");
+        addComment("Do enables/disables titles and subtitles on weather changed");
+        addValueAndCommentDefault("conf.enable.title.title", "false");
+        addComment("Do enables/disables chat messages");
+        addValueAndCommentDefault("conf.enable.chat.message", "true");
 
         // Settings
         addVoid();
