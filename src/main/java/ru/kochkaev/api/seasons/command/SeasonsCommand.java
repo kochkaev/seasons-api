@@ -8,6 +8,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import ru.kochkaev.api.seasons.Main;
 import ru.kochkaev.api.seasons.config.Config;
+import ru.kochkaev.api.seasons.object.WeatherObject;
 import ru.kochkaev.api.seasons.service.Season;
 import ru.kochkaev.api.seasons.service.Weather;
 import ru.kochkaev.api.seasons.util.Message;
@@ -38,7 +39,9 @@ public class SeasonsCommand {
     }
     public static int setWeather(String weatherID, ServerCommandSource source) {
         ServerWorld world = source.getServer().getOverworld();
-        Weather.setWeather(Weather.getWeatherByID(weatherID), world);
+        WeatherObject weather = Weather.getWeatherByID(weatherID);
+        Weather.setWeather(weather, world);
+        Weather.setIsNight(weather.isNightly());
         source.sendFeedback((() -> Message.getFeedbackText("Successfully set weather \"" + weatherID + "\"")), true);
         return 0;
     }

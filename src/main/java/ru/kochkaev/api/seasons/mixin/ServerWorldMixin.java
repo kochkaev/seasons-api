@@ -36,6 +36,9 @@ public abstract class ServerWorldMixin
     }
 
 
+//    @Final
+//    @Shadow(prefix="seasonsAPI$")
+//    private abstract final ServerWorldProperties seasonsAPI$worldProperties;
     @Shadow
     private final ServerWorldProperties worldProperties;
 

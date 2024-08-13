@@ -153,6 +153,7 @@ public class Weather {
     }
 
     public static Boolean isNight() { return isNight; }
+    public static void setIsNight(Boolean night) { isNight = night; }
 
     public static void setWeather(WeatherObject weather, ServerWorld world) {
         CURRENT_WEATHER.onWeatherRemove();
