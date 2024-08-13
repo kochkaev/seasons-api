@@ -7,6 +7,7 @@ import ru.kochkaev.api.seasons.config.Config;
 import ru.kochkaev.api.seasons.service.Weather;
 import ru.kochkaev.api.seasons.util.Format;
 import ru.kochkaev.api.seasons.util.Message;
+import ru.kochkaev.api.seasons.util.functional.IFuncStringRet;
 
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +34,7 @@ public abstract class WeatherObject {
     protected String id;
     /** Display weather name, sends to chat, title, etc. */
     protected String name;
+    protected IFuncStringRet nameLambda;
     /** Weather property, is it raining in this weather?
      * Can be null (if it shouldn't overwrite previous weather) */
     @Nullable
@@ -74,10 +76,32 @@ public abstract class WeatherObject {
      * @param chance {@link #chance}
      * @param seasons {@link #seasons}
      * @param nightly {@link #nightly}
+     * @see #WeatherObject(String, IFuncStringRet, Boolean, Boolean, Integer, List, Boolean)
      */
     public WeatherObject(String id, String name, @Nullable Boolean raining, @Nullable Boolean thundering, @Nullable Integer chance, @Nullable List<SeasonObject> seasons, @Nullable Boolean nightly) {
         this.id = id;
         this.name = name;
+        this.raining = raining;
+        this.thundering = thundering;
+        this.chance = chance;
+        this.seasons = seasons;
+        this.nightly = nightly;
+    }
+    /**
+     * You can use this constructor for dynamic update name on language change.
+     * @param id {@link #id}
+     * @param name lambda function, returns display name of this weather.
+     * @param raining {@link #raining}
+     * @param thundering {@link #thundering}
+     * @param chance {@link #chance}
+     * @param seasons {@link #seasons}
+     * @param nightly {@link #nightly}
+     * @see #WeatherObject(String, String, Boolean, Boolean, Integer, List, Boolean)
+     */
+    public WeatherObject(String id, IFuncStringRet name, @Nullable Boolean raining, @Nullable Boolean thundering, @Nullable Integer chance, @Nullable List<SeasonObject> seasons, @Nullable Boolean nightly) {
+        this.id = id;
+        this.nameLambda = name;
+        this.name = name.function();
         this.raining = raining;
         this.thundering = thundering;
         this.chance = chance;
@@ -151,6 +175,10 @@ public abstract class WeatherObject {
      * @return {@link #nightly}
      */
     public @Nullable Boolean isNightly() { return this.nightly; }
+
+    public void onReload() {
+        this.name = nameLambda.function();
+    }
 
     public boolean isEnabled() { return this.enabled; }
     public void setEnabled(boolean enabled) { this.enabled = enabled; }

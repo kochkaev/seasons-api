@@ -7,6 +7,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -36,11 +37,11 @@ public class ServerPlayerEntityMixin extends PlayerEntity {
         ChallengesTicker.addPlayer((ServerPlayerEntity) (Object) this);
     }
 
-
+    @Unique
     public boolean isSpectator() {
         return false;
     }
-
+    @Unique
     public boolean isCreative() {
         return false;
     }

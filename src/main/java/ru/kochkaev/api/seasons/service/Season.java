@@ -49,6 +49,12 @@ public class Season {
         Main.getLogger().info("Seasons was reloaded!");
     }
 
+    public static void reloadDynamics() {
+        for (SeasonObject season : allSeasons.values()) {
+            season.onReload();
+        }
+    }
+
     public static void setSeason(SeasonObject season, PlayerManager players) {
         CURRENT_SEASON.onSeasonRemove();
         setCurrent(season);

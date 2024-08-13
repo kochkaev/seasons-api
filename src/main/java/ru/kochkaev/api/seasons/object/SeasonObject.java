@@ -5,6 +5,7 @@ import net.minecraft.server.MinecraftServer;
 import ru.kochkaev.api.seasons.config.Config;
 import ru.kochkaev.api.seasons.util.Message;
 import ru.kochkaev.api.seasons.util.Format;
+import ru.kochkaev.api.seasons.util.functional.IFuncStringRet;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +31,7 @@ public abstract class SeasonObject {
     protected String id;
     /** Display season name, sends to chat, title, etc. */
     protected String name;
+    protected IFuncStringRet nameLambda;
 
     /** It's season enabled. */
     protected boolean enabled = true;
@@ -46,10 +48,23 @@ public abstract class SeasonObject {
      * </code>
      * @param id {@link #id}
      * @param name {@link #name}
+     * @see #SeasonObject(String, IFuncStringRet)
      */
     public SeasonObject(String id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    /**
+     * You can use this constructor for dynamic update name on language change.
+     * @param id {@link #id}
+     * @param name lambda function, returns display name of this weather.
+     * @see #SeasonObject(String, String)
+     */
+    public SeasonObject(String id, IFuncStringRet name) {
+        this.id = id;
+        this.nameLambda = name;
+        this.name = name.function();
     }
 
     /**
@@ -90,6 +105,11 @@ public abstract class SeasonObject {
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("%season%", name);
         sendMessage(server, message, placeholders);
+    }
+
+
+    public void onReload() {
+        this.name = nameLambda.function();
     }
 
 

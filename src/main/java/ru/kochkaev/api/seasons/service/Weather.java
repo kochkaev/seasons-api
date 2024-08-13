@@ -140,6 +140,12 @@ public class Weather {
         Main.getLogger().info("Weathers was reloaded!");
     }
 
+    public static void reloadDynamics() {
+        for (WeatherObject weather : allWeathers.values()) {
+            weather.onReload();
+        }
+    }
+
     public static void setChancedWeatherInCurrentSeason(ServerWorld world){
         SeasonObject currentSeason = Season.getCurrent();
         WeatherObject weather = getChancedWeather(isNight ? getSeasonNightlyWeathers(currentSeason) : getSeasonDailyWeathers(currentSeason));

@@ -4,6 +4,8 @@ import com.google.gson.JsonObject;
 import ru.kochkaev.api.seasons.Main;
 import ru.kochkaev.api.seasons.object.JSONConfigObject;
 import ru.kochkaev.api.seasons.object.TXTConfigObject;
+import ru.kochkaev.api.seasons.service.Season;
+import ru.kochkaev.api.seasons.service.Weather;
 import ru.kochkaev.api.seasons.util.functional.IFuncVoid;
 
 import java.lang.reflect.Constructor;
@@ -80,6 +82,8 @@ public class Config {
         for (Config mod : mods.values()) {
             mod.loadLang(lang);
         }
+        Season.reloadDynamics();
+        Weather.reloadDynamics();
         Main.getLogger().info("Lang changed to: {}", lang);
     }
 
