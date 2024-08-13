@@ -109,7 +109,7 @@ public abstract class SeasonObject {
 
 
     public void onReload() {
-        this.name = nameLambda.function();
+        if (nameLambda != null) this.name = nameLambda.function();
     }
 
 

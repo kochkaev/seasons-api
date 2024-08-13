@@ -177,7 +177,7 @@ public abstract class WeatherObject {
     public @Nullable Boolean isNightly() { return this.nightly; }
 
     public void onReload() {
-        this.name = nameLambda.function();
+        if (nameLambda != null) this.name = nameLambda.function();
     }
 
     public boolean isEnabled() { return this.enabled; }

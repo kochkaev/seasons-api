@@ -7,6 +7,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -14,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import ru.kochkaev.api.seasons.ChallengesTicker;
 
 @Mixin(ServerPlayerEntity.class)
-public class ServerPlayerEntityMixin extends PlayerEntity {
+public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 
 
     public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
@@ -37,11 +38,13 @@ public class ServerPlayerEntityMixin extends PlayerEntity {
         ChallengesTicker.addPlayer((ServerPlayerEntity) (Object) this);
     }
 
-    @Unique
+    @Shadow(prefix="seasonsAPI$")
+    public abstract boolean seasonsAPI$isSpectator();
     public boolean isSpectator() {
         return false;
     }
-    @Unique
+    @Shadow(prefix="seasonsAPI$")
+    public abstract boolean seasonsAPI$isCreative();
     public boolean isCreative() {
         return false;
     }
