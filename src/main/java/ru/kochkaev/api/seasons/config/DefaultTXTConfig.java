@@ -6,10 +6,9 @@ public class DefaultTXTConfig extends TXTConfigObject{
 
     public DefaultTXTConfig() {
         super("API", "config", "config");
-        generate();
     }
 
-    private void generate() {
+    public void generate() {
 
         String copyright = Config.getCopyright() + "#\n# It's mod config!\n#" +
                 "\n# Other config files:\n#   - current.json - information about the current Weather/Season,\n#     is updated when the server is turned off.\n#   - lang - directory, contains translations of mod names/messages.\n\n\n";

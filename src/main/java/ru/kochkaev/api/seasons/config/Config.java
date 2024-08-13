@@ -17,24 +17,36 @@ public class Config {
 
     private TXTConfigObject config;
     private TXTConfigObject lang;
+    private final Map<String, TXTConfigObject> langs = new HashMap<>();
     private static JsonObject current = new JsonObject();
     private static JSONConfigObject jsonCore;
     private static final Map<String, Config> mods = new HashMap<>();
     private final String modName;
     private final String defaultLang;
-    private static final List<String> langs =  new ArrayList<>();
-    private static boolean isLoaded = false;
+    private static final List<String> allLangs =  new ArrayList<>();
 
-    public Config(String modName, String defaultLang, TXTConfigObject... objects) {
+    public Config(String modName, String defaultLang) {
         this.modName = modName;
         this.defaultLang = defaultLang;
-        for (TXTConfigObject object : objects) {
-            object.createIfDoNotExists();
-            if (object.getType().equals("config")) this.config = object.open();
-            else if (!langs.contains(object.getSubType())) langs.add(object.getSubType());
-        }
-        if (isLoaded) reloadLang();
         Main.getLogger().info("Loaded mod: {}", modName);
+    }
+
+    public void registerConfigObject(TXTConfigObject object) {
+        object.generateCreateIfDoNotExistsOpenAndUpdateIfLegacy();
+        if (object.getType().equals("config")) this.config = object;
+        else if (object.getType().equals("lang")) {
+            String lang = object.getSubType();
+            langs.put(lang, object);
+            if (!allLangs.contains(lang)) allLangs.add(lang);
+        }
+        object.close();
+    }
+
+    public static void initConfigObjects(){
+        for (Config mod : mods.values()) {
+            if (mod.config != null) mod.config.generateCreateIfDoNotExistsOpenAndUpdateIfLegacy();
+            mod.reloadLang();
+        }
     }
 
     public static Config getModConfig(String modName) { return mods.get(modName); }
@@ -47,27 +59,31 @@ public class Config {
         String defaultCurrent = "{ \"season\": NONE, \"weather\": NONE, \"previous-weather\": NONE, \"language\": EN_us }";
         jsonCore = JSONConfigObject.openOrCreate("Seasons/current", defaultCurrent);
         current = jsonCore.getJsonObject();
-        for (Config mod : mods.values()){
-            mod.reloadLang();
-        }
-        isLoaded = true;
+//        for (Config mod : mods.values()){
+//            mod.reloadLang();
+//            if (mod.config != null) mod.config.generateCreateIfDoNotExistsOpenAndUpdateIfLegacy();
+//        }
         Main.getLogger().info("Configs loaded!");
     }
 
     public void reloadLang() {
-        lang = TXTConfigObject.openOrDefault(("Seasons/" + modName + "/lang/" + current.get("language").getAsString()), ("Seasons/" + modName + "/lang/" + defaultLang));
+        loadLang(getCurrent("language"));
+    }
+    public void loadLang(String langName) {
+        lang = langs.containsKey(langName) ? langs.get(langName) : langs.get(defaultLang);
+        lang.generateCreateIfDoNotExistsOpenAndUpdateIfLegacy();
     }
 
     public static void setLang(String lang) {
         writeCurrent("language", lang);
         saveCurrent();
         for (Config mod : mods.values()) {
-            mod.reloadLang();
+            mod.loadLang(lang);
         }
         Main.getLogger().info("Lang changed to: {}", lang);
     }
 
-    public static List<String> getLangs() { return langs; }
+    public static List<String> getLangs() { return allLangs; }
 
     public static void reloadAll() {
         for (Config mod : mods.values()) {
@@ -76,7 +92,7 @@ public class Config {
         Main.getLogger().info("Configs was reloaded!");
     }
     public void reload() {
-        config.reload();
+        config.generateCreateIfDoNotExistsOpenAndUpdateIfLegacy();
         reloadLang();
     }
 

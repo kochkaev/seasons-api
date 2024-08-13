@@ -7,10 +7,9 @@ public class DefaultTXTLangEN extends TXTConfigObject {
 
     public DefaultTXTLangEN() {
         super("API", "EN_us", "lang");
-        generate();
     }
 
-    private void generate() {
+    public void generate() {
 
         String copyright = Config.getCopyright() + "#\n# It's mod lang!\n#" +
                 "\n# ** NAME = Display name of the Weather/Season\n# ** MESSAGE = Message, sends to chat on trigger\n#\n# Placeholders:\n#   - %season% - replaces to current season.\n" +

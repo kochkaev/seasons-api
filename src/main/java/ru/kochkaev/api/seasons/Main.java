@@ -25,7 +25,8 @@ public class Main implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		Config.init__();
-		Config.regModConfig(new Config("API", "EN_us", new DefaultTXTConfig(), new DefaultTXTLangRU(), new DefaultTXTLangEN()));
+		Config.regModConfig(new Config("API", "EN_us"));
+		Register.registerAllInPackage("ru.kochkaev.api.seasons.config");
 		Register.registerAllInPackage("ru.kochkaev.api.seasons.event");
 		Register.registerAllInPackage("ru.kochkaev.api.seasons.example");
 		CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> SeasonsCommand.register(dispatcher)));

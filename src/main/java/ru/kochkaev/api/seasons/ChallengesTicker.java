@@ -118,7 +118,7 @@ public class ChallengesTicker {
         allowedChallenges.clear();
         allowedChallenges.addAll(challenges);
         changeWeather = false;
-//        Main.getLogger().info(allowedChallenges.toString());
+        Main.getLogger().info("In current weather available challenges: {}", allowedChallenges);
     }
 
     public static boolean isTicking() { return isTicking; }
