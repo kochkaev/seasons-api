@@ -202,6 +202,7 @@ public abstract class ChallengeObject {
 
     /**
      * You can use this method for send message to server players.
+     * @see #sendMessage(ServerPlayerEntity, String)
      * @param player player who we will send message.
      * @param message message for send.
      * @param placeholders Map of placeholders.
@@ -214,17 +215,15 @@ public abstract class ChallengeObject {
      *
      * You also can use placeholders:<br>
      *     - {@code &} for colours (will replace to paragraph symbol).<br>
-     *     - {@code %season%} for get current season name from lang config.<br>
-     *     - {@code %weather%} for get current weather name from lang config.<br>
+     *     - {@code %seasons:season%} for get current season name from lang config.<br>
+     *     - {@code %seasons:weather%} for get current weather name from lang config.<br>
+     *     - And others, if you have PlaceholderAPI.<br>
      * @param player player, who we will send message
      * @param message message, who we will send
      * @see #sendMessage(ServerPlayerEntity, String, Map)
      */
     protected void sendMessage(ServerPlayerEntity player, String message) {
-        Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("%season%", Season.getCurrent().getName());
-        placeholders.put("%weather%", Weather.getCurrent().getName());
-        sendMessage(player, message, placeholders);
+        Message.sendMessage2PlayerDefaultPlaceholders(message, player);
     }
 
     /** This method check this challenge available in current weather (or if {@link #allowIfPrevious} == true and {@link #weathers} contains previous weather).

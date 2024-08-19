@@ -1,15 +1,11 @@
 package ru.kochkaev.api.seasons.object;
 
 
-import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.Nullable;
-import ru.kochkaev.api.seasons.config.Config;
 import ru.kochkaev.api.seasons.service.Weather;
-import ru.kochkaev.api.seasons.util.Format;
 import ru.kochkaev.api.seasons.util.Message;
 import ru.kochkaev.api.seasons.util.functional.IFuncStringRet;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -113,7 +109,7 @@ public abstract class WeatherObject {
      * This method will be called when this weather is set.
      * You must realize this method in your weather.
      */
-    public abstract void onWeatherSet(MinecraftServer server);
+    public abstract void onWeatherSet();
     /**
      * This method will be called when this weather was removed.
      * You must realize this method in your weather.
@@ -149,22 +145,20 @@ public abstract class WeatherObject {
 
     /**
      * You can use this method for send message to server players.
-     * @param server Minecraft server.
+     * @see #sendMessage(String)
      * @param message message for send.
      * @param placeholders Map of placeholders.
      */
-    protected void sendMessage(MinecraftServer server, String message, Map<String, String> placeholders) {
-        Message.sendMessage2Server(message, server.getPlayerManager(), placeholders);
+    protected void sendMessage(String message, Map<String, String> placeholders) {
+        Message.sendMessage2Server(message, placeholders);
     }
     /**
-     * @see #sendMessage(MinecraftServer, String, Map)
-     * @param server Minecraft server.
+     * You can use this method for send message to server players with default placeholders.
+     * @see #sendMessage(String, Map)
      * @param message message for send.
      */
-    protected void sendMessage(MinecraftServer server, String message) {
-        Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("%weather%", name);
-        sendMessage(server, message, placeholders);
+    protected void sendMessage(String message) {
+        Message.sendMessage2ServerDefaultPlaceholders(message);
     }
 
     /** This method returns seasons-api, that this weather will available.

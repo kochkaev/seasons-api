@@ -9,8 +9,8 @@ public class ExampleSeason extends SeasonObject {
     }
 
     @Override
-    public void onSeasonSet(MinecraftServer server) {
-        sendMessage(server, "No available seasons matched. Try to download additional mod based on Seasons API.");
+    public void onSeasonSet() {
+        sendMessage("No available seasons matched. Try to download additional mod based on Seasons API.");
     }
 
     @Override

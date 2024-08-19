@@ -28,13 +28,13 @@ public class Register {
                 Config.getModConfig(configObject.getModName()).registerConfigObject(configObject);
             }
             Config.initConfigObjects();
-            Main.getLogger().info("Registered {} config files", configs4Reg.size());
+            SeasonsAPI.getLogger().info("Registered {} config files", configs4Reg.size());
             for (Class<SeasonObject> season: seasons4Reg) Season.register(season.getConstructor().newInstance());
-            Main.getLogger().info("Registered {} seasons", seasons4Reg.size());
+            SeasonsAPI.getLogger().info("Registered {} seasons", seasons4Reg.size());
             for (Class<WeatherObject> weather : weathers4Reg) Weather.register(weather.getConstructor().newInstance());
-            Main.getLogger().info("Registered {} weathers", weathers4Reg.size());
+            SeasonsAPI.getLogger().info("Registered {} weathers", weathers4Reg.size());
             for (Class<ChallengeObject> challenge : challenges4Reg) Challenge.register(challenge.getConstructor().newInstance());
-            Main.getLogger().info("Registered {} challenges", challenges4Reg.size());
+            SeasonsAPI.getLogger().info("Registered {} challenges", challenges4Reg.size());
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {
             throw new RuntimeException(e);

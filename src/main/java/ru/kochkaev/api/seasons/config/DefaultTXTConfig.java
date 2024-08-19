@@ -17,20 +17,22 @@ public class DefaultTXTConfig extends TXTConfigObject{
         // Messages format
         addVoid();
         addComment("* MESSAGES FORMAT");
+        addString("# You can use placeholders: \n#   - & - insert color (replaces to paragraph symbol)\n#   - %message% - will be replaced to message in specific context" +
+                "\n#   - %seasons:weather% - insert current weather name (from langs)\n#   - %seasons:weather-previous% - insert previous weather name (from langs)\n#   - %seasons:season% - insert current season name (from langs)" +
+                "\n#   - %seasons:lang% - insert current lang key\n#   - %seasons:display-name% - insert Seasons mod display name (lang.message.seasonsModDisplayName in langs)" +
+                "\n#   - %seasons:title-new-day% - insert new day title message (from langs)\n#   - %seasons:title-info% - insert new day info title message (from langs)" +
+                "\n#   - %seasons:actionbar% - insert actionbar title message format\n#   - And others if you have installed PlaceholderAPI\n");
         addComment("Chat message format");
-        addComment("You can use placeholders: %seasonsModDisplayName% for insert seasons mod display name (from langs), %message% for insert message and & for insert color (replaces to paragraph symbol)");
-        addValueAndCommentDefault("conf.format.chat.message", "%seasonsModDisplayName% &7• %message%");
+        addComment("You can use %message% for insert message");
+        addValueAndCommentDefault("conf.format.chat.message", "%seasons:display-name% &7• %message%");
         addComment("Actionbar title format");
-        addComment("You can use placeholders: %season% for insert season name (from langs), %weather% for insert weather name (from langs) and & for insert color (replaces to paragraph symbol)");
-        addValueAndCommentDefault("conf.format.title.actionbar", "%season% &r&7• %weather%");
+        addValueAndCommentDefault("conf.format.title.actionbar", "%seasons:season% &r&7• %seasons:weather%");
         addComment("Title (on weather changed) format");
-        addComment("You can use placeholders: %info% for insert info message (from langs, contains season and weather name), %messageNewDay% for insert title \"new day\" message (from langs) and & for insert color (replaces to paragraph symbol)");
-        addValueAndCommentDefault("conf.format.title.title", "%messageNewDay%");
+        addValueAndCommentDefault("conf.format.title.title", "%seasons:title-new-day%");
         addComment("Subtitle (on weather changed) format");
-        addComment("You can use placeholders: %info% for insert info message (from langs, contains season and weather name), %messageNewDay% for insert title \"new day\" message (from langs) and & for insert color (replaces to paragraph symbol)");
-        addValueAndCommentDefault("conf.format.title.subtitle", "%info%");
+        addValueAndCommentDefault("conf.format.title.subtitle", "%seasons:title-info%");
         addComment("Command feedback format");
-        addComment("You can use placeholders: %message% for insert feedback message, & for insert color (replaces to paragraph symbol)");
+        addComment("You can use %message% for insert feedback message");
         addValueAndCommentDefault("conf.format.chat.feedback", "&7&oSeasons feedback: %message%");
 
         // Enable/disable features

@@ -38,14 +38,14 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
         ChallengesTicker.addPlayer((ServerPlayerEntity) (Object) this);
     }
 
-    @Shadow(prefix="seasonsAPI$")
-    public abstract boolean seasonsAPI$isSpectator();
-    public boolean isSpectator() {
-        return false;
-    }
-    @Shadow(prefix="seasonsAPI$")
-    public abstract boolean seasonsAPI$isCreative();
-    public boolean isCreative() {
-        return false;
-    }
+//    @Shadow(prefix="seasonsAPI$")
+//    public abstract boolean seasonsAPI$isSpectator();
+//    public boolean isSpectator() {
+//        return false;
+//    }
+//    @Shadow(prefix="seasonsAPI$")
+//    public abstract boolean seasonsAPI$isCreative();
+//    public boolean isCreative() {
+//        return false;
+//    }
 }

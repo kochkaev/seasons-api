@@ -1,7 +1,6 @@
 package ru.kochkaev.api.seasons.object;
 
 import net.fabricmc.loader.api.FabricLoader;
-import ru.kochkaev.api.seasons.Main;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -10,7 +9,6 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public abstract class TXTConfigObject {
 

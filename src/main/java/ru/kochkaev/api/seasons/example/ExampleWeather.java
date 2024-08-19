@@ -12,8 +12,8 @@ public class ExampleWeather extends WeatherObject {
     }
 
     @Override
-    public void onWeatherSet(MinecraftServer server) {
-        sendMessage(server, "No available weathers matched. Try to download additional mod based on Seasons API.");
+    public void onWeatherSet() {
+        sendMessage("No available weathers matched. Try to download additional mod based on Seasons API.");
     }
 
     @Override

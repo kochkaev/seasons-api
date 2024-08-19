@@ -1,13 +1,9 @@
 package ru.kochkaev.api.seasons.object;
 
 
-import net.minecraft.server.MinecraftServer;
-import ru.kochkaev.api.seasons.config.Config;
 import ru.kochkaev.api.seasons.util.Message;
-import ru.kochkaev.api.seasons.util.Format;
 import ru.kochkaev.api.seasons.util.functional.IFuncStringRet;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -71,7 +67,7 @@ public abstract class SeasonObject {
      * This method will be called when this season is set.
      * You must realize this method in your season.
      */
-    public abstract void onSeasonSet(MinecraftServer server);
+    public abstract void onSeasonSet();
     /**
      * This method will be called when this season was removed.
      * You must realize this method in your season.
@@ -89,22 +85,20 @@ public abstract class SeasonObject {
 
     /**
      * You can use this method for send message to server players.
-     * @param server Minecraft server.
+     * @see #sendMessage(String)
      * @param message message for send.
      * @param placeholders Map of placeholders.
      */
-    protected void sendMessage(MinecraftServer server, String message, Map<String, String> placeholders) {
-        Message.sendMessage2Server(message, server.getPlayerManager(), placeholders);
+    protected void sendMessage(String message, Map<String, String> placeholders) {
+        Message.sendMessage2Server(message, placeholders);
     }
     /**
-     * @see #sendMessage(MinecraftServer, String, Map)
-     * @param server Minecraft server.
+     * You can use this method for send message to server players with default placeholders.
+     * @see #sendMessage(String, Map)
      * @param message message for send.
      */
-    protected void sendMessage(MinecraftServer server, String message) {
-        Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("%season%", name);
-        sendMessage(server, message, placeholders);
+    protected void sendMessage(String message) {
+        Message.sendMessage2ServerDefaultPlaceholders(message);
     }
 
 

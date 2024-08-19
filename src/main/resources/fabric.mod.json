@@ -15,7 +15,7 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-          "ru.kochkaev.api.seasons.Main"
+          "ru.kochkaev.api.seasons.SeasonsAPI"
 		]
 	},
 	"mixins": [
@@ -23,8 +23,11 @@
 	],
 	"depends": {
 		"fabricloader": ">=0.15.11",
-		"minecraft": "~1.21",
+		"minecraft": ">=1.21",
 		"java": ">=21",
 		"fabric-api": "*"
+	},
+	"suggests": {
+		"placeholder-api": "*"
 	}
 }

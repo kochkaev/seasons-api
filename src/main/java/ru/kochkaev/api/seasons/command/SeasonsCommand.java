@@ -2,11 +2,9 @@ package ru.kochkaev.api.seasons.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.world.ServerWorld;
-import ru.kochkaev.api.seasons.Main;
+import ru.kochkaev.api.seasons.SeasonsAPI;
 import ru.kochkaev.api.seasons.config.Config;
 import ru.kochkaev.api.seasons.object.WeatherObject;
 import ru.kochkaev.api.seasons.service.Season;
@@ -32,15 +30,13 @@ public class SeasonsCommand {
     }
 
     public static int setSeason(String seasonID, ServerCommandSource source) {
-        PlayerManager players = source.getServer().getPlayerManager();
-        Season.setSeason(Season.getSeasonByID(seasonID), players);
+        Season.setSeason(Season.getSeasonByID(seasonID));
         source.sendFeedback((() -> Message.getFeedbackText("Successfully set season \"" + seasonID + "\"")), true);
         return 0;
     }
     public static int setWeather(String weatherID, ServerCommandSource source) {
-        ServerWorld world = source.getServer().getOverworld();
         WeatherObject weather = Weather.getWeatherByID(weatherID);
-        Weather.setWeather(weather, world);
+        Weather.setWeather(weather);
         Weather.setIsNight(weather.isNightly());
         source.sendFeedback((() -> Message.getFeedbackText("Successfully set weather \"" + weatherID + "\"")), true);
         return 0;
@@ -52,11 +48,11 @@ public class SeasonsCommand {
     }
 
     public static int reload(ServerCommandSource source) {
-        Main.setLoaded(false);
+        SeasonsAPI.setLoaded(false);
         Config.reloadAll();
-        Season.reloadFromConfig(source.getServer().getPlayerManager());
-        Weather.reloadFromConfig(source.getServer().getOverworld());
-        Main.setLoaded(true);
+        Season.reloadFromConfig();
+        Weather.reloadFromConfig();
+        SeasonsAPI.setLoaded(true);
         source.sendFeedback(() -> Message.getFeedbackText("Seasons configs successfully reloaded!"), true);
         return 0;
     }

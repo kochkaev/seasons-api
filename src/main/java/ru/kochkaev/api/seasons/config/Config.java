@@ -1,15 +1,12 @@
 package ru.kochkaev.api.seasons.config;
 
 import com.google.gson.JsonObject;
-import ru.kochkaev.api.seasons.Main;
+import ru.kochkaev.api.seasons.SeasonsAPI;
 import ru.kochkaev.api.seasons.object.JSONConfigObject;
 import ru.kochkaev.api.seasons.object.TXTConfigObject;
 import ru.kochkaev.api.seasons.service.Season;
 import ru.kochkaev.api.seasons.service.Weather;
-import ru.kochkaev.api.seasons.util.functional.IFuncVoid;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +27,7 @@ public class Config {
     public Config(String modName, String defaultLang) {
         this.modName = modName;
         this.defaultLang = defaultLang;
-        Main.getLogger().info("Loaded mod: {}", modName);
+        SeasonsAPI.getLogger().info("Loaded mod: {}", modName);
     }
 
     public void registerConfigObject(TXTConfigObject object) {
@@ -65,7 +62,7 @@ public class Config {
 //            mod.reloadLang();
 //            if (mod.config != null) mod.config.generateCreateIfDoNotExistsOpenAndUpdateIfLegacy();
 //        }
-        Main.getLogger().info("Configs loaded!");
+        SeasonsAPI.getLogger().info("Configs loaded!");
     }
 
     public void reloadLang() {
@@ -84,7 +81,7 @@ public class Config {
         }
         Season.reloadDynamics();
         Weather.reloadDynamics();
-        Main.getLogger().info("Lang changed to: {}", lang);
+        SeasonsAPI.getLogger().info("Lang changed to: {}", lang);
     }
 
     public static List<String> getLangs() { return allLangs; }
@@ -93,7 +90,7 @@ public class Config {
         for (Config mod : mods.values()) {
             mod.reload();
         }
-        Main.getLogger().info("Configs was reloaded!");
+        SeasonsAPI.getLogger().info("Configs was reloaded!");
     }
     public void reload() {
         config.generateCreateIfDoNotExistsOpenAndUpdateIfLegacy();

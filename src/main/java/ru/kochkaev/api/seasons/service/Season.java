@@ -2,11 +2,9 @@ package ru.kochkaev.api.seasons.service;
 
 //import ru.kochkaev.seasons-api.Config.OldConfig;
 
-import net.minecraft.server.PlayerManager;
-import ru.kochkaev.api.seasons.Main;
+import ru.kochkaev.api.seasons.SeasonsAPI;
 import ru.kochkaev.api.seasons.config.Config;
 import ru.kochkaev.api.seasons.object.SeasonObject;
-import ru.kochkaev.api.seasons.util.Message;
 
 import java.util.*;
 
@@ -40,13 +38,13 @@ public class Season {
         Config.saveCurrent();
     }
 
-    public static void reloadFromConfig(PlayerManager players) {
+    public static void reloadFromConfig() {
         String currentStr = Config.getCurrent("season");
         SeasonObject season = getSeasonByID(currentStr);
         if (CURRENT_SEASON != season) {
-            setSeason(season, players);
+            setSeason(season);
         }
-        Main.getLogger().info("Seasons was reloaded!");
+        SeasonsAPI.getLogger().info("Seasons was reloaded!");
     }
 
     public static void reloadDynamics() {
@@ -55,11 +53,11 @@ public class Season {
         }
     }
 
-    public static void setSeason(SeasonObject season, PlayerManager players) {
+    public static void setSeason(SeasonObject season) {
         CURRENT_SEASON.onSeasonRemove();
         setCurrent(season);
-        season.onSeasonSet(players.getServer());
-        Main.getLogger().info("Season was set to \"{}\"", season.getId());
+        season.onSeasonSet();
+        SeasonsAPI.getLogger().info("Season was set to \"{}\"", season.getId());
     }
 
 

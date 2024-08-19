@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import ru.kochkaev.api.seasons.Main;
+import ru.kochkaev.api.seasons.SeasonsAPI;
 import ru.kochkaev.api.seasons.config.Config;
 import ru.kochkaev.api.seasons.object.WeatherObject;
 import ru.kochkaev.api.seasons.service.Task;
@@ -45,12 +45,12 @@ public abstract class ServerWorldMixin
 
     @Inject(method = "tick", at = @At("HEAD"))
     public void tick(BooleanSupplier shouldKeepTicking, CallbackInfo ci){
-        if (Main.isLoaded()){
-            if ((this.properties.getTimeOfDay() % 24000L >= Config.getModConfig("API").getConfig().getLong("conf.tick.day.start")) && (Weather.isNight()) && (Config.getModConfig("API").getConfig().getLong("conf.tick.day.end") > this.properties.getTimeOfDay() % 24000L))
-                Weather.setDay(this.toServerWorld());
-            if ((this.properties.getTimeOfDay() % 24000L >= Config.getModConfig("API").getConfig().getLong("conf.tick.day.end")) && (!Weather.isNight()))
-                Weather.setNight(this.toServerWorld());
-            if (Config.getModConfig("API").getConfig().getBoolean("conf.enable.title.actionbar")) Title.showActionBar(Objects.requireNonNull(this.getServer()).getPlayerManager());
+        if (SeasonsAPI.isLoaded()){
+            if ((this.properties.getTimeOfDay() % 24000L >= Config.getModConfig("API").getConfig().getLong("conf.tick.day.start")) && (Boolean.TRUE.equals(Weather.isNight())) && (Config.getModConfig("API").getConfig().getLong("conf.tick.day.end") > this.properties.getTimeOfDay() % 24000L))
+                Weather.setDay();
+            if ((this.properties.getTimeOfDay() % 24000L >= Config.getModConfig("API").getConfig().getLong("conf.tick.day.end")) && (Boolean.FALSE.equals(Weather.isNight())))
+                Weather.setNight();
+            if (Config.getModConfig("API").getConfig().getBoolean("conf.enable.title.actionbar")) Title.showActionBar();
             if ((this.worldProperties.isRaining() != Weather.getCurrent().getRaining()) || (this.worldProperties.isThundering() != Weather.getCurrent().getThundering()))
                 this.setWeather(-1, -1, false, false);
             Task.runTasks();

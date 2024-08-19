@@ -25,12 +25,28 @@ loom {
     }
 }
 
+// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
 repositories {
-    // Add repositories to retrieve artifacts from in here.
-    // You should only use this when depending on other mods because
-    // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-    // See https://docs.gradle.org/current/userguide/declaring_repositories.html
-    // for more information about repositories.
+    // Add repositories to publish to here.
+    // Notice: This block does NOT have the same function as the block in the top level.
+    // The repositories here will be used for publishing your artifact, not for
+    // retrieving dependencies.
+    maven {
+        name = "GitHubPackages"
+//            name = 'GitHub kochkaev Apache Maven Packages'
+        url = 'https://maven.pkg.github.com/kochkaev/seasons-api'
+        credentials {
+            username = "kochkaev"
+            password = pass
+//                password = tokensProp.properties.get('github_token')
+        }
+
+    }
+    maven {
+        name = "Nucleoid"
+        url = "https://maven.nucleoid.xyz/"
+    }
+
 }
 
 dependencies {
@@ -41,6 +57,8 @@ dependencies {
 
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    // Placeholders API
+    modImplementation "eu.pb4:placeholder-api:${project.placeholderapi_version}"
 }
 
 processResources {
@@ -95,26 +113,6 @@ publishing {
         gpr(MavenPublication) {
             from(components.java)
         }
-    }
-
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-    repositories {
-        // Add repositories to publish to here.
-        // Notice: This block does NOT have the same function as the block in the top level.
-        // The repositories here will be used for publishing your artifact, not for
-        // retrieving dependencies.
-        maven {
-            name = "GitHubPackages"
-//            name = 'GitHub kochkaev Apache Maven Packages'
-            url = 'https://maven.pkg.github.com/kochkaev/seasons-api'
-            credentials {
-                username = "kochkaev"
-                password = pass
-//                password = tokensProp.properties.get('github_token')
-            }
-
-        }
-
     }
 
 }
