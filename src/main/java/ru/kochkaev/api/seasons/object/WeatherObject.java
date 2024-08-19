@@ -28,9 +28,15 @@ public abstract class WeatherObject {
 
     /** Weather ID, must be unique. */
     protected String id;
-    /** Display weather name, sends to chat, title, etc. */
-    protected String name;
-    protected IFuncStringRet nameLambda;
+    /**
+     * Display weather name, sends to chat, title, etc. <br><br>
+     * Name can be dynamic... <br>
+     * {@code () -> Config.getModConfig("YourModConfigID").getLang().getString("yourDynamicNameID")} <br>
+     * ...and static! <br>
+     * {@code () -> "Your static name"}<br><br>
+     * Lambda-function for get name uses IFuncStringRet functional interface.
+     */
+    protected IFuncStringRet name;
     /** Weather property, is it raining in this weather?
      * Can be null (if it shouldn't overwrite previous weather) */
     @Nullable
@@ -72,32 +78,10 @@ public abstract class WeatherObject {
      * @param chance {@link #chance}
      * @param seasons {@link #seasons}
      * @param nightly {@link #nightly}
-     * @see #WeatherObject(String, IFuncStringRet, Boolean, Boolean, Integer, List, Boolean)
-     */
-    public WeatherObject(String id, String name, @Nullable Boolean raining, @Nullable Boolean thundering, @Nullable Integer chance, @Nullable List<SeasonObject> seasons, @Nullable Boolean nightly) {
-        this.id = id;
-        this.name = name;
-        this.raining = raining;
-        this.thundering = thundering;
-        this.chance = chance;
-        this.seasons = seasons;
-        this.nightly = nightly;
-    }
-    /**
-     * You can use this constructor for dynamic update name on language change.
-     * @param id {@link #id}
-     * @param name lambda function, returns display name of this weather.
-     * @param raining {@link #raining}
-     * @param thundering {@link #thundering}
-     * @param chance {@link #chance}
-     * @param seasons {@link #seasons}
-     * @param nightly {@link #nightly}
-     * @see #WeatherObject(String, String, Boolean, Boolean, Integer, List, Boolean)
      */
     public WeatherObject(String id, IFuncStringRet name, @Nullable Boolean raining, @Nullable Boolean thundering, @Nullable Integer chance, @Nullable List<SeasonObject> seasons, @Nullable Boolean nightly) {
         this.id = id;
-        this.nameLambda = name;
-        this.name = name.function();
+        this.name = name;
         this.raining = raining;
         this.thundering = thundering;
         this.chance = chance;
@@ -123,7 +107,7 @@ public abstract class WeatherObject {
     /** This method returns display name of this weather.
      * @return {@link #name}
      */
-    public String getName() { return this.name; }
+    public String getName() { return this.name.function(); }
     /** This method returns chance of this weather coming.
      * @return {@link #chance}
      */
@@ -171,7 +155,7 @@ public abstract class WeatherObject {
     public @Nullable Boolean isNightly() { return this.nightly; }
 
     public void onReload() {
-        if (nameLambda != null) this.name = nameLambda.function();
+
     }
 
     public boolean isEnabled() { return this.enabled; }

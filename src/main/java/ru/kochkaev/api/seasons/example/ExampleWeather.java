@@ -8,7 +8,7 @@ import java.util.Collections;
 
 public class ExampleWeather extends WeatherObject {
     public ExampleWeather() {
-        super("example", "No weathers matched", false, false, 0, Collections.singletonList(Season.getSeasonByID("example")), null);
+        super("example", () -> "No weathers matched", false, false, 0, Collections.singletonList(Season.getSeasonByID("example")), null);
     }
 
     @Override

@@ -25,9 +25,15 @@ public abstract class SeasonObject {
 
     /** Season ID, must be unique. */
     protected String id;
-    /** Display season name, sends to chat, title, etc. */
-    protected String name;
-    protected IFuncStringRet nameLambda;
+    /**
+     * Display season name, sends to chat, title, etc. <br><br>
+     * Name can be dynamic... <br>
+     * {@code () -> Config.getModConfig("YourModConfigID").getLang().getString("yourDynamicNameID")} <br>
+     * ...and static! <br>
+     * {@code () -> "Your static name"}<br><br>
+     * Lambda-function for get name uses IFuncStringRet functional interface.
+     */
+    protected IFuncStringRet name;
 
     /** It's season enabled. */
     protected boolean enabled = true;
@@ -44,23 +50,10 @@ public abstract class SeasonObject {
      * </code>
      * @param id {@link #id}
      * @param name {@link #name}
-     * @see #SeasonObject(String, IFuncStringRet)
-     */
-    public SeasonObject(String id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    /**
-     * You can use this constructor for dynamic update name on language change.
-     * @param id {@link #id}
-     * @param name lambda function, returns display name of this weather.
-     * @see #SeasonObject(String, String)
      */
     public SeasonObject(String id, IFuncStringRet name) {
         this.id = id;
-        this.nameLambda = name;
-        this.name = name.function();
+        this.name = name;
     }
 
     /**
@@ -81,7 +74,7 @@ public abstract class SeasonObject {
     /** This method returns display name of this weather.
      * @return {@link #name}
      */
-    public String getName() { return this.name; }
+    public String getName() { return this.name.function(); }
 
     /**
      * You can use this method for send message to server players.
@@ -103,7 +96,7 @@ public abstract class SeasonObject {
 
 
     public void onReload() {
-        if (nameLambda != null) this.name = nameLambda.function();
+
     }
 
 

@@ -5,7 +5,7 @@ import ru.kochkaev.api.seasons.object.SeasonObject;
 
 public class ExampleSeason extends SeasonObject {
     public ExampleSeason() {
-        super("example", "No seasons matched");
+        super("example", () -> "No seasons matched");
     }
 
     @Override
