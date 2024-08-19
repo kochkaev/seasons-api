@@ -29,7 +29,7 @@ public class Season {
     public static void onServerStartup() {
         String currentStr = Config.getCurrent("season");
         if (currentStr.equals("NONE") || currentStr.equals("example")) setCurrent(getRandomSeason());
-        else getSeasonByID(currentStr);
+        else CURRENT_SEASON = getSeasonByID(currentStr);
         if (CURRENT_SEASON == null) CURRENT_SEASON = getSeasonByID("example");
     }
 
