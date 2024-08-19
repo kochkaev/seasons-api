@@ -45,7 +45,7 @@ public class PlaceholderAPI {
     }
     /** Register dynamic double-parsing placeholder use IFuncTextRet simple lambda function */
     public void registerDoubleParse(String namespace, String path, IFuncTextRet lmbd) {
-        registerDoubleParse(namespace, path, lmbd.function());
+        register(namespace, path, (context, arg) -> PlaceholderResult.value(Placeholders.parseText(lmbd.function(), context)));
     }
     /** Register static double-parsing placeholder use Text */
     public void registerDoubleParse(String namespace, String path, Text text) {

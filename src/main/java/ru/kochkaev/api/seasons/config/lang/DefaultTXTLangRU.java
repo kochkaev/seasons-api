@@ -25,6 +25,6 @@ public class DefaultTXTLangRU extends TXTConfigObject {
         addComment("New day title message (used in titles as %seasons:title-new-day% placeholder)");
         addValueAndCommentDefault("lang.message.messageNewDay", "&e&bНаступил новый день!");
         addComment("Current weather and season title message (used in titles as %seasons:title-info% placeholder)");
-        addValueAndCommentDefault("lang.message.currentInfo", "%season%. &7Сегодня %weather%");
+        addValueAndCommentDefault("lang.message.currentInfo", "%seasons:season%. &7Сегодня %seasons:weather%");
     }
 }
