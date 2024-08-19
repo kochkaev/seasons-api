@@ -104,9 +104,7 @@ public class SeasonsCommand {
         return 0;
     }
     public static int getChallenges(ServerCommandSource source) {
-        List<String> challenges = new ArrayList<>();
-        for (ChallengeObject challenge : ChallengesTicker.getAllowedChallenges()) challenges.add(challenge.getID());
-        source.sendFeedback((() -> Message.getFeedbackText("Currently allowed challenges are " + challenges)), false);
+        source.sendFeedback((() -> Message.getFeedbackText("Currently allowed challenges are " + ChallengesTicker.getAllowedChallenges().stream().map(ChallengeObject::getID).toList())), false);
         return 0;
     }
 
