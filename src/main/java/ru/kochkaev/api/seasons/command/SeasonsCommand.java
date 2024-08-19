@@ -7,12 +7,16 @@ import net.minecraft.server.command.ServerCommandSource;
 import ru.kochkaev.api.seasons.ChallengesTicker;
 import ru.kochkaev.api.seasons.SeasonsAPI;
 import ru.kochkaev.api.seasons.config.Config;
+import ru.kochkaev.api.seasons.object.ChallengeObject;
 import ru.kochkaev.api.seasons.object.WeatherObject;
 import ru.kochkaev.api.seasons.service.Challenge;
 import ru.kochkaev.api.seasons.service.Season;
 import ru.kochkaev.api.seasons.service.Weather;
 import ru.kochkaev.api.seasons.util.Format;
 import ru.kochkaev.api.seasons.util.Message;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SeasonsCommand {
 
@@ -100,7 +104,9 @@ public class SeasonsCommand {
         return 0;
     }
     public static int getChallenges(ServerCommandSource source) {
-        source.sendFeedback((() -> Message.getFeedbackText("Currently allowed challenges are " + ChallengesTicker.getAllowedChallenges().toString())), false);
+        List<String> challenges = new ArrayList<>();
+        for (ChallengeObject challenge : ChallengesTicker.getAllowedChallenges()) challenges.add(challenge.getID());
+        source.sendFeedback((() -> Message.getFeedbackText("Currently allowed challenges are " + challenges)), false);
         return 0;
     }
 
