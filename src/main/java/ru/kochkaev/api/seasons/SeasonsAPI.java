@@ -9,7 +9,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.kochkaev.api.seasons.command.SeasonCommand;
 import ru.kochkaev.api.seasons.command.SeasonsCommand;
 import ru.kochkaev.api.seasons.config.Config;
 import ru.kochkaev.api.seasons.integration.IntegrationManager;
@@ -34,7 +33,6 @@ public class SeasonsAPI implements ModInitializer {
 		Register.registerAllInPackage("ru.kochkaev.api.seasons.event");
 		Register.registerAllInPackage("ru.kochkaev.api.seasons.example");
 		CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> SeasonsCommand.register(dispatcher)));
-		CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> SeasonCommand.register(dispatcher)));
 		ServerLifecycleEvents.SERVER_STARTED.register(this::onStarted);
 		ServerLifecycleEvents.SERVER_STOPPED.register((server) -> onShutdown());
 	}

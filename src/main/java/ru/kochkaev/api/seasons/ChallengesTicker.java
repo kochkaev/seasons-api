@@ -19,6 +19,8 @@ public class ChallengesTicker {
     private static final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private static final List<ServerPlayerEntity> playersRemoveList = new ArrayList<>();
     private static final List<ServerPlayerEntity> playersAddList = new ArrayList<>();
+    private static final List<ChallengeObject> forceAllowed = new ArrayList<>();
+    private static final List<ChallengeObject> forceDisabled = new ArrayList<>();
 
     private static final List<ChallengeObject> allowedChallenges = new ArrayList<>();
     private static boolean changeWeather = false;
@@ -56,6 +58,8 @@ public class ChallengesTicker {
         }
         if (!playersRemoveList.isEmpty()) removePlayersTask();
         if (!playersAddList.isEmpty()) addPlayersTask();
+        if (!forceAllowed.isEmpty()) forceAllowTask();
+        if (!forceDisabled.isEmpty()) forceDisableTask();
         if (changeWeather) changeWeatherTask();
 //        Main.getLogger().info("Challenges ticker is ticking");
         if (shutdown) shutdownTask();
@@ -119,6 +123,38 @@ public class ChallengesTicker {
         allowedChallenges.addAll(challenges);
         changeWeather = false;
         SeasonsAPI.getLogger().info("In current weather available challenges: {}", allowedChallenges.stream().map(ChallengeObject::getID).toList());
+    }
+
+    public static List<ChallengeObject> getAllowedChallenges() {
+        return allowedChallenges;
+    }
+    public static void forceAllowChallenge(ChallengeObject challenge) {
+        forceAllowed.add(challenge);
+    }
+    public static void forceDisableChallenge(ChallengeObject challenge) {
+        forceDisabled.add(challenge);
+    }
+    private static void forceAllowTask() {
+        for (ChallengeObject challenge : forceAllowed) {
+            for (ServerPlayerEntity player : players) {
+                if (!allowedChallenges.contains(challenge)) {
+                    challenge.onChallengeStart(player);
+                    allowedChallenges.add(challenge);
+                }
+            }
+        }
+        forceAllowed.clear();
+    }
+    private static void forceDisableTask() {
+        for (ChallengeObject challenge : forceDisabled) {
+            for (ServerPlayerEntity player : players) {
+                if (allowedChallenges.contains(challenge)) {
+                    challenge.onChallengeEnd(player);
+                    allowedChallenges.remove(challenge);
+                }
+            }
+        }
+        forceAllowed.clear();
     }
 
     public static boolean isTicking() { return isTicking; }
