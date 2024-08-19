@@ -150,6 +150,7 @@ public class ChallengesTicker {
         for (ChallengeObject challenge : forceDisabled) {
             for (ServerPlayerEntity player : players) {
                 if (allowedChallenges.contains(challenge)) {
+                    countOfInARowCallsMap.get(player).put(challenge, 0);
                     challenge.onChallengeEnd(player);
                     allowedChallenges.remove(challenge);
                 }
