@@ -15,7 +15,7 @@ Idea by Harieo
 - Harieo on GitHub: https://github.com/Harieo/
 - Original plugin on GitHub: https://github.com/Harieo/Seasons/
 - Original plugin on SpigotMC: https://www.spigotmc.org/resources/seasons.39298/
-------------------------------------------------
+
 Created by @kochkaev
 - GitHub: https://github.com/kochkaev/
 - VK: https://vk.com/kleverdi/
