@@ -1,7 +1,8 @@
 # Seasons API
 
-This mod was developed by analogy with the Spigot plugin "Seasons" specifically for the private Minecraft server "Zixa City" by its administrator (kochkaev, aka kleverdi). The idea of this mod was taken from Harieo.
 Seasons API was developed for creating your own seasons, weathers and challenges!
+------------------------------------------------
+This mod was developed by analogy with the Spigot plugin "Seasons" specifically for the private Minecraft server "Zixa City" by its administrator (kochkaev, aka kleverdi). The idea of this mod was taken from Harieo.
 
 ## What is this?
 + Season - a certain period of a conditional year that has a certain weather for the current conditional time.
