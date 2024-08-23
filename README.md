@@ -21,7 +21,7 @@ Created by @kochkaev
 - VK: https://vk.com/kleverdi/
 - YouTube: https://youtube.com/@kochkaev/
 - Contact email: kleverdi@vk.com
-------------------------------------------------
-WARN: It's only server-side mod.
-------------------------------------------------
+
+### WARN: It's only server-side mod.
+
  
