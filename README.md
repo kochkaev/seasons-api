@@ -9,8 +9,7 @@ This mod was developed by analogy with the Spigot plugin "Seasons" specifically 
 + Weather - daytime conditions for the game that have their own Challenges.
 + Challenge - a set of some sort of rules for the player, appropriate to the current season and weather.
 
-You can create your own set of seasons, weathers and challenges in your mod. More information about implementing the Seasons API in your mod can be found in this wiki:
-https://github.com/kochkaev/seasons-api/wiki
+You can create your own set of seasons, weathers and challenges in your mod. More information about implementing the Seasons API in your mod can be found in [wiki](https://github.com/kochkaev/seasons-api/wiki).
 ------------------------------------------------
 Idea by Harieo
 - Harieo on GitHub: https://github.com/Harieo/
