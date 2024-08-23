@@ -129,6 +129,9 @@ public class ChallengesTicker {
     public static List<ChallengeObject> getAllowedChallenges() {
         return allowedChallenges;
     }
+    public static boolean isChallengeAllowed(ChallengeObject challenge) {
+        return allowedChallenges.contains(challenge);
+    }
     public static void forceAllowChallenge(ChallengeObject challenge) {
         forceAllowed.add(challenge);
     }

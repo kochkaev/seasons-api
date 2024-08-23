@@ -8,6 +8,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
+import ru.kochkaev.api.seasons.ChallengesTicker;
 import ru.kochkaev.api.seasons.service.Season;
 import ru.kochkaev.api.seasons.util.functional.IFunc;
 import ru.kochkaev.api.seasons.util.functional.IFuncRet;
@@ -231,6 +232,16 @@ public abstract class ChallengeObject {
      */
     public boolean isAllowed() {
         return (this.weathers.contains(Weather.getCurrent()) || (this.allowIfPrevious && this.weathers.contains(Weather.getPreviousCurrent()))) && this.enabled;
+    }
+    public boolean isAllowed(WeatherObject weather) {
+        return (this.weathers.contains(weather) || (this.allowIfPrevious && this.weathers.contains(Weather.getPreviousCurrent()))) && this.enabled;
+    }
+
+    /** This method check this challenge allowed in ChallengesTicker.
+     * @return true, if allowedChallenges list in ChallengesTicker contains current challenge | false, if not.
+     */
+    public boolean isAllowedInTicker() {
+        return ChallengesTicker.isChallengeAllowed(this);
     }
     /** This method returns weathers, that available this challenge.
      * @return {@link #weathers}
