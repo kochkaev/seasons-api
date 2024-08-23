@@ -7,7 +7,7 @@ Seasons API was developed for creating your own seasons, weathers and challenges
 + Season - a certain period of a conditional year that has a certain weather for the current conditional time.
 + Weather - daytime conditions for the game that have their own Challenges.
 + Challenge - a set of some sort of rules for the player, appropriate to the current season and weather.
-
+------------------------------------------------
 You can create your own set of seasons, weathers and challenges in your mod. More information about implementing the Seasons API in your mod can be found in this wiki:
 https://github.com/kochkaev/seasons-api/wiki
 ------------------------------------------------
