@@ -3,14 +3,15 @@
 	"id": "seasons-api",
 	"version": "${version}",
 	"name": "Seasons API",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "API for creating your own seasons, weathers and challenges!",
 	"authors": [
 		"kochkaev"
 	],
 	"contact": {
+		"issues": "https://github.com/kochkaev/seasons-api/issues",
 		"sources": "https://github.com/kochkaev/seasons-api"
 	},
-	"license": "CC0-1.0",
+	"license": "All rights reserved",
 	"icon": "assets/icon.png",
 	"environment": "*",
 	"entrypoints": {
@@ -23,7 +24,10 @@
 	],
 	"depends": {
 		"fabricloader": ">=0.15.11",
-		"minecraft": ">=1.21",
+		"minecraft": [
+			"1.21",
+			"1.21.1"
+		],
 		"java": ">=21",
 		"fabric-api": "*"
 	},
