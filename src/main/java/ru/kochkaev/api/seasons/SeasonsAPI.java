@@ -29,7 +29,7 @@ public class SeasonsAPI implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		Config.init__();
-		Config.regModConfig(new ConfigObject("API", "EN_us"));
+		Config.regModConfig(new ConfigObject("API", "en_US"));
 		Register.registerAllInPackage("ru.kochkaev.api.seasons.config");
 		Register.registerAllInPackage("ru.kochkaev.api.seasons.event");
 		Register.registerAllInPackage("ru.kochkaev.api.seasons.example");
