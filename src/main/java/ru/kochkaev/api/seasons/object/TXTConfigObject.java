@@ -19,7 +19,7 @@ public abstract class TXTConfigObject {
     private final String type;
 
     private final String modName;
-    private final String subType;
+    private final String filename;
 
     private final Set<String> generatedKeySet = new HashSet<>();
     private String generated = "";
@@ -27,7 +27,7 @@ public abstract class TXTConfigObject {
     protected TXTConfigObject(String modName, String filename, String type) {
         this.modName = modName;
 //        this.filename = modName + (type.equals("lang") ? "/lang/" : "/") + filename;
-        this.subType = filename;
+        this.filename = filename;
         this.type = type;
         this.path = FabricLoader.getInstance().getConfigDir().toAbsolutePath().resolve("Seasons/" + modName + (type.equals("lang") ? "/lang/" : "/") + filename + ".txt").toString();
     }
@@ -64,6 +64,12 @@ public abstract class TXTConfigObject {
     }
     public long getLong(String key) {
         return Long.parseLong(map.get(key));
+    }
+    public float getFloat(String key) {
+        return Float.parseFloat(map.get(key));
+    }
+    public double getDouble(String key) {
+        return Double.parseDouble(map.get(key));
     }
     public Boolean getBoolean(String key) {
         return Boolean.parseBoolean(map.get(key));
@@ -198,7 +204,7 @@ public abstract class TXTConfigObject {
 //    }
 
     public String getType() { return type; }
-    public String getSubType() { return subType; }
+    public String getFilename() { return filename; }
     public String getModName() { return modName; }
 
 }

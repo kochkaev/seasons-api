@@ -10,7 +10,8 @@ import net.minecraft.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.kochkaev.api.seasons.command.SeasonsCommand;
-import ru.kochkaev.api.seasons.config.Config;
+import ru.kochkaev.api.seasons.object.ConfigObject;
+import ru.kochkaev.api.seasons.service.Config;
 import ru.kochkaev.api.seasons.integration.IntegrationManager;
 import ru.kochkaev.api.seasons.integration.PlaceholderAPI;
 import ru.kochkaev.api.seasons.service.Challenge;
@@ -28,7 +29,7 @@ public class SeasonsAPI implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		Config.init__();
-		Config.regModConfig(new Config("API", "EN_us"));
+		Config.regModConfig(new ConfigObject("API", "EN_us"));
 		Register.registerAllInPackage("ru.kochkaev.api.seasons.config");
 		Register.registerAllInPackage("ru.kochkaev.api.seasons.event");
 		Register.registerAllInPackage("ru.kochkaev.api.seasons.example");

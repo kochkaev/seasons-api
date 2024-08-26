@@ -6,7 +6,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.server.command.ServerCommandSource;
-import ru.kochkaev.api.seasons.config.Config;
+import ru.kochkaev.api.seasons.service.Config;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -15,7 +15,7 @@ public class LangSuggestionProvider implements SuggestionProvider<ServerCommandS
 
     @Override
     public CompletableFuture<Suggestions> getSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
-        for (String lang : Config.getLangs()) {
+        for (String lang : Config.getListOfLangs()) {
             builder.suggest(lang);
         }
         return builder.buildFuture();

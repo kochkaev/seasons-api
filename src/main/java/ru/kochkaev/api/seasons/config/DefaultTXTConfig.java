@@ -1,6 +1,7 @@
 package ru.kochkaev.api.seasons.config;
 
 import ru.kochkaev.api.seasons.object.TXTConfigObject;
+import ru.kochkaev.api.seasons.service.Config;
 
 public class DefaultTXTConfig extends TXTConfigObject{
 

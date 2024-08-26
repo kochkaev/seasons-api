@@ -1,12 +1,12 @@
 package ru.kochkaev.api.seasons.config.lang;
 
-import ru.kochkaev.api.seasons.config.Config;
+import ru.kochkaev.api.seasons.service.Config;
 import ru.kochkaev.api.seasons.object.TXTConfigObject;
 
 public class DefaultTXTLangEN extends TXTConfigObject {
 
     public DefaultTXTLangEN() {
-        super("API", "EN_us", "lang");
+        super("API", "en_US", "lang");
     }
 
     public void generate() {

@@ -1,6 +1,6 @@
 package ru.kochkaev.api.seasons;
 
-import ru.kochkaev.api.seasons.config.Config;
+import ru.kochkaev.api.seasons.service.Config;
 import ru.kochkaev.api.seasons.object.ChallengeObject;
 import ru.kochkaev.api.seasons.object.SeasonObject;
 import ru.kochkaev.api.seasons.object.TXTConfigObject;

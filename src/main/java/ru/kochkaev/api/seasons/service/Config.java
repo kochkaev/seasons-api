@@ -1,11 +1,10 @@
-package ru.kochkaev.api.seasons.config;
+package ru.kochkaev.api.seasons.service;
 
 import com.google.gson.JsonObject;
 import ru.kochkaev.api.seasons.SeasonsAPI;
+import ru.kochkaev.api.seasons.object.ConfigObject;
 import ru.kochkaev.api.seasons.object.JSONConfigObject;
 import ru.kochkaev.api.seasons.object.TXTConfigObject;
-import ru.kochkaev.api.seasons.service.Season;
-import ru.kochkaev.api.seasons.service.Weather;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,45 +13,19 @@ import java.util.Map;
 
 public class Config {
 
-    private TXTConfigObject config;
-    private TXTConfigObject lang;
-    private final Map<String, TXTConfigObject> langs = new HashMap<>();
     private static JsonObject current = new JsonObject();
     private static JSONConfigObject jsonCore;
-    private static final Map<String, Config> mods = new HashMap<>();
-    private final String modName;
-    private final String defaultLang;
-    private static final List<String> allLangs =  new ArrayList<>();
-
-    public Config(String modName, String defaultLang) {
-        this.modName = modName;
-        this.defaultLang = defaultLang;
-        SeasonsAPI.getLogger().info("Loaded mod: {}", modName);
-    }
-
-    public void registerConfigObject(TXTConfigObject object) {
-        object.generateCreateIfDoNotExistsOpenAndUpdateIfLegacy();
-        if (object.getType().equals("config")) this.config = object;
-        else if (object.getType().equals("lang")) {
-            String lang = object.getSubType();
-            langs.put(lang, object);
-            if (!allLangs.contains(lang)) allLangs.add(lang);
-        }
-        object.close();
-    }
+    private static final Map<String, ConfigObject> mods = new HashMap<>();
+    private static final List<String> listOfLangs =  new ArrayList<>();
 
     public static void initConfigObjects(){
-        for (Config mod : mods.values()) {
-            if (mod.config != null) mod.config.generateCreateIfDoNotExistsOpenAndUpdateIfLegacy();
-            mod.reloadLang();
-        }
+        for (ConfigObject mod : mods.values()) mod.reload();
     }
 
-    public static Config getModConfig(String modName) { return mods.get(modName); }
-    public static void regModConfig(Config config) {
+    public static ConfigObject getModConfig(String modName) { return mods.get(modName); }
+    public static void regModConfig(ConfigObject config) {
         mods.put(config.getModName(), config);
     }
-    public String getModName() { return this.modName; }
 
     public static void init__() {
         String defaultCurrent = "{ \"season\": NONE, \"weather\": NONE, \"previous-weather\": NONE, \"language\": EN_us }";
@@ -65,18 +38,10 @@ public class Config {
         SeasonsAPI.getLogger().info("Configs loaded!");
     }
 
-    public void reloadLang() {
-        loadLang(getCurrent("language"));
-    }
-    public void loadLang(String langName) {
-        lang = langs.containsKey(langName) ? langs.get(langName) : langs.get(defaultLang);
-        lang.generateCreateIfDoNotExistsOpenAndUpdateIfLegacy();
-    }
-
     public static void setLang(String lang) {
         writeCurrent("language", lang);
         saveCurrent();
-        for (Config mod : mods.values()) {
+        for (ConfigObject mod : mods.values()) {
             mod.loadLang(lang);
         }
         Season.reloadDynamics();
@@ -84,17 +49,13 @@ public class Config {
         SeasonsAPI.getLogger().info("Lang changed to: {}", lang);
     }
 
-    public static List<String> getLangs() { return allLangs; }
+    public static List<String> getListOfLangs() { return listOfLangs; }
 
     public static void reloadAll() {
-        for (Config mod : mods.values()) {
+        for (ConfigObject mod : mods.values()) {
             mod.reload();
         }
         SeasonsAPI.getLogger().info("Configs was reloaded!");
-    }
-    public void reload() {
-        config.generateCreateIfDoNotExistsOpenAndUpdateIfLegacy();
-        reloadLang();
     }
 
     public static void saveCurrent() {
@@ -104,9 +65,6 @@ public class Config {
 
     public static String getCurrent(String key) { return current.get(key).getAsString(); }
     public static void writeCurrent(String key, String value) { current.addProperty(key, value); }
-
-    public TXTConfigObject getLang() { return lang; }
-    public TXTConfigObject getConfig() { return config; }
 
     public static String getCopyright() {
         return "# ------------------------------------------------\n# seasons-api\n# ------------------------------------------------\n" +

@@ -1,7 +1,7 @@
 package ru.kochkaev.api.seasons;
 
 import net.minecraft.server.network.ServerPlayerEntity;
-import ru.kochkaev.api.seasons.config.Config;
+import ru.kochkaev.api.seasons.service.Config;
 import ru.kochkaev.api.seasons.object.ChallengeObject;
 import ru.kochkaev.api.seasons.service.Challenge;
 
@@ -9,7 +9,6 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 public class ChallengesTicker {
 
