@@ -16,8 +16,8 @@ public class Task {
     public static void addTask(IFuncRet task, List<Object> args) {
         addTask(task, task, args);
     }
-    public static void removeTask(IFuncRet task) {
-        forRemove.add(task);
+    public static void removeTask(Object key) {
+        forRemove.add(key);
     }
 
     public static void runTasks() {

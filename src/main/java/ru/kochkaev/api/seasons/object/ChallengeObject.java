@@ -170,9 +170,8 @@ public abstract class ChallengeObject {
     /**
      * You can use this method for give player freezing effect (blue hurts and snowflakes on the screen).<br>
      * @param player player, who we will give effect.
-     * @return task method.
      */
-    protected IFuncRet giveFrozen(ServerPlayerEntity player) {
+    protected void giveFrozen(ServerPlayerEntity player) {
         IFuncRet task = (args) -> {
             int count = (int) args.getFirst();
             ServerPlayerEntity playr = (ServerPlayerEntity) args.get(1);
@@ -180,15 +179,17 @@ public abstract class ChallengeObject {
             if (count < 140) return Arrays.asList(count+1, playr);
             return args;
         };
-        Task.addTask(task, Arrays.asList(1, player));
-        return task;
+        Task.addTask(getFrozenTaskKey(player), task, Arrays.asList(1, player));
     }
     /**
      * You can use this method for remove player freeze effect.<br>
-     * @param task task, who we will remove.
+     * @param player player for effect removing.
      */
-    protected void removeFrozen(IFuncRet task) {
-        Task.removeTask(task);
+    protected void removeFrozen(ServerPlayerEntity player) {
+        Task.removeTask(getFrozenTaskKey(player));
+    }
+    protected String getFrozenTaskKey(ServerPlayerEntity player) {
+        return player.getName()+"-"+id+"-frozenTask";
     }
 
     /**
