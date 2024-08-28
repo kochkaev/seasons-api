@@ -21,8 +21,8 @@ public class Task {
     }
 
     public static void runTasks() {
-        for (IFuncRet task : tasks.getFirstValuesSet()) {
-            tasks.setSecond(task, task.function(tasks.getSecond(task)));
+        for (Object key : tasks.getKeySet()) {
+            tasks.setSecond(key, tasks.getFirst(key).function(tasks.getSecond(key)));
         }
         for (Object key : forRemove) {
             tasks.remove(key);
