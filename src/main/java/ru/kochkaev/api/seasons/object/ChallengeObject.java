@@ -179,17 +179,17 @@ public abstract class ChallengeObject {
             if (count < 140) return Arrays.asList(count+1, playr);
             return args;
         };
-        Task.addTask(getFrozenTaskKey(player), task, Arrays.asList(1, player));
+        Task.addTask(getTaskKey(player, "frozen"), task, Arrays.asList(1, player));
     }
     /**
      * You can use this method for remove player freeze effect.<br>
      * @param player player for effect removing.
      */
     protected void removeFrozen(ServerPlayerEntity player) {
-        Task.removeTask(getFrozenTaskKey(player));
+        Task.removeTask(getTaskKey(player, "frozen"));
     }
-    protected String getFrozenTaskKey(ServerPlayerEntity player) {
-        return player.getName()+"-"+id+"-frozenTask";
+    protected String getTaskKey(ServerPlayerEntity player, String taskName) {
+        return player.getName()+"-"+id+"-"+taskName+"-Task";
     }
 
     /**
