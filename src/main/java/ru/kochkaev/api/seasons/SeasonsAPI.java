@@ -31,6 +31,7 @@ public class SeasonsAPI {
     }
 
     public static void onWorldStarted() {
+        Config.loadCurrent();
         Register.register();
         Season.onServerStartup();
         Weather.onServerStartup();
@@ -50,7 +51,6 @@ public class SeasonsAPI {
         placeholderAPI = IntegrationManager.getPlaceholderAPIIfAvailable();
         clothConfig = IntegrationManager.getClothConfigIfAvailable();
         registerPlaceholders();
-        Config.init__();
         Config.regModConfig(new ConfigObject("API", "en_US"));
         Register.registerAllInPackage("ru.kochkaev.api.seasons.config");
         Register.registerAllInPackage("ru.kochkaev.api.seasons.event");

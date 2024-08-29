@@ -15,8 +15,7 @@ public class JSONConfigObject {
     private JsonObject jsonObject;
     static Gson gson = new Gson();
 
-    public static JSONConfigObject openOrCreate(String filename, String defaults) {
-        Path path = FabricLoader.getInstance().getConfigDir().toAbsolutePath().resolve(filename+".json");
+    public static JSONConfigObject openOrCreate(Path path, String defaults) {
         String pathStr = path.toString();
         try {
             File json = new File(pathStr);
@@ -33,6 +32,10 @@ public class JSONConfigObject {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+    public static JSONConfigObject openOrCreate(String filename, String defaults) {
+        Path path = FabricLoader.getInstance().getConfigDir().toAbsolutePath().resolve(filename+".json");
+        return openOrCreate(path, defaults);
     }
 
 

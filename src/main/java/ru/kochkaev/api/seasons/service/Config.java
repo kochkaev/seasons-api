@@ -1,15 +1,14 @@
 package ru.kochkaev.api.seasons.service;
 
 import com.google.gson.JsonObject;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.util.WorldSavePath;
 import ru.kochkaev.api.seasons.SeasonsAPI;
 import ru.kochkaev.api.seasons.SeasonsAPIServer;
 import ru.kochkaev.api.seasons.object.ConfigObject;
 import ru.kochkaev.api.seasons.object.JSONConfigObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Config {
 
@@ -27,9 +26,9 @@ public class Config {
         mods.put(config.getModName(), config);
     }
 
-    public static void init__() {
+    public static void loadCurrent() {
         String defaultCurrent = "{ \"season\": NONE, \"weather\": NONE, \"previous-weather\": NONE, \"language\": EN_us }";
-        jsonCore = JSONConfigObject.openOrCreate("Seasons/current", defaultCurrent);
+        jsonCore = JSONConfigObject.openOrCreate(Objects.requireNonNull(SeasonsAPI.getEnvironment().getOverworld().getServer()).getSavePath(WorldSavePath.ROOT).toAbsolutePath().resolve("seasons-current.json"), defaultCurrent);
         current = jsonCore.getJsonObject();
 //        for (Config mod : mods.values()){
 //            mod.reloadLang();

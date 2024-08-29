@@ -3,7 +3,6 @@ package ru.kochkaev.api.seasons;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
@@ -42,7 +41,7 @@ public class SeasonsAPIServer extends Environment implements ModInitializer {
 	}
 
 	@Override
-	public <T extends ParticleEffect> int spawnParticles(T particle, double x, double y, double z, int count, double deltaX, double deltaY, double deltaZ, double speed) {
-		return overworld.spawnParticles(particle, x, y, z, count, deltaX, deltaY, deltaZ, speed);
+	public <T extends ParticleEffect> void spawnParticles(T particle, double x, double y, double z, int count, double deltaX, double deltaY, double deltaZ, double speed) {
+		overworld.spawnParticles(particle, x, y, z, count, deltaX, deltaY, deltaZ, speed);
 	}
 }
