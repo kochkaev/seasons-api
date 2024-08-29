@@ -19,7 +19,10 @@ public class IntegrationManager {
 
     public static @Nullable ClothConfig getClothConfigIfAvailable() {
         try {
-            if (isModLoaded("cloth-config")) return new ClothConfig();
+            if (isModLoaded("cloth-config")) {
+                SeasonsAPI.getLogger().info("Cloth Config API available, integrating!");
+                return ClothConfig.getInstance();
+            }
         } catch (Throwable t) {
             SeasonsAPI.getLogger().info("Cloth Config API don't matched, skipping");
         }

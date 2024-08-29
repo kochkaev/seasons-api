@@ -15,18 +15,21 @@
 	"icon": "assets/icon.png",
 	"environment": "*",
 	"entrypoints": {
-		"main": [
-          "ru.kochkaev.api.seasons.SeasonsAPIFabric"
-		],
 		"client": [
 			"ru.kochkaev.api.seasons.SeasonsAPIFabricClient"
 		],
+		"server": [
+
+		],
+		"main": [
+          	"ru.kochkaev.api.seasons.SeasonsAPIFabric"
+		],
 		"modmenu": [
-          "ru.kochkaev.api.seasons.integration.mod.ModMenu"
+          	"ru.kochkaev.api.seasons.integration.mod.ModMenu"
 		]
 	},
 	"mixins": [
-		"seasons-api.mixins.json"
+			"seasons-api.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.15.11",
@@ -41,5 +44,14 @@
 		"placeholder-api": "*",
 		"cloth-config": "*",
 		"modmenu": "*"
-	}
-}
+	},
+	"custom": {
+		"modmenu": {
+			"links": {
+				"modmenu.issues": "https://github.com/kochkaev/seasons-api/issues",
+				"modmenu.sources": "https://github.com/kochkaev/seasons-api"
+			},
+			"badges": [ "library" ],
+			"update_checker": false
+		}
+	}}

@@ -16,8 +16,7 @@ public class SeasonsAPIFabric extends Environment implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		SeasonsAPI.regEnvironment(this, true);
-		SeasonsAPI.start();
+		SeasonsAPI.regEnvironment(this);
 		ServerLifecycleEvents.SERVER_STARTED.register(SeasonsAPI::onWorldStarted);
 		ServerLifecycleEvents.SERVER_STOPPED.register((server) -> SeasonsAPI.onWorldShutdown());
 	}

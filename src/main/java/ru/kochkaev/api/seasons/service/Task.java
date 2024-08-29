@@ -19,6 +19,9 @@ public class Task {
     public static void removeTask(Object key) {
         forRemove.add(key);
     }
+    public static Map1Key2Values<Object, IFuncRet, List<Object>> getTasks() {
+        return tasks;
+    }
 
     public static void runTasks() {
         for (Object key : tasks.getKeySet()) {

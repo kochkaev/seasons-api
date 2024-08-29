@@ -1,3 +1,4 @@
 {
-    "death.attack.weather": "%1$s became a victim of the weather."
+    "death.attack.weather": "%1$s became a victim of the weather.",
+    "seasonsapi.config.modname": "Seasons API Configs"
 }

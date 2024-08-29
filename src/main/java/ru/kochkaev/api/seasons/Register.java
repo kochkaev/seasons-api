@@ -27,14 +27,18 @@ public class Register {
                 TXTConfigObject configObject = config.getConstructor().newInstance();
                 Config.getModConfig(configObject.getModName()).registerConfigObject(configObject);
             }
-            Config.initConfigObjects();
-            SeasonsAPI.getLogger().info("Registered {} config files", configs4Reg.size());
-            for (Class<SeasonObject> season: seasons4Reg) Season.register(season.getConstructor().newInstance());
-            SeasonsAPI.getLogger().info("Registered {} seasons", seasons4Reg.size());
-            for (Class<WeatherObject> weather : weathers4Reg) Weather.register(weather.getConstructor().newInstance());
-            SeasonsAPI.getLogger().info("Registered {} weathers", weathers4Reg.size());
-            for (Class<ChallengeObject> challenge : challenges4Reg) Challenge.register(challenge.getConstructor().newInstance());
-            SeasonsAPI.getLogger().info("Registered {} challenges", challenges4Reg.size());
+            if (SeasonsAPI.isStarted()){
+                Config.initConfigObjects();
+                SeasonsAPI.getLogger().info("Registered {} config files", configs4Reg.size());
+                for (Class<SeasonObject> season : seasons4Reg) Season.register(season.getConstructor().newInstance());
+                SeasonsAPI.getLogger().info("Registered {} seasons", seasons4Reg.size());
+                for (Class<WeatherObject> weather : weathers4Reg)
+                    Weather.register(weather.getConstructor().newInstance());
+                SeasonsAPI.getLogger().info("Registered {} weathers", weathers4Reg.size());
+                for (Class<ChallengeObject> challenge : challenges4Reg)
+                    Challenge.register(challenge.getConstructor().newInstance());
+                SeasonsAPI.getLogger().info("Registered {} challenges", challenges4Reg.size());
+            }
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {
             throw new RuntimeException(e);

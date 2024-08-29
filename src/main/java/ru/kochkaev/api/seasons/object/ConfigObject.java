@@ -1,6 +1,7 @@
 package ru.kochkaev.api.seasons.object;
 
 import ru.kochkaev.api.seasons.SeasonsAPI;
+import ru.kochkaev.api.seasons.integration.mod.ClothConfig;
 import ru.kochkaev.api.seasons.service.Config;
 
 import java.util.HashMap;
@@ -17,6 +18,7 @@ public class ConfigObject {
     public ConfigObject(String modName, String defaultLang) {
         this.modName = modName;
         this.defaultLang = defaultLang;
+        if (SeasonsAPI.getClothConfig()!=null) ClothConfig.getClient().addConfigCategory(this);
         SeasonsAPI.getLogger().info("Loaded mod: {}", modName);
     }
 
@@ -27,8 +29,8 @@ public class ConfigObject {
             String lang = object.getFilename();
             langs.put(lang, object);
             if (!Config.getListOfLangs().contains(lang)) Config.getListOfLangs().add(lang);
+            object.close();
         }
-        object.close();
     }
 
     public void reloadLang() {
@@ -51,4 +53,10 @@ public class ConfigObject {
     public TXTConfigObject getConfig() { return configs.values().stream().findFirst().orElseThrow(); }
     public TXTConfigObject getConfig(String filename) { return configs.get(filename); }
 
+    public Map<String, TXTConfigObject> getConfigs() {
+        return configs;
+    }
+    public Map<String, TXTConfigObject> getLangs() {
+        return langs;
+    }
 }

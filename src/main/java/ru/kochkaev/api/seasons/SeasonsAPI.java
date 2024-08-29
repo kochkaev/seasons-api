@@ -19,6 +19,7 @@ import ru.kochkaev.api.seasons.util.Format;
 public class SeasonsAPI {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("Seasons");
+    private static boolean isStarted = false;
     private static boolean isLoaded = false;
     private static PlaceholderAPI placeholderAPI = null;
     private static ClothConfig clothConfig = null;
@@ -26,13 +27,16 @@ public class SeasonsAPI {
     private static MinecraftServer server;
     private static ServerWorld world;
 
-    public static void regEnvironment(Environment environment, boolean isServer) {
+    public static void regEnvironment(Environment environment) {
         SeasonsAPI.environment = environment;
     }
 
     public static void onWorldStarted(MinecraftServer server) {
+        Register.registerAllInPackage("ru.kochkaev.api.seasons.event");
+        Register.registerAllInPackage("ru.kochkaev.api.seasons.example");
         SeasonsAPI.server = server;
         SeasonsAPI.world = server.getOverworld();
+        SeasonsAPI.isStarted = true;
         Config.loadCurrent();
         Register.register();
         Season.onServerStartup();
@@ -47,17 +51,21 @@ public class SeasonsAPI {
         Weather.saveCurrentToConfig();
         Season.saveCurrentToConfig();
         Config.saveCurrent();
+        isLoaded = false;
+        isStarted = false;
+    }
+
+    public static void checkIntegrations() {
+        placeholderAPI = IntegrationManager.getPlaceholderAPIIfAvailable();
+        clothConfig = IntegrationManager.getClothConfigIfAvailable();
     }
 
     public static void start() {
-        placeholderAPI = IntegrationManager.getPlaceholderAPIIfAvailable();
-        clothConfig = IntegrationManager.getClothConfigIfAvailable();
         registerPlaceholders();
         Config.regModConfig(new ConfigObject("API", "en_US"));
         Register.registerAllInPackage("ru.kochkaev.api.seasons.config");
-        Register.registerAllInPackage("ru.kochkaev.api.seasons.event");
-        Register.registerAllInPackage("ru.kochkaev.api.seasons.example");
         environment.registerCommands();
+        Register.register();
     }
 
     private static void registerPlaceholders() {
@@ -72,6 +80,7 @@ public class SeasonsAPI {
     }
 
     public static Logger getLogger() { return LOGGER; }
+    public static boolean isStarted() { return isStarted; }
     public static boolean isLoaded() { return isLoaded; }
     public static Environment getEnvironment() { return environment; }
     public static void setLoaded(boolean loaded) { isLoaded = loaded; }

@@ -1,6 +1,8 @@
 package ru.kochkaev.api.seasons.object;
 
 import net.fabricmc.loader.api.FabricLoader;
+import ru.kochkaev.api.seasons.util.map.Map1Key2Values;
+import ru.kochkaev.api.seasons.util.map.Map1Key3Values;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -15,7 +17,7 @@ public abstract class TXTConfigObject {
     private final String path;
     private Map<String, String> map = new HashMap<>();
     /** If true - {@link #generate} will generate content of config file, or else - generate only set of config keys. */
-    private boolean generateMode = false;
+    private String generateMode = "structure";
     private final String type;
 
     private final String modName;
@@ -23,6 +25,8 @@ public abstract class TXTConfigObject {
 
     private final Set<String> generatedKeySet = new HashSet<>();
     private String generated = "";
+    private final Map1Key2Values<String, String, String> keyCommentValueMap = new Map1Key2Values<>();
+    private String tempCommentForValue = "";
 
     protected TXTConfigObject(String modName, String filename, String type) {
         this.modName = modName;
@@ -101,9 +105,9 @@ public abstract class TXTConfigObject {
             reader.close();
             generate();
             if (!map.keySet().equals(generatedKeySet)) {
-                generateMode = true;
+                generateMode = "content";
                 generate();
-                generateMode = false;
+                generateMode = "structure";
                 Writer writer = Files.newBufferedWriter(Paths.get(path));
                 writer.write(generated);
                 writer.close();
@@ -117,6 +121,32 @@ public abstract class TXTConfigObject {
         map.clear();
         generatedKeySet.clear();
         generated = "";
+    }
+
+    /** To Cloth Config */
+    public Map1Key2Values<String, String, String> getKeyCommentAndDefaultMap() {
+        generateMode = "gui";
+        generate();
+        generateMode = "structure";
+//        for (String key : keyCommentValueMap.getKeySet()) keyCommentValueMap.setSecond(key, map.get(key));
+        Map1Key2Values<String, String, String> output = keyCommentValueMap.copy();
+        keyCommentValueMap.clear();
+        tempCommentForValue = "";
+        return output;
+    }
+
+    public void write(String key, String value) {
+        map.put(key, value);
+        try {
+            generateMode = "content";
+            generate();
+            generateMode = "structure";
+            Writer writer = Files.newBufferedWriter(Paths.get(path));
+            writer.write(generated);
+            writer.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -176,28 +206,37 @@ public abstract class TXTConfigObject {
 //    public static class GenerateDefaults {
 
     protected void addLine(String line) {
-        if (generateMode) generated += line + "\n";
+        if (generateMode.equals("content")) generated += line + "\n";
     }
     protected void addValue(String key, String value) {
-        if (!generateMode) generatedKeySet.add(key);
-        else {
+        if (generateMode.equals("structure")) generatedKeySet.add(key);
+        else if (generateMode.equals("content")){
             addLine(key + ": \"" + (map.getOrDefault(key, value)) + "\"");
             map.put(key, value);
         }
+        else if (generateMode.equals("gui")) {
+            keyCommentValueMap.put(key, tempCommentForValue, value);
+            tempCommentForValue = "";
+        }
     }
     protected void addValueAndCommentDefault(String key, String value) {
-        if (!generateMode) generatedKeySet.add(key);
-        else {
+        if (generateMode.equals("structure")) generatedKeySet.add(key);
+        else if (generateMode.equals("content")){
             String valueModified = map.getOrDefault(key, value);
             addLine(key + ": \"" + valueModified + "\" # | default: \"" + value + "\"");
             map.put(key, value);
         }
+        else if (generateMode.equals("gui")) {
+            keyCommentValueMap.put(key, tempCommentForValue, value);
+            tempCommentForValue = "";
+        }
     }
     protected void addComment(String comment) {
+        if (generateMode.equals("gui")) tempCommentForValue += "\n" + comment;
         addLine("# " + comment);
     }
-    protected void addVoid() { addLine(""); }
-    protected void addString(String string) { if (generateMode) generated += string; }
+    protected void addVoid() { if (generateMode.equals("gui")) tempCommentForValue = ""; else addLine(""); }
+    protected void addString(String string) { if (generateMode.equals("content")) generated += string; }
 
     protected String getGenerated() { return generated; }
 
