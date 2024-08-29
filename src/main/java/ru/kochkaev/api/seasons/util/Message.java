@@ -1,9 +1,9 @@
 package ru.kochkaev.api.seasons.util;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import ru.kochkaev.api.seasons.SeasonsAPIServer;
+import ru.kochkaev.api.seasons.SeasonsAPI;
+import ru.kochkaev.api.seasons.SeasonsAPIFabric;
 import ru.kochkaev.api.seasons.service.Config;
 
 import java.util.HashMap;
@@ -17,11 +17,11 @@ public abstract class Message {
     }
     public static void sendMessage2Server(String message, Map<String, String> placeholders){
         String formattedMessage = getFormattedMessage(message, placeholders);
-        for (PlayerEntity player : SeasonsAPIServer.getServer().getPlayerManager().getPlayerList()) player.sendMessage(Text.of(formattedMessage));
+        for (PlayerEntity player : SeasonsAPI.getServer().getPlayerManager().getPlayerList()) player.sendMessage(Text.of(formattedMessage));
     }
     public static void sendMessage2ServerDefaultPlaceholders(String message){
         Text formattedText = getFormattedText(message);
-        for (PlayerEntity player : SeasonsAPIServer.getServer().getPlayerManager().getPlayerList()) player.sendMessage(formattedText);
+        for (PlayerEntity player : SeasonsAPI.getServer().getPlayerManager().getPlayerList()) player.sendMessage(formattedText);
     }
 
     public static void sendMessage2Players(String message, List<PlayerEntity> players){

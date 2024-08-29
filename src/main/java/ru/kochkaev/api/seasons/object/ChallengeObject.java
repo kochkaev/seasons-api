@@ -196,7 +196,7 @@ public abstract class ChallengeObject {
      * @param particles spawn particle type.
      */
     protected void spawnParticles(PlayerEntity player, ParticleEffect particles, boolean falling, double offsetY, int count) {
-        SeasonsAPI.getEnvironment().spawnParticles(particles, player.getX(), player.getY()+offsetY, player.getZ(), count, 0, falling ? -1 : 1, 0, 0.1);
+        SeasonsAPI.getOverworld().spawnParticles(particles, player.getX(), player.getY()+offsetY, player.getZ(), count, 0, falling ? -1 : 1, 0, 0.1);
     }
 
 

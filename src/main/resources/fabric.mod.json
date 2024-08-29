@@ -16,10 +16,10 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"ru.kochkaev.api.seasons.SeasonsAPIServer"
+          "ru.kochkaev.api.seasons.SeasonsAPIFabric"
 		],
 		"client": [
-			"ru.kochkaev.api.seasons.SeasonsAPIClient"
+			"ru.kochkaev.api.seasons.SeasonsAPIFabricClient"
 		],
 		"modmenu": [
           "ru.kochkaev.api.seasons.integration.mod.ModMenu"

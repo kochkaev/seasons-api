@@ -7,7 +7,7 @@ import eu.pb4.placeholders.api.Placeholders;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import ru.kochkaev.api.seasons.SeasonsAPI;
-import ru.kochkaev.api.seasons.SeasonsAPIServer;
+import ru.kochkaev.api.seasons.SeasonsAPIFabric;
 import ru.kochkaev.api.seasons.util.functional.IFuncStringRet;
 import ru.kochkaev.api.seasons.util.functional.IFuncTextRet;
 
@@ -87,7 +87,7 @@ public class PlaceholderAPI {
     }
 
     public Text parseText(Text message) {
-        return Placeholders.parseText(message, PlaceholderContext.of(SeasonsAPIServer.getServer()));
+        return Placeholders.parseText(message, PlaceholderContext.of(SeasonsAPI.getServer()));
     }
     public String parseString(String message) {
         return parseText(Text.of(message)).getString();

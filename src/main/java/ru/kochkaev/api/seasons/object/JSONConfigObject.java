@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.fabricmc.loader.api.FabricLoader;
+import ru.kochkaev.api.seasons.SeasonsAPI;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -34,7 +35,7 @@ public class JSONConfigObject {
         }
     }
     public static JSONConfigObject openOrCreate(String filename, String defaults) {
-        Path path = FabricLoader.getInstance().getConfigDir().toAbsolutePath().resolve(filename+".json");
+        Path path = SeasonsAPI.getEnvironment().getConfigPath().resolve(filename+".json");
         return openOrCreate(path, defaults);
     }
 

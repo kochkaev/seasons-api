@@ -1,10 +1,10 @@
 package ru.kochkaev.api.seasons;
 
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.kochkaev.api.seasons.command.SeasonsCommand;
 import ru.kochkaev.api.seasons.integration.Environment;
 import ru.kochkaev.api.seasons.integration.IntegrationManager;
 import ru.kochkaev.api.seasons.integration.mod.ClothConfig;
@@ -23,14 +23,16 @@ public class SeasonsAPI {
     private static PlaceholderAPI placeholderAPI = null;
     private static ClothConfig clothConfig = null;
     private static Environment environment;
-    private static boolean isServer = true;
+    private static MinecraftServer server;
+    private static ServerWorld world;
 
     public static void regEnvironment(Environment environment, boolean isServer) {
         SeasonsAPI.environment = environment;
-        SeasonsAPI.isServer = isServer;
     }
 
-    public static void onWorldStarted() {
+    public static void onWorldStarted(MinecraftServer server) {
+        SeasonsAPI.server = server;
+        SeasonsAPI.world = server.getOverworld();
         Config.loadCurrent();
         Register.register();
         Season.onServerStartup();
@@ -55,7 +57,7 @@ public class SeasonsAPI {
         Register.registerAllInPackage("ru.kochkaev.api.seasons.config");
         Register.registerAllInPackage("ru.kochkaev.api.seasons.event");
         Register.registerAllInPackage("ru.kochkaev.api.seasons.example");
-        CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> SeasonsCommand.register(dispatcher)));
+        environment.registerCommands();
     }
 
     private static void registerPlaceholders() {
@@ -72,13 +74,18 @@ public class SeasonsAPI {
     public static Logger getLogger() { return LOGGER; }
     public static boolean isLoaded() { return isLoaded; }
     public static Environment getEnvironment() { return environment; }
-    public static boolean isServer() { return isServer; }
     public static void setLoaded(boolean loaded) { isLoaded = loaded; }
     public static PlaceholderAPI getPlaceholderAPI() {
         return placeholderAPI;
     }
     public static ClothConfig getClothConfig() {
         return clothConfig;
+    }
+    public static MinecraftServer getServer() {
+        return server;
+    }
+    public static ServerWorld getOverworld() {
+        return world;
     }
 
 }
