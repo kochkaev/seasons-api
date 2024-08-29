@@ -3,7 +3,7 @@ package ru.kochkaev.api.seasons.util;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import ru.kochkaev.api.seasons.SeasonsAPI;
+import ru.kochkaev.api.seasons.SeasonsAPIServer;
 import ru.kochkaev.api.seasons.service.Config;
 
 import java.util.HashMap;
@@ -17,32 +17,32 @@ public abstract class Message {
     }
     public static void sendMessage2Server(String message, Map<String, String> placeholders){
         String formattedMessage = getFormattedMessage(message, placeholders);
-        for (PlayerEntity player : SeasonsAPI.getServer().getPlayerManager().getPlayerList()) player.sendMessage(Text.of(formattedMessage));
+        for (PlayerEntity player : SeasonsAPIServer.getServer().getPlayerManager().getPlayerList()) player.sendMessage(Text.of(formattedMessage));
     }
     public static void sendMessage2ServerDefaultPlaceholders(String message){
         Text formattedText = getFormattedText(message);
-        for (PlayerEntity player : SeasonsAPI.getServer().getPlayerManager().getPlayerList()) player.sendMessage(formattedText);
+        for (PlayerEntity player : SeasonsAPIServer.getServer().getPlayerManager().getPlayerList()) player.sendMessage(formattedText);
     }
 
-    public static void sendMessage2Players(String message, List<ServerPlayerEntity> players){
+    public static void sendMessage2Players(String message, List<PlayerEntity> players){
         sendMessage2Players(message, players, new HashMap<>());
     }
-    public static void sendMessage2Players(String message, List<ServerPlayerEntity> players, Map<String, String> placeholders){
+    public static void sendMessage2Players(String message, List<PlayerEntity> players, Map<String, String> placeholders){
         String formattedMessage = getFormattedMessage(message, placeholders);
         for (PlayerEntity player : players) player.sendMessage(Text.of(formattedMessage));
     }
-    public static void sendMessage2PlayersDefaultPlaceholders(String message, List<ServerPlayerEntity> players){
+    public static void sendMessage2PlayersDefaultPlaceholders(String message, List<PlayerEntity> players){
         Text formattedText = getFormattedText(message);
         for (PlayerEntity player : players) player.sendMessage(formattedText);
     }
 
-    public static void sendMessage2Player(String message, ServerPlayerEntity player){
+    public static void sendMessage2Player(String message, PlayerEntity player){
         sendMessage2Player(message, player, new HashMap<>());
     }
-    public static void sendMessage2Player(String message, ServerPlayerEntity player, Map<String, String> placeholders){
+    public static void sendMessage2Player(String message, PlayerEntity player, Map<String, String> placeholders){
         player.sendMessage(Text.of(getFormattedMessage(message, placeholders)));
     }
-    public static void sendMessage2PlayerDefaultPlaceholders(String message, ServerPlayerEntity player){
+    public static void sendMessage2PlayerDefaultPlaceholders(String message, PlayerEntity player){
         player.sendMessage(getFormattedText(message));
     }
 

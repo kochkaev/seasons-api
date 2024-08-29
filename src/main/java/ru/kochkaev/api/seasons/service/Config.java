@@ -2,9 +2,9 @@ package ru.kochkaev.api.seasons.service;
 
 import com.google.gson.JsonObject;
 import ru.kochkaev.api.seasons.SeasonsAPI;
+import ru.kochkaev.api.seasons.SeasonsAPIServer;
 import ru.kochkaev.api.seasons.object.ConfigObject;
 import ru.kochkaev.api.seasons.object.JSONConfigObject;
-import ru.kochkaev.api.seasons.object.TXTConfigObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -37,6 +37,18 @@ repositories {
         url = "https://maven.nucleoid.xyz/"
     }
 
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
+
 }
 
 dependencies {
@@ -49,6 +61,8 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     // Placeholders API
     modImplementation "eu.pb4:placeholder-api:${project.placeholderapi_version}"
+    modImplementation "maven.modrinth:modmenu:${project.modmenu_version}"
+    modImplementation "maven.modrinth:cloth-config:${project.clothconfig_version}"
 }
 
 processResources {

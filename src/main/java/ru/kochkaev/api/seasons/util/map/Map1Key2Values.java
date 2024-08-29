@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 public class Map1Key2Values <K, F, S> {
 
-    private Map<K,ValuesObject> map = new HashMap<>();
+    private final Map<K,ValuesObject> map = new HashMap<>();
 
     public Map1Key2Values() {
 

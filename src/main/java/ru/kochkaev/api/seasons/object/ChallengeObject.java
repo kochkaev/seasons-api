@@ -4,13 +4,12 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.network.ServerPlayerEntity;
 import ru.kochkaev.api.seasons.ChallengesTicker;
-import ru.kochkaev.api.seasons.service.Season;
-import ru.kochkaev.api.seasons.util.functional.IFunc;
+import ru.kochkaev.api.seasons.SeasonsAPI;
 import ru.kochkaev.api.seasons.util.functional.IFuncRet;
 import ru.kochkaev.api.seasons.service.Task;
 import ru.kochkaev.api.seasons.service.Weather;
@@ -18,7 +17,6 @@ import ru.kochkaev.api.seasons.util.Message;
 import ru.kochkaev.api.seasons.WeatherDamageType;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -59,7 +57,7 @@ public abstract class ChallengeObject {
      * </code>
      * You can also create anonymous class for create challenge.<br>
      * <code>
-     *     ChallengeObject yourChallenge = new ChallengeObject("Your message", Arrays.asList(Weather.FIRST_WEATHER, Weather.SECOND_WEATHER), false) { public void register() { ... } public void logic(ServerPlayerEntity player, int countOfInARowCalls, int ticksPerAction) { ... } public void challengeEnd(ServerPlayerEntity player) { ... } };<br>
+     *     ChallengeObject yourChallenge = new ChallengeObject("Your message", Arrays.asList(Weather.FIRST_WEATHER, Weather.SECOND_WEATHER), false) { public void register() { ... } public void logic(PlayerEntity player, int countOfInARowCalls, int ticksPerAction) { ... } public void challengeEnd(PlayerEntity player) { ... } };<br>
      * </code>
      * @param weathers {@link #weathers}
      * @param allowIfPrevious {@link #allowIfPrevious}
@@ -83,12 +81,12 @@ public abstract class ChallengeObject {
      * This method will be called every {@code conf.tick.secondsPerTick} (from config.txt) seconds.
      * Method contains challenge logic for one thing player.<br><br>
      * This method must be realized in your challenge. Use {@code @Override} annotation for this method.<br>
-     * {@code public void logic(ServerPlayerEntity player, int countOfInARowCalls) { ... }}
+     * {@code public void logic(PlayerEntity player, int countOfInARowCalls) { ... }}
      * @param player player to whom the logic applies.
      * @param countOfInARowCalls count of fulfilled conditions in "logic" in a row.
      * @return new value for countOfInARowCalls
      */
-    public abstract int logic(ServerPlayerEntity player, int countOfInARowCalls, int ticksPerAction);
+    public abstract int logic(PlayerEntity player, int countOfInARowCalls, int ticksPerAction);
 
     /**
      * Challenge start event.<br><br>
@@ -96,14 +94,14 @@ public abstract class ChallengeObject {
      * You must realize this method in your challenge. Use {@code @Override} annotation for this method.<br>
      * @param player player to whom the logic applies.
      */
-    public abstract void onChallengeStart(ServerPlayerEntity player);
+    public abstract void onChallengeStart(PlayerEntity player);
     /**
      * Challenge end.<br><br>
      * This method will be called on weather change and if {@link #weathers} don't contain this weather (only if {@link #allowIfPrevious} == true), on condition countOfInARowCalls != 0.
      * You must realize this method in your challenge. Use {@code @Override} annotation for this method.<br>
      * @param player player to whom the logic applies.
      */
-    public abstract void onChallengeEnd(ServerPlayerEntity player);
+    public abstract void onChallengeEnd(PlayerEntity player);
 
     /**
      * You can use this method for damage player.
@@ -111,19 +109,19 @@ public abstract class ChallengeObject {
      * @param amount (optional) amount of damage (hp) | default = 1.0f
      * @param key (optional) damage type
      */
-    protected void damage(ServerPlayerEntity player, float amount, RegistryKey<DamageType> key) {
-        DamageSource type = WeatherDamageType.of(player.getServerWorld(), key);
+    protected void damage(PlayerEntity player, float amount, RegistryKey<DamageType> key) {
+        DamageSource type = WeatherDamageType.of(player.getWorld(), key);
         player.damage(type, amount);
     }
-    /** See {@link  #damage(ServerPlayerEntity, float, RegistryKey)} */
-    protected void damage(ServerPlayerEntity player, RegistryKey<DamageType> key) { damage(player, 1.0f, key); }
+    /** See {@link  #damage(PlayerEntity, float, RegistryKey)} */
+    protected void damage(PlayerEntity player, RegistryKey<DamageType> key) { damage(player, 1.0f, key); }
 
-    /** See {@link  #damage(ServerPlayerEntity, float, RegistryKey)} */
-    protected void damageCold(ServerPlayerEntity player) { damage(player, 1.0f, WeatherDamageType.WEATHER_COLDS_DAMAGE_TYPE); }
-    /** See {@link  #damage(ServerPlayerEntity, float, RegistryKey)} */
-    protected void damageHot(ServerPlayerEntity player) { damage(player, 1.0f, WeatherDamageType.WEATHER_HOTS_DAMAGE_TYPE); }
-    /** See {@link  #damage(ServerPlayerEntity, float, RegistryKey)} */
-    protected void damageStorm(ServerPlayerEntity player) { damage(player, 1.0f, WeatherDamageType.WEATHER_STORMY_DAMAGE_TYPE); }
+    /** See {@link  #damage(PlayerEntity, float, RegistryKey)} */
+    protected void damageCold(PlayerEntity player) { damage(player, 1.0f, WeatherDamageType.WEATHER_COLDS_DAMAGE_TYPE); }
+    /** See {@link  #damage(PlayerEntity, float, RegistryKey)} */
+    protected void damageHot(PlayerEntity player) { damage(player, 1.0f, WeatherDamageType.WEATHER_HOTS_DAMAGE_TYPE); }
+    /** See {@link  #damage(PlayerEntity, float, RegistryKey)} */
+    protected void damageStorm(PlayerEntity player) { damage(player, 1.0f, WeatherDamageType.WEATHER_STORMY_DAMAGE_TYPE); }
 
     /**
      * You can use this method for give player effect.
@@ -133,21 +131,21 @@ public abstract class ChallengeObject {
      * @param amplifier (optional) effect level | default = 0
      * @param hideParticles (optional) hide effect particles | default = false
      */
-    protected void giveEffect(ServerPlayerEntity player, RegistryEntry<StatusEffect> effect, int duration, int amplifier, boolean hideParticles) {
+    protected void giveEffect(PlayerEntity player, RegistryEntry<StatusEffect> effect, int duration, int amplifier, boolean hideParticles) {
         player.addStatusEffect(new StatusEffectInstance(effect, duration, amplifier, hideParticles, hideParticles));
     }
-    /** See {@link  #giveEffect(ServerPlayerEntity, RegistryEntry, int, int, boolean)} */
-    protected void giveEffect(ServerPlayerEntity player, RegistryEntry<StatusEffect> effect, int duration, int amplifier) { giveEffect(player, effect, duration, amplifier, false); }
-    /** See {@link  #giveEffect(ServerPlayerEntity, RegistryEntry, int, int, boolean)} */
-    protected void giveEffect(ServerPlayerEntity player, RegistryEntry<StatusEffect> effect, int amplifier) { giveEffect(player, effect, -1, amplifier, false); }
-    /** See {@link  #giveEffect(ServerPlayerEntity, RegistryEntry, int, int, boolean)} */
-    protected void giveEffect(ServerPlayerEntity player, RegistryEntry<StatusEffect> effect) { giveEffect(player, effect, -1, 0, false); }
+    /** See {@link  #giveEffect(PlayerEntity, RegistryEntry, int, int, boolean)} */
+    protected void giveEffect(PlayerEntity player, RegistryEntry<StatusEffect> effect, int duration, int amplifier) { giveEffect(player, effect, duration, amplifier, false); }
+    /** See {@link  #giveEffect(PlayerEntity, RegistryEntry, int, int, boolean)} */
+    protected void giveEffect(PlayerEntity player, RegistryEntry<StatusEffect> effect, int amplifier) { giveEffect(player, effect, -1, amplifier, false); }
+    /** See {@link  #giveEffect(PlayerEntity, RegistryEntry, int, int, boolean)} */
+    protected void giveEffect(PlayerEntity player, RegistryEntry<StatusEffect> effect) { giveEffect(player, effect, -1, 0, false); }
     /**
      * You can use this method for remove player effect.
      * @param player player, who we will remove effect
      * @param effect effect, who we will remove (you can use StatusEffects.EFFECT_NAME)
      */
-    protected void removeEffect(ServerPlayerEntity player, RegistryEntry<StatusEffect> effect)  {
+    protected void removeEffect(PlayerEntity player, RegistryEntry<StatusEffect> effect)  {
         player.removeStatusEffect(effect);
     }
 
@@ -171,10 +169,10 @@ public abstract class ChallengeObject {
      * You can use this method for give player freezing effect (blue hurts and snowflakes on the screen).<br>
      * @param player player, who we will give effect.
      */
-    protected void giveFrozen(ServerPlayerEntity player) {
+    protected void giveFrozen(PlayerEntity player) {
         IFuncRet task = (args) -> {
             int count = (int) args.getFirst();
-            ServerPlayerEntity playr = (ServerPlayerEntity) args.get(1);
+            PlayerEntity playr = (PlayerEntity) args.get(1);
             playr.setFrozenTicks(count);
             if (count < 140) return Arrays.asList(count+1, playr);
             return args;
@@ -185,10 +183,10 @@ public abstract class ChallengeObject {
      * You can use this method for remove player freeze effect.<br>
      * @param player player for effect removing.
      */
-    protected void removeFrozen(ServerPlayerEntity player) {
+    protected void removeFrozen(PlayerEntity player) {
         Task.removeTask(getTaskKey(player, "frozen"));
     }
-    protected String getTaskKey(ServerPlayerEntity player, String taskName) {
+    protected String getTaskKey(PlayerEntity player, String taskName) {
         return player.getName()+"-"+id+"-"+taskName+"-Task";
     }
 
@@ -197,19 +195,19 @@ public abstract class ChallengeObject {
      * @param player player for whom will spawn particles.
      * @param particles spawn particle type.
      */
-    protected void spawnParticles(ServerPlayerEntity player, ParticleEffect particles, boolean falling, double offsetY, int count) {
-        player.getServerWorld().spawnParticles(particles, player.getX(), player.getY()+offsetY, player.getZ(), count, 0, falling ? -1 : 1, 0, 0.1);
+    protected void spawnParticles(PlayerEntity player, ParticleEffect particles, boolean falling, double offsetY, int count) {
+        SeasonsAPI.getEnvironment().spawnParticles(particles, player.getX(), player.getY()+offsetY, player.getZ(), count, 0, falling ? -1 : 1, 0, 0.1);
     }
 
 
     /**
      * You can use this method for send message to server players.
-     * @see #sendMessage(ServerPlayerEntity, String)
+     * @see #sendMessage(PlayerEntity, String)
      * @param player player who we will send message.
      * @param message message for send.
      * @param placeholders Map of placeholders.
      */
-    protected void sendMessage(ServerPlayerEntity player, String message, Map<String, String> placeholders) {
+    protected void sendMessage(PlayerEntity player, String message, Map<String, String> placeholders) {
         Message.sendMessage2Player(message, player, placeholders);
     }
     /**
@@ -222,9 +220,9 @@ public abstract class ChallengeObject {
      *     - And others, if you have PlaceholderAPI.<br>
      * @param player player, who we will send message
      * @param message message, who we will send
-     * @see #sendMessage(ServerPlayerEntity, String, Map)
+     * @see #sendMessage(PlayerEntity, String, Map)
      */
-    protected void sendMessage(ServerPlayerEntity player, String message) {
+    protected void sendMessage(PlayerEntity player, String message) {
         Message.sendMessage2PlayerDefaultPlaceholders(message, player);
     }
 

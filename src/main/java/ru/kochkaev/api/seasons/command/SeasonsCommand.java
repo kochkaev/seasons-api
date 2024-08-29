@@ -6,6 +6,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import ru.kochkaev.api.seasons.ChallengesTicker;
 import ru.kochkaev.api.seasons.SeasonsAPI;
+import ru.kochkaev.api.seasons.SeasonsAPIServer;
 import ru.kochkaev.api.seasons.service.Config;
 import ru.kochkaev.api.seasons.object.ChallengeObject;
 import ru.kochkaev.api.seasons.object.WeatherObject;

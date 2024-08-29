@@ -1,6 +1,7 @@
 package ru.kochkaev.api.seasons.object;
 
 import ru.kochkaev.api.seasons.SeasonsAPI;
+import ru.kochkaev.api.seasons.SeasonsAPIServer;
 import ru.kochkaev.api.seasons.service.Config;
 
 import java.util.HashMap;

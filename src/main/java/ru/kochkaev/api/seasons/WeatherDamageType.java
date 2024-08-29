@@ -6,6 +6,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
 
 public class WeatherDamageType {
 
@@ -16,7 +17,7 @@ public class WeatherDamageType {
 //    public static final DamageSource WEATHER_DAMAGE_SOURCE = new DamageSource(world.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(WEATHER_DAMAGE_TYPE));
 
 
-    public static DamageSource of(ServerWorld world, RegistryKey<DamageType> key) {
+    public static DamageSource of(World world, RegistryKey<DamageType> key) {
 //        return new DamageSource(world.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).createEntry(new DamageType("death.attack.weather", 0.1f, DamageEffects.FREEZING)));
         return new DamageSource(world.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(key));
     }

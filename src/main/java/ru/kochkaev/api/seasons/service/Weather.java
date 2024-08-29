@@ -5,6 +5,7 @@ import net.minecraft.server.world.ServerWorld;
 import org.jetbrains.annotations.Nullable;
 import ru.kochkaev.api.seasons.ChallengesTicker;
 import ru.kochkaev.api.seasons.SeasonsAPI;
+import ru.kochkaev.api.seasons.SeasonsAPIServer;
 import ru.kochkaev.api.seasons.object.SeasonObject;
 import ru.kochkaev.api.seasons.object.WeatherObject;
 import ru.kochkaev.api.seasons.util.Title;
@@ -14,7 +15,6 @@ import java.util.*;
 public class Weather {
 
     private static final Random random = new Random();
-    private static ServerWorld world;
 
 //    private static WeatherObject CURRENT_WEATHER = new ExampleWeather();
     private static WeatherObject CURRENT_WEATHER;
@@ -95,11 +95,10 @@ public class Weather {
     }
 
     public static void onServerStartup(){
-        world = SeasonsAPI.getOverworld();
         String currentStr = Config.getCurrent("weather");
         String prevCurrentStr = Config.getCurrent("previous-weather");
         if (currentStr.equals("NONE") || currentStr.equals("example")) {
-            boolean isDay = world.getTimeOfDay() % 24000L < Config.getModConfig("API").getConfig().getLong("conf.tick.day.end");
+            boolean isDay = SeasonsAPI.getEnvironment().getOverworld().getTimeOfDay() % 24000L < Config.getModConfig("API").getConfig().getLong("conf.tick.day.end");
             CURRENT_WEATHER = (prevCurrentStr.equals("NONE")) ? getChancedWeather(isDay ? getSeasonDailyWeathers(Season.getCurrent()) : getSeasonNightlyWeathers(Season.getCurrent())) : getWeatherByID(prevCurrentStr);
             if (isDay) {
                 setDay();
@@ -158,7 +157,7 @@ public class Weather {
         CURRENT_WEATHER.onWeatherRemove();
         Weather.setCurrent(weather);
         weather.onWeatherSet();
-        world.setWeather(-1, -1, weather.getRaining(), weather.getThundering());
+        SeasonsAPI.getEnvironment().setWeather(weather);
         Challenge.updateChallengesInCurrentWeather();
         ChallengesTicker.changeWeather();
         SeasonsAPI.getLogger().info("Weather was set to \"{}\"", weather.getId());
