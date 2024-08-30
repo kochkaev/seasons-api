@@ -42,16 +42,12 @@
 	},
 	"suggests": {
 		"placeholder-api": "*",
-		"cloth-config": "*",
+		"cloth-config2": "*",
 		"modmenu": "*"
 	},
 	"custom": {
 		"modmenu": {
-			"links": {
-				"modmenu.issues": "https://github.com/kochkaev/seasons-api/issues",
-				"modmenu.sources": "https://github.com/kochkaev/seasons-api"
-			},
-			"badges": [ "library" ],
-			"update_checker": false
+			"update_checker": true
 		}
-	}}
+	}
+}

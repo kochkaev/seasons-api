@@ -7,7 +7,7 @@ import java.util.*;
 
 public class Task {
 
-    private static final Map1Key2Values<Object, IFuncRet, List<Object>> tasks = new Map1Key2Values<>();
+    private static final Map1Key2Values<Object, IFuncRet, List<Object>> tasks = new Map1Key2Values.HashMap1Key2Values<>();
     private static final List<Object> forRemove = new ArrayList<>();
 
     public static void addTask(Object key, IFuncRet task, List<Object> args) {

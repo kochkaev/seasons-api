@@ -1,7 +1,7 @@
 package ru.kochkaev.api.seasons.object;
 
 import net.fabricmc.loader.api.FabricLoader;
-import ru.kochkaev.api.seasons.util.map.Map1Key2Values;
+import org.apache.commons.lang3.StringUtils;
 import ru.kochkaev.api.seasons.util.map.Map1Key3Values;
 
 import java.io.*;
@@ -15,7 +15,8 @@ import java.util.stream.Stream;
 public abstract class TXTConfigObject {
 
     private final String path;
-    private Map<String, String> map = new HashMap<>();
+    private Map<String, String> valuesMap = new HashMap<>();
+    private Map<String, Object> typesMap = new HashMap<>();
     /** If true - {@link #generate} will generate content of config file, or else - generate only set of config keys. */
     private String generateMode = "structure";
     private final String type;
@@ -23,10 +24,11 @@ public abstract class TXTConfigObject {
     private final String modName;
     private final String filename;
 
-    private final Set<String> generatedKeySet = new HashSet<>();
+    private final Queue<String> generatedKeySet = new PriorityQueue<>();
     private String generated = "";
-    private final Map1Key2Values<String, String, String> keyCommentValueMap = new Map1Key2Values<>();
+    private final Map1Key3Values<String, String, String, Object> keyHeaderCommentValueMap = new Map1Key3Values.TreeMap1Key3Values<>();
     private String tempCommentForValue = "";
+    private String tempHeaderForValue = "";
 
     protected TXTConfigObject(String modName, String filename, String type) {
         this.modName = modName;
@@ -53,7 +55,7 @@ public abstract class TXTConfigObject {
         try {
             File txt = new File(path);
             Scanner reader = new Scanner(txt, StandardCharsets.UTF_8);
-            this.map = txtParser(reader);
+            this.valuesMap = txtParser(reader);
             reader.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -61,29 +63,53 @@ public abstract class TXTConfigObject {
     }
 
     public String getString(String key) {
-        return map.get(key);
+        return valuesMap.get(key);
     }
     public int getInt(String key) {
-        return Integer.parseInt(map.get(key));
+        return Integer.parseInt(valuesMap.get(key));
     }
     public long getLong(String key) {
-        return Long.parseLong(map.get(key));
+        return Long.parseLong(valuesMap.get(key));
     }
     public float getFloat(String key) {
-        return Float.parseFloat(map.get(key));
+        return Float.parseFloat(valuesMap.get(key));
     }
     public double getDouble(String key) {
-        return Double.parseDouble(map.get(key));
+        return Double.parseDouble(valuesMap.get(key));
     }
     public Boolean getBoolean(String key) {
-        return Boolean.parseBoolean(map.get(key));
+        return Boolean.parseBoolean(valuesMap.get(key));
+    }
+    public Object getValue(String key) {
+//        return typesMap.get(key).getClass().cast(valuesMap.get(key));
+        Object type = typesMap.get(key);
+        Object value = valuesMap.get(key);
+        if (type instanceof String) {
+            return value;
+        }
+        else if (type instanceof Integer) {
+            value = Integer.parseInt(StringUtils.join(value));
+        }
+        else if (type instanceof Long) {
+            value = Long.parseLong(StringUtils.join(value));
+        }
+        else if (type instanceof Float) {
+            value = Float.parseFloat(StringUtils.join(value));
+        }
+        else if (type instanceof Double) {
+            value = Double.parseDouble(StringUtils.join(value));
+        }
+        else if (type instanceof Boolean) {
+            value = Boolean.parseBoolean(StringUtils.join(value));
+        }
+        return value;
     }
 
     public void open(){
         try {
             File txt = new File(path);
             Scanner reader = new Scanner(txt, StandardCharsets.UTF_8);
-            map = txtParser(reader);
+            valuesMap = txtParser(reader);
             reader.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -101,10 +127,10 @@ public abstract class TXTConfigObject {
                 boolean uselessly1 = txt.createNewFile();
             }
             Scanner reader = new Scanner(txt, StandardCharsets.UTF_8);
-            map = txtParser(reader);
+            valuesMap = txtParser(reader);
             reader.close();
             generate();
-            if (!map.keySet().equals(generatedKeySet)) {
+            if (!valuesMap.keySet().equals(generatedKeySet)) {
                 generateMode = "content";
                 generate();
                 generateMode = "structure";
@@ -118,25 +144,26 @@ public abstract class TXTConfigObject {
     }
 
     public void close() {
-        map.clear();
+        valuesMap.clear();
         generatedKeySet.clear();
         generated = "";
     }
 
     /** To Cloth Config */
-    public Map1Key2Values<String, String, String> getKeyCommentAndDefaultMap() {
+    public Map1Key3Values<String, String, String, Object> getKeyHeaderCommentAndDefaultMap() {
         generateMode = "gui";
         generate();
         generateMode = "structure";
 //        for (String key : keyCommentValueMap.getKeySet()) keyCommentValueMap.setSecond(key, map.get(key));
-        Map1Key2Values<String, String, String> output = keyCommentValueMap.copy();
-        keyCommentValueMap.clear();
+        Map1Key3Values<String, String, String, Object> output = keyHeaderCommentValueMap.copy();
+        keyHeaderCommentValueMap.clear();
         tempCommentForValue = "";
+        tempHeaderForValue = "";
         return output;
     }
 
     public void write(String key, String value) {
-        map.put(key, value);
+        valuesMap.put(key, value);
         try {
             generateMode = "content";
             generate();
@@ -209,31 +236,79 @@ public abstract class TXTConfigObject {
         if (generateMode.equals("content")) generated += line + "\n";
     }
     protected void addValue(String key, String value) {
-        if (generateMode.equals("structure")) generatedKeySet.add(key);
-        else if (generateMode.equals("content")){
-            addLine(key + ": \"" + (map.getOrDefault(key, value)) + "\"");
-            map.put(key, value);
-        }
-        else if (generateMode.equals("gui")) {
-            keyCommentValueMap.put(key, tempCommentForValue, value);
-            tempCommentForValue = "";
+        switch (generateMode) {
+            case "structure" -> {
+                generatedKeySet.add(key);
+                typesMap.put(key, String.class);
+            }
+            case "content" -> {
+                addLine(key + ": \"" + (valuesMap.getOrDefault(key, value)) + "\"");
+                valuesMap.put(key, value);
+            }
+            case "gui" -> {
+                keyHeaderCommentValueMap.put(key, tempHeaderForValue, tempCommentForValue, value);
+                tempCommentForValue = "";
+            }
         }
     }
     protected void addValueAndCommentDefault(String key, String value) {
-        if (generateMode.equals("structure")) generatedKeySet.add(key);
-        else if (generateMode.equals("content")){
-            String valueModified = map.getOrDefault(key, value);
-            addLine(key + ": \"" + valueModified + "\" # | default: \"" + value + "\"");
-            map.put(key, value);
+        switch (generateMode) {
+            case "structure" -> {
+                generatedKeySet.add(key);
+                typesMap.put(key, String.class);
+            }
+            case "content" -> {
+                String valueModified = valuesMap.getOrDefault(key, value);
+                addLine(key + ": \"" + valueModified + "\" # | default: \"" + value + "\"");
+                valuesMap.put(key, value);
+            }
+            case "gui" -> {
+                keyHeaderCommentValueMap.put(key, tempHeaderForValue, tempCommentForValue, value);
+                tempCommentForValue = "";
+            }
         }
-        else if (generateMode.equals("gui")) {
-            keyCommentValueMap.put(key, tempCommentForValue, value);
-            tempCommentForValue = "";
+    }
+    protected void addTypedValue(String key, Object value) {
+        switch (generateMode) {
+            case "structure" -> {
+                generatedKeySet.add(key);
+                typesMap.put(key, value.getClass());
+            }
+            case "content" -> {
+                String valueModified = valuesMap.getOrDefault(key, StringUtils.join(value));
+                addLine(key + ": \"" + valueModified + "\" # | type: \"" + value.getClass().getName() + "\"");
+                valuesMap.put(key, StringUtils.join(value));
+            }
+            case "gui" -> {
+                keyHeaderCommentValueMap.put(key, tempHeaderForValue, tempCommentForValue, value);
+                tempCommentForValue = "";
+            }
+        }
+    }
+    protected void addTypedValueAndCommentDefault(String key, Object value) {
+        switch (generateMode) {
+            case "structure" -> {
+                generatedKeySet.add(key);
+                typesMap.put(key, value.getClass());
+            }
+            case "content" -> {
+                String valueModified = valuesMap.getOrDefault(key, StringUtils.join(value));
+                addLine(key + ": \"" + valueModified + "\" # | type: \"" + value.getClass().getName() + "\" | default: \"" + value + "\"");
+                valuesMap.put(key, StringUtils.join(value));
+            }
+            case "gui" -> {
+                keyHeaderCommentValueMap.put(key, tempHeaderForValue, tempCommentForValue, value);
+                tempCommentForValue = "";
+            }
         }
     }
     protected void addComment(String comment) {
         if (generateMode.equals("gui")) tempCommentForValue += "\n" + comment;
         addLine("# " + comment);
+    }
+    protected void addHeader(String header) {
+        if (generateMode.equals("gui")) tempHeaderForValue = header;
+        addLine("# * " + header);
     }
     protected void addVoid() { if (generateMode.equals("gui")) tempCommentForValue = ""; else addLine(""); }
     protected void addString(String string) { if (generateMode.equals("content")) generated += string; }

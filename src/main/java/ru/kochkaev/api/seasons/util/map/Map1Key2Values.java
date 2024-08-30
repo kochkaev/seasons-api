@@ -3,14 +3,15 @@ package ru.kochkaev.api.seasons.util.map;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class Map1Key2Values <K, F, S> {
 
-    private final Map<K,ValuesObject> map = new HashMap<>();
+    private final Map<K,ValuesObject> map;
 
-    public Map1Key2Values() {
-
+    protected Map1Key2Values(Map<K,ValuesObject> map) {
+        this.map = map;
     }
 
     public void put(K key, F firstValue, S secondValue) {
@@ -52,7 +53,7 @@ public class Map1Key2Values <K, F, S> {
     }
 
     public Map1Key2Values<K, F, S> copy() {
-        Map1Key2Values<K, F, S> copy = new Map1Key2Values<>();
+        Map1Key2Values<K, F, S> copy = new Map1Key2Values<>(map instanceof HashMap ? new HashMap<>() : new TreeMap<>());
         for (K key : map.keySet()) {
             copy.put(key, map.get(key).getFirst(), map.get(key).getSecond());
         }
@@ -77,6 +78,17 @@ public class Map1Key2Values <K, F, S> {
         }
         public void setSecond(S second) {
             this.second = second;
+        }
+    }
+
+    public static class HashMap1Key2Values<K, F, S> extends Map1Key2Values<K, F, S> {
+        public HashMap1Key2Values() {
+            super(new HashMap<>());
+        }
+    }
+    public static class TreeMap1Key2Values<K, F, S> extends Map1Key2Values<K, F, S> {
+        public TreeMap1Key2Values() {
+            super(new TreeMap<>());
         }
     }
 
