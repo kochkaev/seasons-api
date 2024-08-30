@@ -19,7 +19,7 @@
 			"ru.kochkaev.api.seasons.SeasonsAPIFabricClient"
 		],
 		"server": [
-
+			"ru.kochkaev.api.seasons.SeasonsAPIFabricServer"
 		],
 		"main": [
           	"ru.kochkaev.api.seasons.SeasonsAPIFabric"
