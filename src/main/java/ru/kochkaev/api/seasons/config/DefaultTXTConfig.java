@@ -50,13 +50,19 @@ public class DefaultTXTConfig extends TXTConfigObject{
         addVoid();
         addHeader("SETTINGS");
         addComment("Tick of day starts");
-        addTypedValueAndCommentDefault("conf.tick.day.start", 0);
+        addTypedValueAndCommentDefault("conf.tick.day.start", 0L);
         addComment("Tick of day ends");
-        addTypedValueAndCommentDefault("conf.tick.day.end", 12542);
+        addTypedValueAndCommentDefault("conf.tick.day.end", 12542L);
         addComment("Seconds per seasons-api tick");
         addTypedValueAndCommentDefault("conf.tick.secondsPerTick", 1);
         addComment("Ticks before action starts (for example, damage)");
         addTypedValueAndCommentDefault("conf.tick.ticksPerAction", 3);
+
+        // Language
+//        addVoid();
+//        addHeader("LANGUAGE");
+//        addComment("Current language of seasons mod (currently works only in game)");
+//        addTypedValueAndCommentDefault("conf.lang", "en_US");
 
     }
 }

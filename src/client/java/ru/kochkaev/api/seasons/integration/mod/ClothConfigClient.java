@@ -56,9 +56,8 @@ public class ClothConfigClient extends ClothConfig {
         for (ConfigObject mod : Config.getMods().values()) {
             for (TXTConfigObject config : mod.getConfigs().values()) {
                 ConfigCategory modCategory = builder.getOrCreateCategory(Text.of(mod.getModName()+"-"+config.getFilename()));
-                Map1Key3Values<String, String, String, Object> valuesMap = config.getKeyHeaderCommentAndDefaultMap();
-                for (String key : valuesMap.getKeySet()) {
-                    Object value = valuesMap.getThird(key);
+                Map<String, TXTConfigObject.ConfigValueObject<?>> valuesMap = config.getTypedValuesMap();
+                for (String key : valuesMap.keySet()) {
                     modCategory.addEntry(
 //                            (
 //                                    value instanceof String ?
@@ -82,7 +81,7 @@ public class ClothConfigClient extends ClothConfig {
 //                                                                                    builder.entryBuilder().startStrField(Text.of(key), StringUtils.join(value))
 //                                                                                            .setDefaultValue(StringUtils.join(value))
 //                            )
-                            typedFieldBuilder(builder, key, value, valuesMap.getFirst(key), valuesMap.getSecond(key), mod.getModName(), config.getFilename())
+                            typedFieldBuilder(builder, key, valuesMap.get(key), mod.getModName(), config.getFilename())
                     );
                 }
             }
@@ -97,26 +96,31 @@ public class ClothConfigClient extends ClothConfig {
 //    }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    protected static <T, E extends TooltipListEntry<T>, B extends FieldBuilder<T, E, B>, R extends AbstractFieldBuilder<T, E, B>> AbstractConfigListEntry typedFieldBuilder(ConfigBuilder builder, String key, T value, String header, String description, String modName, String configName) {
+    protected static <T, E extends TooltipListEntry<T>, B extends FieldBuilder<T, E, B>, R extends AbstractFieldBuilder<T, E, B>> AbstractConfigListEntry typedFieldBuilder(ConfigBuilder builder, String key, TXTConfigObject.ConfigValueObject<T> valueObject, String modName, String configName) {
+        T value = valueObject.getValue();
+        T defaultValue = valueObject.getDefaultValue();
         R entryBuilder = switch (value) {
             case String s -> (R) builder.entryBuilder().startStrField(Text.of(key), s)
-                    .setDefaultValue(s);
+                    .setDefaultValue((String) defaultValue);
             case Boolean b -> (R) builder.entryBuilder().startBooleanToggle(Text.of(key), b)
-                    .setDefaultValue(b);
+                    .setDefaultValue((Boolean) defaultValue);
             case Integer i -> (R) builder.entryBuilder().startIntField(Text.of(key), i)
-                    .setDefaultValue(i);
+                    .setDefaultValue((Integer) defaultValue);
             case Long l -> (R) builder.entryBuilder().startLongField(Text.of(key), l)
-                    .setDefaultValue(l);
-            case Float v -> (R) builder.entryBuilder().startFloatField(Text.of(key), v)
-                    .setDefaultValue(v);
-            case Double v -> (R) builder.entryBuilder().startDoubleField(Text.of(key), v)
-                    .setDefaultValue(v);
+                    .setDefaultValue((Long) defaultValue);
+            case Float f -> (R) builder.entryBuilder().startFloatField(Text.of(key), f)
+                    .setDefaultValue((Float) defaultValue);
+            case Double d -> (R) builder.entryBuilder().startDoubleField(Text.of(key), d)
+                    .setDefaultValue((Double) defaultValue);
             case null, default -> (R) builder.entryBuilder().startStrField(Text.of(key), StringUtils.join(value))
-                    .setDefaultValue(StringUtils.join(value));
+                    .setDefaultValue(StringUtils.join(defaultValue));
         };
         entryBuilder = (R) entryBuilder
-                .setTooltip(Text.of(header), Text.of(description));
-        entryBuilder = (R) entryBuilder.setSaveConsumer(newValue -> Config.getModConfig(modName).getConfig(configName).write(key, StringUtils.join(newValue)));
+                .setTooltip(Text.of(valueObject.getHeader()), Text.of(valueObject.getDescription()));
+        entryBuilder = (R) entryBuilder.setSaveConsumer(newValue -> {
+            assert value != null;
+            if (!value.equals(newValue)) Config.getModConfig(modName).getConfig(configName).setValue(key, newValue);
+        });
         return entryBuilder.build();
     }
 

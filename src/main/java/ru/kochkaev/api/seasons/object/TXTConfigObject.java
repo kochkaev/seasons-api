@@ -2,6 +2,8 @@ package ru.kochkaev.api.seasons.object;
 
 import net.fabricmc.loader.api.FabricLoader;
 import org.apache.commons.lang3.StringUtils;
+import ru.kochkaev.api.seasons.SeasonsAPI;
+import ru.kochkaev.api.seasons.service.Task;
 import ru.kochkaev.api.seasons.util.map.Map1Key3Values;
 
 import java.io.*;
@@ -15,8 +17,7 @@ import java.util.stream.Stream;
 public abstract class TXTConfigObject {
 
     private final String path;
-    private Map<String, String> valuesMap = new HashMap<>();
-    private Map<String, Object> typesMap = new HashMap<>();
+    private final Map<String, ConfigValueObject<?>> typedValuesMap = new TreeMap<>();
     /** If true - {@link #generate} will generate content of config file, or else - generate only set of config keys. */
     private String generateMode = "structure";
     private final String type;
@@ -24,10 +25,8 @@ public abstract class TXTConfigObject {
     private final String modName;
     private final String filename;
 
-    private final Queue<String> generatedKeySet = new PriorityQueue<>();
     private String generated = "";
-    private final Map1Key3Values<String, String, String, Object> keyHeaderCommentValueMap = new Map1Key3Values.TreeMap1Key3Values<>();
-    private String tempCommentForValue = "";
+    private String tempCommentForValue = "—————";
     private String tempHeaderForValue = "";
 
     protected TXTConfigObject(String modName, String filename, String type) {
@@ -55,7 +54,7 @@ public abstract class TXTConfigObject {
         try {
             File txt = new File(path);
             Scanner reader = new Scanner(txt, StandardCharsets.UTF_8);
-            this.valuesMap = txtParser(reader);
+            autoParser(reader);
             reader.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -63,53 +62,43 @@ public abstract class TXTConfigObject {
     }
 
     public String getString(String key) {
-        return valuesMap.get(key);
+        return getValue(key);
+//        return valuesMap.get(key);
     }
     public int getInt(String key) {
-        return Integer.parseInt(valuesMap.get(key));
+        return getValue(key);
+//        return Integer.parseInt(valuesMap.get(key));
     }
     public long getLong(String key) {
-        return Long.parseLong(valuesMap.get(key));
+        return getValue(key);
+//        return Long.parseLong(valuesMap.get(key));
     }
     public float getFloat(String key) {
-        return Float.parseFloat(valuesMap.get(key));
+        return getValue(key);
+//        return Float.parseFloat(valuesMap.get(key));
     }
     public double getDouble(String key) {
-        return Double.parseDouble(valuesMap.get(key));
+        return getValue(key);
+//        return Double.parseDouble(valuesMap.get(key));
     }
     public Boolean getBoolean(String key) {
-        return Boolean.parseBoolean(valuesMap.get(key));
+        return getValue(key);
+//        return Boolean.parseBoolean(valuesMap.get(key));
     }
-    public Object getValue(String key) {
+    public <T> T getValue(String key) {
 //        return typesMap.get(key).getClass().cast(valuesMap.get(key));
-        Object type = typesMap.get(key);
-        Object value = valuesMap.get(key);
-        if (type instanceof String) {
-            return value;
-        }
-        else if (type instanceof Integer) {
-            value = Integer.parseInt(StringUtils.join(value));
-        }
-        else if (type instanceof Long) {
-            value = Long.parseLong(StringUtils.join(value));
-        }
-        else if (type instanceof Float) {
-            value = Float.parseFloat(StringUtils.join(value));
-        }
-        else if (type instanceof Double) {
-            value = Double.parseDouble(StringUtils.join(value));
-        }
-        else if (type instanceof Boolean) {
-            value = Boolean.parseBoolean(StringUtils.join(value));
-        }
-        return value;
+//        return (T) typesMap.get(key);
+        //noinspection unchecked
+        return (T) typedValuesMap.get(key).getValue();
     }
 
     public void open(){
         try {
             File txt = new File(path);
+            generate();
+            tempCommentForValue = "—————";
             Scanner reader = new Scanner(txt, StandardCharsets.UTF_8);
-            valuesMap = txtParser(reader);
+            autoParser(reader);
             reader.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -119,21 +108,26 @@ public abstract class TXTConfigObject {
     /**
      * This universal method will generate a config file content, create file if it does not exist, open file and update content if it is legacy.
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public void generateCreateIfDoNotExistsOpenAndUpdateIfLegacy() {
         try {
             File txt = new File(path);
             if (!txt.exists()){
-                boolean uselessly = txt.getParentFile().mkdirs();
-                boolean uselessly1 = txt.createNewFile();
+                txt.getParentFile().mkdirs();
+                txt.createNewFile();
             }
-            Scanner reader = new Scanner(txt, StandardCharsets.UTF_8);
-            valuesMap = txtParser(reader);
-            reader.close();
             generate();
-            if (!valuesMap.keySet().equals(generatedKeySet)) {
+            Scanner reader = new Scanner(txt, StandardCharsets.UTF_8);
+            Set<String> parsed = autoParser(reader);
+            reader.close();
+            tempCommentForValue = "—————";
+            if (!parsed.equals(typedValuesMap.keySet())) {
                 generateMode = "content";
+                generated = "";
                 generate();
                 generateMode = "structure";
+//                txt.delete();
+//                txt.createNewFile();
                 Writer writer = Files.newBufferedWriter(Paths.get(path));
                 writer.write(generated);
                 writer.close();
@@ -144,36 +138,45 @@ public abstract class TXTConfigObject {
     }
 
     public void close() {
-        valuesMap.clear();
-        generatedKeySet.clear();
+        typedValuesMap.clear();
         generated = "";
     }
 
     /** To Cloth Config */
-    public Map1Key3Values<String, String, String, Object> getKeyHeaderCommentAndDefaultMap() {
-        generateMode = "gui";
-        generate();
-        generateMode = "structure";
+    public Map<String, ConfigValueObject<?>> getTypedValuesMap() {
 //        for (String key : keyCommentValueMap.getKeySet()) keyCommentValueMap.setSecond(key, map.get(key));
-        Map1Key3Values<String, String, String, Object> output = keyHeaderCommentValueMap.copy();
-        keyHeaderCommentValueMap.clear();
-        tempCommentForValue = "";
-        tempHeaderForValue = "";
-        return output;
+        return typedValuesMap;
     }
 
-    public void write(String key, String value) {
-        valuesMap.put(key, value);
+//    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public void write() {
         try {
             generateMode = "content";
+            generated = "";
             generate();
             generateMode = "structure";
+//            File txt = new File(path);
+//            txt.delete();
+//            txt.createNewFile();
             Writer writer = Files.newBufferedWriter(Paths.get(path));
             writer.write(generated);
             writer.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+    public <T> void setValue(String key, T value) {
+//        @SuppressWarnings("unchecked")
+//        ConfigValueObject<?> confValue = typedValuesMap.get(key);
+        typedValuesMap.get(key).setValue(value);
+//        if (prev instanceof T) typedValuesMap.get(key).setValue(value);
+//        if (SeasonsAPI.getServer()!=null && !Task.getTasks().getKeySet().contains("Configs-Rewrite"))
+//            Task.addTask("Configs-Rewrite", args -> {
+//                write();
+//                Task.removeTask("Configs-Rewrite");
+//                return args;
+//            }, new ArrayList<>());
+        write();
     }
 
 
@@ -229,6 +232,42 @@ public abstract class TXTConfigObject {
                 ));
     }
 
+    public Set<String> autoParser(Scanner reader){
+        Set<String> output = new HashSet<>();
+        StringBuilder temp;
+        String tempKey;
+        String tempValue;
+        Object parsedValue;
+        do {
+            if (reader.hasNextLine()) temp = new StringBuilder(reader.nextLine());
+            else {
+                temp = new StringBuilder();
+                while (reader.hasNext()) {
+                    temp.append(reader.next());
+                }
+            }
+            if ((!temp.isEmpty()) && temp.charAt(0) != '#') {
+                if (temp.toString().contains("#")) {
+                    temp = new StringBuilder(temp.substring(0, temp.indexOf("#") - 1));
+                }
+                tempKey = temp.substring(0, temp.indexOf(" ") - 1);
+                tempValue = temp.substring(temp.indexOf("\"") + 1, temp.lastIndexOf("\""));
+                parsedValue = switch (typedValuesMap.get(tempKey).getValue()) {
+                    case String s -> tempValue;
+                    case Boolean b -> Boolean.parseBoolean(tempValue);
+                    case Integer i -> Integer.parseInt(tempValue);
+                    case Long l -> Long.parseLong(tempValue);
+                    case Float f -> Float.parseFloat(tempValue);
+                    case Double d -> Double.parseDouble(tempValue);
+                    case null, default -> null;
+                };
+                typedValuesMap.get(tempKey).setValue(parsedValue);
+                output.add(tempKey);
+            }
+        } while (reader.hasNext());
+        return output;
+    }
+
 
 //    public static class GenerateDefaults {
 
@@ -238,79 +277,59 @@ public abstract class TXTConfigObject {
     protected void addValue(String key, String value) {
         switch (generateMode) {
             case "structure" -> {
-                generatedKeySet.add(key);
-                typesMap.put(key, String.class);
+                typedValuesMap.put(key, new ConfigValueObject<>(value, value, tempHeaderForValue, tempCommentForValue));
+                tempCommentForValue = "—————";
             }
             case "content" -> {
-                addLine(key + ": \"" + (valuesMap.getOrDefault(key, value)) + "\"");
-                valuesMap.put(key, value);
-            }
-            case "gui" -> {
-                keyHeaderCommentValueMap.put(key, tempHeaderForValue, tempCommentForValue, value);
-                tempCommentForValue = "";
+                addLine(key + ": \"" + (typedValuesMap.get(key).getValue()) + "\"");
             }
         }
     }
     protected void addValueAndCommentDefault(String key, String value) {
         switch (generateMode) {
             case "structure" -> {
-                generatedKeySet.add(key);
-                typesMap.put(key, String.class);
+                typedValuesMap.put(key, new ConfigValueObject<>(value, value, tempHeaderForValue, tempCommentForValue));
+                tempCommentForValue = "—————";
             }
-            case "content" -> {
-                String valueModified = valuesMap.getOrDefault(key, value);
-                addLine(key + ": \"" + valueModified + "\" # | default: \"" + value + "\"");
-                valuesMap.put(key, value);
-            }
-            case "gui" -> {
-                keyHeaderCommentValueMap.put(key, tempHeaderForValue, tempCommentForValue, value);
-                tempCommentForValue = "";
-            }
+            case "content" -> addLine(key + ": \"" + typedValuesMap.get(key).getValue() + "\" # | default: \"" + value + "\"");
         }
     }
     protected void addTypedValue(String key, Object value) {
         switch (generateMode) {
             case "structure" -> {
-                generatedKeySet.add(key);
-                typesMap.put(key, value.getClass());
+                typedValuesMap.put(key, new ConfigValueObject<>(value, value, tempHeaderForValue, tempCommentForValue));
+                tempCommentForValue = "—————";
             }
-            case "content" -> {
-                String valueModified = valuesMap.getOrDefault(key, StringUtils.join(value));
-                addLine(key + ": \"" + valueModified + "\" # | type: \"" + value.getClass().getName() + "\"");
-                valuesMap.put(key, StringUtils.join(value));
-            }
-            case "gui" -> {
-                keyHeaderCommentValueMap.put(key, tempHeaderForValue, tempCommentForValue, value);
-                tempCommentForValue = "";
-            }
+            case "content" -> addLine(key + ": \"" + typedValuesMap.get(key).getValue() + "\" # | type: \"" + value.getClass().getSimpleName() + "\"");
         }
     }
     protected void addTypedValueAndCommentDefault(String key, Object value) {
         switch (generateMode) {
             case "structure" -> {
-                generatedKeySet.add(key);
-                typesMap.put(key, value.getClass());
+                typedValuesMap.put(key, new ConfigValueObject<>(value, value, tempHeaderForValue, tempCommentForValue));
+                tempCommentForValue = "—————";
             }
-            case "content" -> {
-                String valueModified = valuesMap.getOrDefault(key, StringUtils.join(value));
-                addLine(key + ": \"" + valueModified + "\" # | type: \"" + value.getClass().getName() + "\" | default: \"" + value + "\"");
-                valuesMap.put(key, StringUtils.join(value));
-            }
-            case "gui" -> {
-                keyHeaderCommentValueMap.put(key, tempHeaderForValue, tempCommentForValue, value);
-                tempCommentForValue = "";
-            }
+            case "content" -> addLine(key + ": \"" + typedValuesMap.get(key).getValue() + "\" # | type: \"" + value.getClass().getSimpleName() + "\" | default: \"" + value + "\"");
         }
     }
     protected void addComment(String comment) {
-        if (generateMode.equals("gui")) tempCommentForValue += "\n" + comment;
-        addLine("# " + comment);
+        switch (generateMode) {
+            case "structure" -> tempCommentForValue += "\n" + comment;
+            case "content" -> addLine("# " + comment);
+        }
     }
     protected void addHeader(String header) {
-        if (generateMode.equals("gui")) tempHeaderForValue = header;
-        addLine("# * " + header);
+        switch (generateMode) {
+            case "structure" -> tempHeaderForValue = header;
+            case "content" -> addLine("# * " + header);
+        }
     }
-    protected void addVoid() { if (generateMode.equals("gui")) tempCommentForValue = ""; else addLine(""); }
+    protected void addVoid() {
+        switch (generateMode) {
+            case "structure" -> tempCommentForValue = "—————";
+            case "content" -> addLine("");
+        }
+    }
     protected void addString(String string) { if (generateMode.equals("content")) generated += string; }
 
     protected String getGenerated() { return generated; }
@@ -320,6 +339,47 @@ public abstract class TXTConfigObject {
     public String getType() { return type; }
     public String getFilename() { return filename; }
     public String getModName() { return modName; }
+
+    public static class ConfigValueObject<T> {
+        private T value;
+        private final T defaultValue;
+        private String header;
+        private String description;
+
+        public ConfigValueObject(T value, T defaultValue, String header, String description) {
+            this.value = value;
+            this.defaultValue = defaultValue;
+            this.header = header;
+            this.description = description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+        public void setHeader(String header) {
+            this.header = header;
+        }
+//        public void setValue(T value) {
+//            this.value = value;
+//        }
+        public void setValue(Object value) {
+            //noinspection unchecked
+            this.value = (T) value;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+        public String getHeader() {
+            return header;
+        }
+        public T getValue() {
+            return value;
+        }
+        public T getDefaultValue() {
+            return defaultValue;
+        }
+    }
 
 }
 
