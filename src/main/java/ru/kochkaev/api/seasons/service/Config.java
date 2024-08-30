@@ -20,6 +20,7 @@ public class Config {
     }
 
     public static ConfigObject getModConfig(String modName) { return mods.get(modName); }
+    public static Map<String, ConfigObject> getMods() { return mods; }
     public static void regModConfig(ConfigObject config) {
         mods.put(config.getModName(), config);
     }

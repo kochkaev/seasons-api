@@ -18,7 +18,7 @@ public class ConfigObject {
     public ConfigObject(String modName, String defaultLang) {
         this.modName = modName;
         this.defaultLang = defaultLang;
-        if (SeasonsAPI.getClothConfig()!=null) ClothConfig.getClient().addConfigCategory(this);
+//        if (SeasonsAPI.getClothConfig()!=null) ClothConfig.getClient().addConfigCategory(this);
         SeasonsAPI.getLogger().info("Loaded mod: {}", modName);
     }
 

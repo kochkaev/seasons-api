@@ -30,7 +30,7 @@ import java.util.Map;
 public class ClothConfigClient extends ClothConfig {
 
 //    private static final Map<String, Map<String, Map1Key2Values<String, String, String>>> categoryMatrix = new HashMap<>();
-    private static final List<ConfigObject> configs = new ArrayList<>();
+//    private static final List<ConfigObject> configs = new ArrayList<>();
 
     public ClothConfigClient() {
 
@@ -53,7 +53,7 @@ public class ClothConfigClient extends ClothConfig {
 //                    );
 //            }
 //        }
-        for (ConfigObject mod : configs) {
+        for (ConfigObject mod : Config.getMods().values()) {
             for (TXTConfigObject config : mod.getConfigs().values()) {
                 ConfigCategory modCategory = builder.getOrCreateCategory(Text.of(mod.getModName()+"-"+config.getFilename()));
                 Map1Key3Values<String, String, String, Object> valuesMap = config.getKeyHeaderCommentAndDefaultMap();
@@ -89,12 +89,12 @@ public class ClothConfigClient extends ClothConfig {
         }
         return builder.build();
     }
-    public void addConfigCategory(ConfigObject config) {
-//        Map<String, Map1Key2Values<String, String, String>> modConfigs = new HashMap<>();
-//        for (TXTConfigObject configObject : config.getConfigs().values()) modConfigs.put(configObject.getFilename(), configObject.getKeyCommentAndDefaultMap());
-//        categoryMatrix.put(config.getModName(), modConfigs);
-        configs.add(config);
-    }
+//    public void addConfigCategory(ConfigObject config) {
+////        Map<String, Map1Key2Values<String, String, String>> modConfigs = new HashMap<>();
+////        for (TXTConfigObject configObject : config.getConfigs().values()) modConfigs.put(configObject.getFilename(), configObject.getKeyCommentAndDefaultMap());
+////        categoryMatrix.put(config.getModName(), modConfigs);
+//        configs.add(config);
+//    }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     protected static <T, E extends TooltipListEntry<T>, B extends FieldBuilder<T, E, B>, R extends AbstractFieldBuilder<T, E, B>> AbstractConfigListEntry typedFieldBuilder(ConfigBuilder builder, String key, T value, String header, String description, String modName, String configName) {

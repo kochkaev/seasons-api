@@ -15,7 +15,7 @@ public abstract class ClothConfig {
     private static ClothConfig instance;
 
     public abstract Object getConfigScreen(Object parent);
-    public abstract void addConfigCategory(ConfigObject config);
+//    public abstract void addConfigCategory(ConfigObject config);
 
     public static ClothConfig getClient() {
         return client;
@@ -30,8 +30,8 @@ public abstract class ClothConfig {
                 public ConfigBuilder getConfigScreen(Object parent) {
                     return null;
                 }
-                @Override
-                public void addConfigCategory(ConfigObject config) {}
+//                @Override
+//                public void addConfigCategory(ConfigObject config) {}
             };
         }
         return instance;
