@@ -34,6 +34,8 @@ You can create your own set of seasons, weathers and challenges in your mod. Mor
 ### Dependencies
 - [Fabric API](https://modrinth.com/mod/fabric-api) (Required)
 - [Text Placeholder API](https://modrinth.com/mod/placeholder-api) (Optional)
+- [Mod Menu](https://modrinth.com/mod/modmenu) (Optional)
+- [Cloth Config API](https://modrinth.com/mod/cloth-config) (Optional)
 ### Idea by Harieo
 - Harieo on GitHub: https://github.com/Harieo/
 - Original plugin on GitHub: https://github.com/Harieo/Seasons/
@@ -43,4 +45,3 @@ You can create your own set of seasons, weathers and challenges in your mod. Mor
 - VK: https://vk.com/kleverdi/
 - YouTube: https://youtube.com/@kochkaev/
 - Contact email: kleverdi@vk.com
-### WARN: It's only server-side mod.
