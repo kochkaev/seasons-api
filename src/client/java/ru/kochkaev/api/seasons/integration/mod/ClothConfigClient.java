@@ -11,6 +11,7 @@ import me.shedaniel.clothconfig2.impl.builders.AbstractFieldBuilder;
 import me.shedaniel.clothconfig2.impl.builders.FieldBuilder;
 import me.shedaniel.clothconfig2.impl.builders.IntFieldBuilder;
 import me.shedaniel.clothconfig2.impl.builders.StringFieldBuilder;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -36,7 +37,7 @@ public class ClothConfigClient extends ClothConfig {
 
     }
 
-    public Screen getConfigScreen(Object parent) {
+    public Screen getConfigScreen(Object parent, ConfigObject priority) {
         ConfigBuilder builder = ConfigBuilder.create()
                 .setParentScreen((Screen) parent)
                 .setTitle(Text.of("Seasons Config"));
@@ -55,7 +56,11 @@ public class ClothConfigClient extends ClothConfig {
 //        }
         for (ConfigObject mod : Config.getMods().values()) {
             for (TXTConfigObject config : mod.getConfigs().values()) {
-                ConfigCategory modCategory = builder.getOrCreateCategory(Text.of(mod.getModName()+"-"+config.getFilename()));
+                ConfigCategory modCategory = builder.getOrCreateCategory(Text.of(mod.getModName()+(mod.getConfigs().size()>1 ? " ("+config.getFilename()+")" : "")));
+//                        .setCategoryBackground(Identifier.of("seasons-api", "seasons-config-background.png"));
+//                Identifier modCategoryBackground = modCategory.getBackground();
+//                modCategory.setCategoryBackground(Identifier.of("seasons-api", "seasons-config-background.png"));
+                if (config.getModName().equals(priority.getModName())) builder.setFallbackCategory(modCategory);
                 Map<String, TXTConfigObject.ConfigValueObject<?>> valuesMap = config.getTypedValuesMap();
                 for (String key : valuesMap.keySet()) {
                     modCategory.addEntry(

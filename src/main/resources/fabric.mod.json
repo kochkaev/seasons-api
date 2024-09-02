@@ -47,6 +47,13 @@
 	},
 	"custom": {
 		"modmenu": {
+			"parent": {
+				"id": "seasons",
+				"name": "Seasons",
+				"description": "Differentiate your gameplay by adding new weather depending on the current season, and weather-set Challenges that you have to complete throughout the day!",
+				"icon": "assets/icon_parent.png",
+				"update_checker": false
+			},
 			"update_checker": true
 		}
 	}
