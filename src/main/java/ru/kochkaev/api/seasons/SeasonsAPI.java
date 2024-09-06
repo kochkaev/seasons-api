@@ -5,7 +5,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.kochkaev.api.seasons.integration.Environment;
+import ru.kochkaev.api.seasons.integration.Loader;
 import ru.kochkaev.api.seasons.integration.IntegrationManager;
 import ru.kochkaev.api.seasons.integration.mod.ClothConfig;
 import ru.kochkaev.api.seasons.integration.mod.PlaceholderAPI;
@@ -23,12 +23,12 @@ public class SeasonsAPI {
     private static boolean isLoaded = false;
     private static PlaceholderAPI placeholderAPI = null;
     private static ClothConfig clothConfig = null;
-    private static Environment environment;
+    private static Loader loader;
     private static MinecraftServer server;
     private static ServerWorld world;
 
-    public static void regEnvironment(Environment environment) {
-        SeasonsAPI.environment = environment;
+    public static void regLoader(Loader loader) {
+        SeasonsAPI.loader = loader;
     }
 
     public static void onWorldStarted(MinecraftServer server) {
@@ -38,6 +38,9 @@ public class SeasonsAPI {
         SeasonsAPI.world = server.getOverworld();
         SeasonsAPI.isStarted = true;
         Config.loadCurrent();
+        Config.writeCurrentIfDoNotExists("season");
+        Config.writeCurrentIfDoNotExists("weather");
+        Config.writeCurrentIfDoNotExists("previous_weather");
         Register.register();
         Season.onServerStartup();
         Weather.onServerStartup();
@@ -61,11 +64,12 @@ public class SeasonsAPI {
     }
 
     public static void start() {
-        registerPlaceholders();
         Config.regModConfig(new ConfigObject("API", "en_US"));
-        Register.registerAllInPackage("ru.kochkaev.api.seasons.config");
-        environment.registerCommands();
-        Register.register();
+        Register.registerAllAndApply("ru.kochkaev.api.seasons.config");
+//        Config.initConfigObjects();
+        Config.initConfigObjects();
+        registerPlaceholders();
+        loader.registerCommands();
     }
 
     private static void registerPlaceholders() {
@@ -82,7 +86,7 @@ public class SeasonsAPI {
     public static Logger getLogger() { return LOGGER; }
     public static boolean isStarted() { return isStarted; }
     public static boolean isLoaded() { return isLoaded; }
-    public static Environment getEnvironment() { return environment; }
+    public static Loader getLoader() { return loader; }
     public static void setLoaded(boolean loaded) { isLoaded = loaded; }
     public static PlaceholderAPI getPlaceholderAPI() {
         return placeholderAPI;

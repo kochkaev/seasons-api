@@ -35,7 +35,7 @@ public class JSONConfigObject {
         }
     }
     public static JSONConfigObject openOrCreate(String filename, String defaults) {
-        Path path = SeasonsAPI.getEnvironment().getConfigPath().resolve(filename+".json");
+        Path path = SeasonsAPI.getLoader().getConfigPath().resolve(filename+".json");
         return openOrCreate(path, defaults);
     }
 

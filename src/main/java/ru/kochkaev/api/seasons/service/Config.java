@@ -14,8 +14,10 @@ public class Config {
     private static JSONConfigObject jsonCore;
     private static final Map<String, ConfigObject> mods = new HashMap<>();
     private static final List<String> listOfLangs =  new ArrayList<>();
+    private static String currentLang = "en_US";
 
     public static void initConfigObjects(){
+        Config.getModConfig("API").getConfig().getString("conf.lang");
         for (ConfigObject mod : mods.values()) mod.reload();
     }
 
@@ -26,7 +28,7 @@ public class Config {
     }
 
     public static void loadCurrent() {
-        String defaultCurrent = "{ \"season\": NONE, \"weather\": NONE, \"previous-weather\": NONE, \"language\": EN_us }";
+        String defaultCurrent = "{}";
         jsonCore = JSONConfigObject.openOrCreate(Objects.requireNonNull(SeasonsAPI.getOverworld().getServer()).getSavePath(WorldSavePath.ROOT).toAbsolutePath().resolve("seasons-current.json"), defaultCurrent);
         current = jsonCore.getJsonObject();
 //        for (Config mod : mods.values()){
@@ -37,8 +39,11 @@ public class Config {
     }
 
     public static void setLang(String lang) {
-        writeCurrent("language", lang);
-        saveCurrent();
+        Config.getModConfig("API").getConfig().setValue("conf.lang", lang);
+        updateLang(lang);
+    }
+    public static void updateLang(String lang) {
+        currentLang = lang;
         for (ConfigObject mod : mods.values()) {
             mod.loadLang(lang);
         }
@@ -62,14 +67,19 @@ public class Config {
     }
 
     public static String getCurrent(String key) { return current.get(key).getAsString(); }
+    public static String getCurrentOrDefault(String key, String def) { return current.has(key)? current.get(key).getAsString() : def; }
     public static void writeCurrent(String key, String value) { current.addProperty(key, value); }
+    public static void writeCurrentIfDoNotExists(String key) { current.addProperty(key, ""); }
+    public static void writeCurrentIfDoNotExists(String key, String value) { current.addProperty(key, value); }
+
+    public static String getCurrentLang() { return currentLang; }
 
     public static String getCopyright() {
-        return "# ------------------------------------------------\n# seasons-api\n# ------------------------------------------------\n" +
-                "# This mod was developed by analogy with the Spigot plugin \"Seasons\"\n# specifically for the private Minecraft server \"Zixa City\"\n# by its administrator (kochkaev, aka kleverdi).\n# The idea of this mod was taken from Harieo.\n" +
-                "# ------------------------------------------------\n# Harieo on GitHub: https://github.com/Harieo/\n# Original plugin on GitHub: https://github.com/Harieo/Seasons/\n# Original plugin on SpigotMC: https://www.spigotmc.org/resources/seasons.39298/\n" +
-                "# ------------------------------------------------\n# Created by @kochkaev\n#   - GitHub: https://github.com/kochkaev/\n#   - VK: https://vk.com/kleverdi/\n#   - YouTube: https://youtube.com/@kochkaev/\n#   - Contact email: kleverdi@vk.com\n"+
-                "# ------------------------------------------------\n# WARN: It's server-side mod.\n# ------------------------------------------------\n# # # # # # # # # # # # # # # # # # # # # # # # # #\n";
+        return "------------------------------------------------\nseasons-api\n------------------------------------------------\n" +
+                "This mod was developed by analogy with the Spigot plugin \"Seasons\"\nspecifically for the private Minecraft server \"Zixa City\"\nby its administrator (kochkaev, aka kleverdi).\nThe idea of this mod was taken from Harieo.\n" +
+                "------------------------------------------------\nHarieo on GitHub: https://github.com/Harieo/\nOriginal plugin on GitHub: https://github.com/Harieo/Seasons/\nOriginal plugin on SpigotMC: https://www.spigotmc.org/resources/seasons.39298/\n" +
+                "------------------------------------------------\nCreated by @kochkaev\n  - GitHub: https://github.com/kochkaev/\n  - VK: https://vk.com/kleverdi/\n  - YouTube: https://youtube.com/@kochkaev/\n  - Contact email: kleverdi@vk.com\n"+
+                "------------------------------------------------\nWARN: It's server-side mod.\n------------------------------------------------\n# # # # # # # # # # # # # # # # # # # # # # # # #\n";
     }
 }
 

@@ -2,9 +2,9 @@ package ru.kochkaev.api.seasons.object;
 
 
 import ru.kochkaev.api.seasons.util.Message;
-import ru.kochkaev.api.seasons.util.functional.IFuncStringRet;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * It's SeasonObject, object for create your own season.<br><br>
@@ -31,9 +31,9 @@ public abstract class SeasonObject {
      * {@code () -> Config.getModConfig("YourModConfigID").getLang().getString("yourDynamicNameID")} <br>
      * ...and static! <br>
      * {@code () -> "Your static name"}<br><br>
-     * Lambda-function for get name uses IFuncStringRet functional interface.
+     * Lambda expression for get name is String Supplier.
      */
-    protected IFuncStringRet name;
+    protected Supplier<String> name;
 
     /** It's season enabled. */
     protected boolean enabled = true;
@@ -51,7 +51,7 @@ public abstract class SeasonObject {
      * @param id {@link #id}
      * @param name {@link #name}
      */
-    public SeasonObject(String id, IFuncStringRet name) {
+    public SeasonObject(String id, Supplier<String> name) {
         this.id = id;
         this.name = name;
     }
@@ -74,7 +74,7 @@ public abstract class SeasonObject {
     /** This method returns display name of this weather.
      * @return {@link #name}
      */
-    public String getName() { return this.name.function(); }
+    public String getName() { return this.name.get(); }
 
     /**
      * You can use this method for send message to server players.

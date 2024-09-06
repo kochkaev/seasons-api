@@ -2,16 +2,14 @@ package ru.kochkaev.api.seasons.util;
 
 import net.minecraft.text.Text;
 import ru.kochkaev.api.seasons.SeasonsAPI;
-import ru.kochkaev.api.seasons.SeasonsAPI;
-import ru.kochkaev.api.seasons.util.functional.IFuncStringRet;
-import ru.kochkaev.api.seasons.util.functional.IFuncTextRet;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class Format {
 
-    private static final Map<String, IFuncStringRet> placeholders = new HashMap<>();
+    private static final Map<String, Supplier<String>> placeholders = new HashMap<>();
 
     public static String formatMessage(String message, Map<String, String> placeholders){
 
@@ -38,7 +36,7 @@ public class Format {
         }
         else {
             // Placeholders
-            for (String key : placeholders.keySet()) if (message.contains(key)) message = message.replaceAll(key, placeholders.get(key).function());
+            for (String key : placeholders.keySet()) if (message.contains(key)) message = message.replaceAll(key, placeholders.get(key).get());
         }
 
         // Colors
@@ -55,7 +53,7 @@ public class Format {
             String tempMsg = message.getString();
             // Placeholders
             for (String placeholder : placeholders.keySet()) {
-                tempMsg = tempMsg.replaceAll(placeholder, placeholders.get(placeholder).function());
+                tempMsg = tempMsg.replaceAll(placeholder, placeholders.get(placeholder).get());
             }
             message = Text.of(tempMsg);
         }
@@ -66,25 +64,32 @@ public class Format {
         return message;
     }
     private static String doubleParseFormat(String value){
-        for (String key : placeholders.keySet()) if (value.contains(key)) value = value.replaceAll(key, placeholders.get(key).function());
+        for (String key : placeholders.keySet()) if (value.contains(key)) value = value.replaceAll(key, placeholders.get(key).get());
         return value;
     }
 
-    public static void regDynamicPlaceholder(String placeholder, IFuncStringRet lmbd){
-        if (SeasonsAPI.getPlaceholderAPI() != null) SeasonsAPI.getPlaceholderAPI().register(placeholder, lmbd);
-        else placeholders.put("%seasons:"+placeholder+"%", lmbd);
+    public static void regDynamicPlaceholder(String placeholder, Supplier<String> supplier){
+        if (SeasonsAPI.getPlaceholderAPI() != null) SeasonsAPI.getPlaceholderAPI().register(placeholder, SeasonsAPI.getPlaceholderAPI().getStringSupplier(supplier));
+        else placeholders.put("%seasons:"+placeholder+"%", supplier);
     }
     public static void regStaticPlaceholder(String placeholder, String value){
         if (SeasonsAPI.getPlaceholderAPI() != null) SeasonsAPI.getPlaceholderAPI().register(placeholder, value);
         else placeholders.put("%seasons:"+placeholder+"%", () -> value);
     }
-    public static void regDoubleParseDynamicPlaceholder(String placeholder, IFuncTextRet lmbd){
-        if (SeasonsAPI.getPlaceholderAPI() != null) SeasonsAPI.getPlaceholderAPI().registerDoubleParse(placeholder, lmbd);
-        else placeholders.put("%seasons:"+placeholder+"%", () -> doubleParseFormat(lmbd.function().getString()));
-    }
-    public static void regDoubleParseDynamicPlaceholder(String placeholder, IFuncStringRet lmbd){
-        if (SeasonsAPI.getPlaceholderAPI() != null) SeasonsAPI.getPlaceholderAPI().registerDoubleParse(placeholder, () -> Text.of(lmbd.function()));
-        else placeholders.put("%seasons:"+placeholder+"%", () -> doubleParseFormat(lmbd.function()));
+    @SuppressWarnings("unchecked")
+    public static void regDoubleParseDynamicPlaceholder(String placeholder, Supplier<?> supplier){
+        switch (supplier.get()) {
+            case String s -> {
+                if (SeasonsAPI.getPlaceholderAPI() != null)
+                    SeasonsAPI.getPlaceholderAPI().registerDoubleParse(placeholder, () -> Text.of((String) supplier.get()));
+                else placeholders.put("%seasons:" + placeholder + "%", () -> doubleParseFormat((String) supplier.get()));
+            }
+            case Text t -> {
+                if (SeasonsAPI.getPlaceholderAPI() != null) SeasonsAPI.getPlaceholderAPI().registerDoubleParse(placeholder, SeasonsAPI.getPlaceholderAPI().getTextSupplier((Supplier<Text>) supplier));
+                else placeholders.put("%seasons:"+placeholder+"%", () -> doubleParseFormat(((Text) supplier.get()).getString()));
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + supplier.get());
+        }
     }
     public static void regDoubleParseStaticPlaceholder(String placeholder, String value){
         if (SeasonsAPI.getPlaceholderAPI() != null) SeasonsAPI.getPlaceholderAPI().registerDoubleParse(placeholder, Text.of(value));

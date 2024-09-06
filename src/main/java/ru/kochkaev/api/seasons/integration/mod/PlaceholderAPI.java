@@ -7,9 +7,8 @@ import eu.pb4.placeholders.api.Placeholders;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import ru.kochkaev.api.seasons.SeasonsAPI;
-import ru.kochkaev.api.seasons.SeasonsAPIFabric;
-import ru.kochkaev.api.seasons.util.functional.IFuncStringRet;
-import ru.kochkaev.api.seasons.util.functional.IFuncTextRet;
+
+import java.util.function.Supplier;
 
 public class PlaceholderAPI {
 
@@ -24,7 +23,7 @@ public class PlaceholderAPI {
         SeasonsAPI.getLogger().info("PlaceholderAPI available, integrating!");
     }
 
-    /** Register placeholder use original PlaceholderHandler lambda function */
+    /** Register placeholder use original PlaceholderHandler lambda expression */
     public void register(String namespace, String path, PlaceholderHandler handler) {
         Placeholders.register(Identifier.of(namespace, path), handler);
     }
@@ -36,24 +35,24 @@ public class PlaceholderAPI {
     public void register(String namespace, String path, Text placeholder) {
         register(namespace, path, (context, arg) -> PlaceholderResult.value(placeholder));
     }
-    /** Register dynamic placeholder use IFuncStringRet simple lambda function */
-    public void register(String namespace, String path, IFuncStringRet lmbd) {
-        register(namespace, path, (context, arg) -> PlaceholderResult.value(lmbd.function()));
+    /** Register dynamic placeholder use String supplier */
+    public void register(String namespace, String path, StringSupplier supplier) {
+        register(namespace, path, (context, arg) -> PlaceholderResult.value(supplier.get()));
     }
-    /** Register dynamic placeholder use IFuncTextRet simple lambda function */
-    public void register(String namespace, String path, IFuncTextRet lmbd) {
-        register(namespace, path, (context, arg) -> PlaceholderResult.value(lmbd.function()));
+    /** Register dynamic placeholder use Text supplier */
+    public void register(String namespace, String path, TextSupplier supplier) {
+        register(namespace, path, (context, arg) -> PlaceholderResult.value(supplier.get()));
     }
-    /** Register dynamic double-parsing placeholder use IFuncTextRet simple lambda function */
-    public void registerDoubleParse(String namespace, String path, IFuncTextRet lmbd) {
-        register(namespace, path, (context, arg) -> PlaceholderResult.value(Placeholders.parseText(lmbd.function(), context)));
+    /** Register dynamic double-parsing placeholder use Text supplier */
+    public void registerDoubleParse(String namespace, String path, TextSupplier supplier) {
+        register(namespace, path, (context, arg) -> PlaceholderResult.value(Placeholders.parseText(supplier.get(), context)));
     }
     /** Register static double-parsing placeholder use Text */
     public void registerDoubleParse(String namespace, String path, Text text) {
         register(namespace, path, (context, arg) -> PlaceholderResult.value(Placeholders.parseText(text, context)));
     }
 
-    /** Register placeholder use original PlaceholderHandler lambda function and local {@link #namespace} */
+    /** Register placeholder use original PlaceholderHandler lambda expression and local {@link #namespace} */
     public void register(String path, PlaceholderHandler handler) {
         register(this.namespace, path, handler);
     }
@@ -65,17 +64,17 @@ public class PlaceholderAPI {
     public void register(String path, Text placeholder) {
         register(this.namespace, path, placeholder);
     }
-    /** Register dynamic placeholder use IFuncStringRet simple lambda function and local {@link #namespace} */
-    public void register(String path, IFuncStringRet lmbd) {
-        register(this.namespace, path, lmbd);
+    /** Register dynamic placeholder use String supplier and local {@link #namespace} */
+    public void register(String path, StringSupplier supplier) {
+        register(this.namespace, path, supplier);
     }
-    /** Register dynamic placeholder use IFuncTextRet simple lambda function and local {@link #namespace} */
-    public void register(String path, IFuncTextRet lmbd) {
-        register(this.namespace, path, lmbd);
+    /** Register dynamic placeholder use Text supplier and local {@link #namespace} */
+    public void register(String path, TextSupplier supplier) {
+        register(this.namespace, path, supplier);
     }
-    /** Register dynamic double-parsing placeholder use IFuncTextRet simple lambda function and local {@link #namespace} */
-    public void registerDoubleParse(String path, IFuncTextRet lmbd) {
-        registerDoubleParse(namespace, path, lmbd);
+    /** Register dynamic double-parsing placeholder use Text supplier and local {@link #namespace} */
+    public void registerDoubleParse(String path, TextSupplier supplier) {
+        registerDoubleParse(namespace, path, supplier);
     }
     /** Register static double-parsing placeholder use Text and local {@link #namespace} */
     public void registerDoubleParse(String path, Text text) {
@@ -92,4 +91,17 @@ public class PlaceholderAPI {
     public String parseString(String message) {
         return parseText(Text.of(message)).getString();
     }
+
+    public TextSupplier getTextSupplier(Supplier<Text> supplier){
+        return supplier::get;
+    }
+    public StringSupplier getStringSupplier(Supplier<String> supplier){
+//        return (StringSupplier) supplier;
+        return supplier::get;
+    }
+
+    @FunctionalInterface
+    public interface TextSupplier extends Supplier<Text> {}
+    @FunctionalInterface
+    public interface StringSupplier extends Supplier<String> {}
 }

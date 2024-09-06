@@ -10,7 +10,6 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import ru.kochkaev.api.seasons.ChallengesTicker;
 import ru.kochkaev.api.seasons.SeasonsAPI;
-import ru.kochkaev.api.seasons.util.functional.IFuncRet;
 import ru.kochkaev.api.seasons.service.Task;
 import ru.kochkaev.api.seasons.service.Weather;
 import ru.kochkaev.api.seasons.util.Message;
@@ -19,6 +18,9 @@ import ru.kochkaev.api.seasons.WeatherDamageType;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * It's ChallengeObject, object for create your own challenges.<br><br>
@@ -170,7 +172,7 @@ public abstract class ChallengeObject {
      * @param player player, who we will give effect.
      */
     protected void giveFrozen(PlayerEntity player) {
-        IFuncRet task = (args) -> {
+        Function<List<?>, List<?>> task = (args) -> {
             int count = (int) args.getFirst();
             PlayerEntity playr = (PlayerEntity) args.get(1);
             playr.setFrozenTicks(count);

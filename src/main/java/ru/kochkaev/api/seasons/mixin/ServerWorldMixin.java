@@ -45,8 +45,10 @@ public abstract class ServerWorldMixin
     @Inject(method = "tick", at = @At("HEAD"))
     public void tick(BooleanSupplier shouldKeepTicking, CallbackInfo ci){
         if (SeasonsAPI.isLoaded()){
-            if ((this.properties.getTimeOfDay() % 24000L >= Config.getModConfig("API").getConfig().getLong("conf.tick.day.start")) && (Boolean.TRUE.equals(Weather.isNight())) && (Config.getModConfig("API").getConfig().getLong("conf.tick.day.end") > this.properties.getTimeOfDay() % 24000L))
+            if ((this.properties.getTimeOfDay() % 24000L >= Config.getModConfig("API").getConfig().getLong("conf.tick.day.start")) && (Boolean.TRUE.equals(Weather.isNight())) && (Config.getModConfig("API").getConfig().getLong("conf.tick.day.end") > this.properties.getTimeOfDay() % 24000L)) {
                 Weather.setDay();
+                Config.writeCurrent("days_after_season_set", String.valueOf((Integer.parseInt(Config.getCurrent("days_after_season_set")) + 1)));
+            }
             if ((this.properties.getTimeOfDay() % 24000L >= Config.getModConfig("API").getConfig().getLong("conf.tick.day.end")) && (Boolean.FALSE.equals(Weather.isNight())))
                 Weather.setNight();
             if (Config.getModConfig("API").getConfig().getBoolean("conf.enable.title.actionbar")) Title.showActionBar();

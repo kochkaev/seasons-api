@@ -5,18 +5,16 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
 import ru.kochkaev.api.seasons.command.SeasonsCommand;
-import ru.kochkaev.api.seasons.integration.Environment;
+import ru.kochkaev.api.seasons.integration.Loader;
 
 import java.nio.file.Path;
 
-public class SeasonsAPIFabric extends Environment implements ModInitializer {
+public class SeasonsAPIFabric extends Loader implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		SeasonsAPI.regEnvironment(this);
+		SeasonsAPI.regLoader(this);
 		ServerLifecycleEvents.SERVER_STARTED.register(SeasonsAPI::onWorldStarted);
 		ServerLifecycleEvents.SERVER_STOPPED.register((server) -> SeasonsAPI.onWorldShutdown());
 	}

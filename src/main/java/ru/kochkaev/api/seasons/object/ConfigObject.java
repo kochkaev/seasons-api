@@ -1,7 +1,6 @@
 package ru.kochkaev.api.seasons.object;
 
 import ru.kochkaev.api.seasons.SeasonsAPI;
-import ru.kochkaev.api.seasons.integration.mod.ClothConfig;
 import ru.kochkaev.api.seasons.service.Config;
 
 import java.util.HashMap;
@@ -9,9 +8,9 @@ import java.util.Map;
 
 public class ConfigObject {
 
-    private TXTConfigObject lang;
-    private final Map<String, TXTConfigObject> langs = new HashMap<>();
-    private final Map<String, TXTConfigObject> configs = new HashMap<>();
+    private ConfigFileObject lang;
+    private final Map<String, ConfigFileObject> langs = new HashMap<>();
+    private final Map<String, ConfigFileObject> configs = new HashMap<>();
     private final String modName;
     private final String defaultLang;
 
@@ -22,19 +21,43 @@ public class ConfigObject {
         SeasonsAPI.getLogger().info("Loaded mod: {}", modName);
     }
 
-    public void registerConfigObject(TXTConfigObject object) {
+//    public void registerConfigObject(TXTConfigObject object) {
+//        ConfigFileObject conf = new ConfigFileObject(object.getModName(), object.getFilename(), object.getType()) {
+//            @Override
+//            public void generate(ConfigContentObject content) {
+//                object.generate();
+//                getContent().putAll(object.getTypedValuesMap());
+//                getContent().getQueue().addAll(object.getKeysQueue());
+//            }
+//            @Override
+//            public void generateCreateIfDoNotExistsOpenAndUpdateIfLegacy() {
+//                object.generateCreateIfDoNotExistsOpenAndUpdateIfLegacy();
+//            }
+//            @Override
+//            public void open() {
+//                object.open();
+//            }
+//            @Override
+//            public void reload() {
+//                object.reload();
+//            }
+//        };
+//        registerConfigObject(conf);
+//    }
+    public void registerConfigObject(ConfigFileObject object) {
         object.generateCreateIfDoNotExistsOpenAndUpdateIfLegacy();
         if (object.getType().equals("config")) this.configs.put(object.getFilename(), object);
         else if (object.getType().equals("lang")) {
             String lang = object.getFilename();
             langs.put(lang, object);
             if (!Config.getListOfLangs().contains(lang)) Config.getListOfLangs().add(lang);
-            object.close();
+            if (lang.equals(Config.getCurrentLang())) this.lang = object;
+            else object.close();
         }
     }
 
     public void reloadLang() {
-        loadLang(Config.getCurrent("language"));
+        loadLang(Config.getCurrentLang());
     }
     public void loadLang(String langName) {
         lang = langs.containsKey(langName) ? langs.get(langName) : langs.get(defaultLang);
@@ -42,21 +65,21 @@ public class ConfigObject {
     }
 
     public void reload() {
-        for (TXTConfigObject conf : configs.values()) {
-            conf.generateCreateIfDoNotExistsOpenAndUpdateIfLegacy();
+        for (ConfigFileObject conf : configs.values()) {
+            conf.reload();
         }
         reloadLang();
     }
 
     public String getModName() { return this.modName; }
-    public TXTConfigObject getLang() { return lang; }
-    public TXTConfigObject getConfig() { return configs.values().stream().findFirst().orElseThrow(); }
-    public TXTConfigObject getConfig(String filename) { return configs.get(filename); }
+    public ConfigFileObject getLang() { return lang; }
+    public ConfigFileObject getConfig() { return configs.values().stream().findFirst().orElseThrow(); }
+    public ConfigFileObject getConfig(String filename) { return configs.get(filename); }
 
-    public Map<String, TXTConfigObject> getConfigs() {
+    public Map<String, ConfigFileObject> getConfigs() {
         return configs;
     }
-    public Map<String, TXTConfigObject> getLangs() {
+    public Map<String, ConfigFileObject> getLangs() {
         return langs;
     }
 }

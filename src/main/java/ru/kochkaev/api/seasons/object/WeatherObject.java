@@ -4,10 +4,10 @@ package ru.kochkaev.api.seasons.object;
 import org.jetbrains.annotations.Nullable;
 import ru.kochkaev.api.seasons.service.Weather;
 import ru.kochkaev.api.seasons.util.Message;
-import ru.kochkaev.api.seasons.util.functional.IFuncStringRet;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * It's WeatherObject, object for create your own weather.<br><br>
@@ -34,9 +34,9 @@ public abstract class WeatherObject {
      * {@code () -> Config.getModConfig("YourModConfigID").getLang().getString("yourDynamicNameID")} <br>
      * ...and static! <br>
      * {@code () -> "Your static name"}<br><br>
-     * Lambda-function for get name uses IFuncStringRet functional interface.
+     * Lambda expression for get name is String Supplier.
      */
-    protected IFuncStringRet name;
+    protected Supplier<String> name;
     /** Weather property, is it raining in this weather?
      * Can be null (if it shouldn't overwrite previous weather) */
     @Nullable
@@ -79,7 +79,7 @@ public abstract class WeatherObject {
      * @param seasons {@link #seasons}
      * @param nightly {@link #nightly}
      */
-    public WeatherObject(String id, IFuncStringRet name, @Nullable Boolean raining, @Nullable Boolean thundering, @Nullable Integer chance, @Nullable List<SeasonObject> seasons, @Nullable Boolean nightly) {
+    public WeatherObject(String id, Supplier<String> name, @Nullable Boolean raining, @Nullable Boolean thundering, @Nullable Integer chance, @Nullable List<SeasonObject> seasons, @Nullable Boolean nightly) {
         this.id = id;
         this.name = name;
         this.raining = raining;
@@ -107,7 +107,7 @@ public abstract class WeatherObject {
     /** This method returns display name of this weather.
      * @return {@link #name}
      */
-    public String getName() { return this.name.function(); }
+    public String getName() { return this.name.get(); }
     /** This method returns chance of this weather coming.
      * @return {@link #chance}
      */

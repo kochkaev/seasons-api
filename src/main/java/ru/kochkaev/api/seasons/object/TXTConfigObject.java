@@ -1,24 +1,21 @@
 package ru.kochkaev.api.seasons.object;
 
-import net.fabricmc.loader.api.FabricLoader;
-import org.apache.commons.lang3.StringUtils;
 import ru.kochkaev.api.seasons.SeasonsAPI;
-import ru.kochkaev.api.seasons.service.Task;
-import ru.kochkaev.api.seasons.util.map.Map1Key3Values;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class TXTConfigObject {
 
     private final String path;
-    private final Map<String, ConfigValueObject<?>> typedValuesMap = new TreeMap<>();
-    /** If true - {@link #generate} will generate content of config file, or else - generate only set of config keys. */
+    private final Map<String, ConfigValueObject<?>> typedValuesMap = new HashMap<>();
+    private final Queue<String> keysQueue = new PriorityQueue<>();
     private String generateMode = "structure";
     private final String type;
 
@@ -31,21 +28,10 @@ public abstract class TXTConfigObject {
 
     protected TXTConfigObject(String modName, String filename, String type) {
         this.modName = modName;
-//        this.filename = modName + (type.equals("lang") ? "/lang/" : "/") + filename;
         this.filename = filename;
         this.type = type;
-        this.path = FabricLoader.getInstance().getConfigDir().toAbsolutePath().resolve("Seasons/" + modName + (type.equals("lang") ? "/lang/" : "/") + filename + ".txt").toString();
+        this.path = SeasonsAPI.getLoader().getConfigPath().resolve("Seasons/" + modName + (type.equals("lang") ? "/lang/" : "/") + filename + ".txt").toString();
     }
-
-//    TXTConfigObject (String path, Map<String, String> map) {
-//        this.path = path;
-//        this.map = map;
-//    }
-
-//    private void readTXT (String path, Scanner reader) {
-//        this.path = path;
-//        this.map = txtParser(reader);
-//    }
 
     /** Generate config file content and set of generated keys. */
     public abstract void generate();
@@ -85,10 +71,10 @@ public abstract class TXTConfigObject {
         return getValue(key);
 //        return Boolean.parseBoolean(valuesMap.get(key));
     }
+    @SuppressWarnings("unchecked")
     public <T> T getValue(String key) {
 //        return typesMap.get(key).getClass().cast(valuesMap.get(key));
 //        return (T) typesMap.get(key);
-        //noinspection unchecked
         return (T) typedValuesMap.get(key).getValue();
     }
 
@@ -142,10 +128,16 @@ public abstract class TXTConfigObject {
         generated = "";
     }
 
-    /** To Cloth Config */
+    /** For Cloth Config */
     public Map<String, ConfigValueObject<?>> getTypedValuesMap() {
 //        for (String key : keyCommentValueMap.getKeySet()) keyCommentValueMap.setSecond(key, map.get(key));
         return typedValuesMap;
+    }
+    public ConfigValueObject<?> getValueObject(String key) {
+        return typedValuesMap.get(key);
+    }
+    public Queue<String> getKeysQueue() {
+        return keysQueue;
     }
 
 //    @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -215,8 +207,8 @@ public abstract class TXTConfigObject {
         return output;
     }
 //    public static Map<String, String> txtParser(Scanner reader){
-//        final Spliterator<String> splt = Spliterators.spliterator(reader, Long.MAX_VALUE, Spliterator.ORDERED | Spliterator.NONNULL);
-//        return txtParser(StreamSupport.stream(splt, false));
+//        final Spliterator<String> split = Spliterators.spliterator(reader, Long.MAX_VALUE, Spliterator.ORDERED | Spliterator.NONNULL);
+//        return txtParser(StreamSupport.stream(split, false));
 //    }
     public static Map<String, String> txtParser(String content){
         return txtParser(Arrays.stream(content.split("\n")));
@@ -278,6 +270,7 @@ public abstract class TXTConfigObject {
         switch (generateMode) {
             case "structure" -> {
                 typedValuesMap.put(key, new ConfigValueObject<>(value, value, tempHeaderForValue, tempCommentForValue));
+                keysQueue.add(key);
                 tempCommentForValue = "—————";
             }
             case "content" -> {
@@ -289,6 +282,7 @@ public abstract class TXTConfigObject {
         switch (generateMode) {
             case "structure" -> {
                 typedValuesMap.put(key, new ConfigValueObject<>(value, value, tempHeaderForValue, tempCommentForValue));
+                keysQueue.add(key);
                 tempCommentForValue = "—————";
             }
             case "content" -> addLine(key + ": \"" + typedValuesMap.get(key).getValue() + "\" # | default: \"" + value + "\"");
@@ -298,6 +292,7 @@ public abstract class TXTConfigObject {
         switch (generateMode) {
             case "structure" -> {
                 typedValuesMap.put(key, new ConfigValueObject<>(value, value, tempHeaderForValue, tempCommentForValue));
+                keysQueue.add(key);
                 tempCommentForValue = "—————";
             }
             case "content" -> addLine(key + ": \"" + typedValuesMap.get(key).getValue() + "\" # | type: \"" + value.getClass().getSimpleName() + "\"");
@@ -307,9 +302,100 @@ public abstract class TXTConfigObject {
         switch (generateMode) {
             case "structure" -> {
                 typedValuesMap.put(key, new ConfigValueObject<>(value, value, tempHeaderForValue, tempCommentForValue));
+                keysQueue.add(key);
                 tempCommentForValue = "—————";
             }
             case "content" -> addLine(key + ": \"" + typedValuesMap.get(key).getValue() + "\" # | type: \"" + value.getClass().getSimpleName() + "\" | default: \"" + value + "\"");
+        }
+    }
+//    protected <T, L extends List<T>> void addTypedSelectionButton(String key, L list, T def){
+//        switch (generateMode) {
+//            case "structure" -> {
+//                typedValuesMap.put(key, new ConfigSelectionObject<>(list, def, def, tempHeaderForValue, tempCommentForValue));
+//                tempCommentForValue = "—————";
+//            }
+//            case "content" -> {
+//                addLine("# Selection: type: \"" + def.getClass().getSimpleName() + "\"");
+//                addLine(key + ": \"" + typedValuesMap.get(key).getValue() + "\" # | default: \"" + def + "\"");
+//            }
+//        }
+//    }
+    protected <T, S extends Supplier<List<T>>> void addTypedSelectionButton(String key, S supplier, T def){
+        switch (generateMode) {
+            case "structure" -> {
+                typedValuesMap.put(key, new ConfigSelectionObject<>(supplier, def, def, tempHeaderForValue, tempCommentForValue, "Button"));
+                keysQueue.add(key);
+                tempCommentForValue = "—————";
+            }
+            case "content" -> {
+                addLine("# Selection: type: \"" + def.getClass().getSimpleName() + "\"");
+                addLine(key + ": \"" + typedValuesMap.get(key).getValue() + "\" # | default: \"" + def + "\"");
+            }
+        }
+    }
+    protected <T, L extends List<T>> void addTypedSelectionButtonAndAvailableValues(String key, L list, T def){
+        switch (generateMode) {
+            case "structure" -> {
+                typedValuesMap.put(key, new ConfigSelectionObject<>(list, def, def, tempHeaderForValue, tempCommentForValue, "Button"));
+                keysQueue.add(key);
+                tempCommentForValue = "—————";
+            }
+            case "content" -> {
+                addLine("# Selection: type: \"" + def.getClass().getSimpleName() + "\" | available values: " + list.stream().map((T val) -> "\""+ String.valueOf(val) + "\"").collect(Collectors.joining(", ")));
+                addLine(key + ": \"" + typedValuesMap.get(key).getValue() + "\" # | default: \"" + def + "\"");
+            }
+        }
+    }
+    protected <T, S extends Supplier<List<T>>> void addTypedSelectionDropdown(String key, S supplier, T def){
+        switch (generateMode) {
+            case "structure" -> {
+                typedValuesMap.put(key, new ConfigSelectionObject<>(supplier, def, def, tempHeaderForValue, tempCommentForValue, "Dropdown"));
+                keysQueue.add(key);
+                tempCommentForValue = "—————";
+            }
+            case "content" -> {
+                addLine("# Selection: type: \"" + def.getClass().getSimpleName() + "\"");
+                addLine(key + ": \"" + typedValuesMap.get(key).getValue() + "\" # | default: \"" + def + "\"");
+            }
+        }
+    }
+    protected <T, L extends List<T>> void addTypedSelectionDropdownAndAvailableValues(String key, L list, T def){
+        switch (generateMode) {
+            case "structure" -> {
+                typedValuesMap.put(key, new ConfigSelectionObject<>(list, def, def, tempHeaderForValue, tempCommentForValue, "Dropdown"));
+                keysQueue.add(key);
+                tempCommentForValue = "—————";
+            }
+            case "content" -> {
+                addLine("# Selection: type: \"" + def.getClass().getSimpleName() + "\" | available values: " + list.stream().map((T val) -> "\""+ String.valueOf(val) + "\"").collect(Collectors.joining(", ")));
+                addLine(key + ": \"" + typedValuesMap.get(key).getValue() + "\" # | default: \"" + def + "\"");
+            }
+        }
+    }
+    protected <T, S extends Supplier<List<T>>> void addTypedSelectionSuggestion(String key, S supplier, T def){
+        switch (generateMode) {
+            case "structure" -> {
+                typedValuesMap.put(key, new ConfigSelectionObject<>(supplier, def, def, tempHeaderForValue, tempCommentForValue, "Suggestion"));
+                keysQueue.add(key);
+                tempCommentForValue = "—————";
+            }
+            case "content" -> {
+                addLine("# Selection: type: \"" + def.getClass().getSimpleName() + "\"");
+                addLine(key + ": \"" + typedValuesMap.get(key).getValue() + "\" # | default: \"" + def + "\"");
+            }
+        }
+    }
+    protected <T, L extends List<T>> void addTypedSelectionSuggestionAndAvailableValues(String key, L list, T def){
+        switch (generateMode) {
+            case "structure" -> {
+                typedValuesMap.put(key, new ConfigSelectionObject<>(list, def, def, tempHeaderForValue, tempCommentForValue, "Suggestion"));
+                keysQueue.add(key);
+                tempCommentForValue = "—————";
+            }
+            case "content" -> {
+                addLine("# Selection: type: \"" + def.getClass().getSimpleName() + "\" | available values: " + list.stream().map((T val) -> "\""+ String.valueOf(val) + "\"").collect(Collectors.joining(", ")));
+                addLine(key + ": \"" + typedValuesMap.get(key).getValue() + "\" # | default: \"" + def + "\"");
+            }
         }
     }
     protected void addComment(String comment) {
@@ -340,46 +426,92 @@ public abstract class TXTConfigObject {
     public String getFilename() { return filename; }
     public String getModName() { return modName; }
 
-    public static class ConfigValueObject<T> {
-        private T value;
-        private final T defaultValue;
-        private String header;
-        private String description;
-
-        public ConfigValueObject(T value, T defaultValue, String header, String description) {
-            this.value = value;
-            this.defaultValue = defaultValue;
-            this.header = header;
-            this.description = description;
-        }
-
-        public void setDescription(String description) {
-            this.description = description;
-        }
-        public void setHeader(String header) {
-            this.header = header;
-        }
-//        public void setValue(T value) {
+//    public static class ConfigValueObject<T> {
+//        private T value;
+//        private final T defaultValue;
+//        private String header;
+//        private String description;
+//
+//        public ConfigValueObject(T value, T defaultValue, String header, String description) {
 //            this.value = value;
+//            this.defaultValue = defaultValue;
+//            this.header = header;
+//            this.description = description;
 //        }
-        public void setValue(Object value) {
-            //noinspection unchecked
-            this.value = (T) value;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-        public String getHeader() {
-            return header;
-        }
-        public T getValue() {
-            return value;
-        }
-        public T getDefaultValue() {
-            return defaultValue;
-        }
-    }
+//
+//        public void setDescription(String description) {
+//            this.description = description;
+//        }
+//        public void setHeader(String header) {
+//            this.header = header;
+//        }
+////        public void setValue(T value) {
+////            this.value = value;
+////        }
+//        public void setValue(Object value) {
+//            //noinspection unchecked
+//            this.value = (T) value;
+//        }
+//
+//        public String getDescription() {
+//            return description;
+//        }
+//        public String getHeader() {
+//            return header;
+//        }
+//        public T getValue() {
+//            return value;
+//        }
+//        public T getDefaultValue() {
+//            return defaultValue;
+//        }
+//    }
+//
+//    public static class ConfigSelectionObject<T, L extends List<T>> extends ConfigValueObject<T> {
+//
+//        private L list;
+//        private Supplier<L> listGetter;
+//        private final String selectionType;
+//
+//        public ConfigSelectionObject(L list, T value, T defaultValue, String header, String description) {
+//            super(value, defaultValue, header, description);
+//            this.list = list;
+//            this.listGetter = null;
+//            this.selectionType = "button";
+//        }
+//        public ConfigSelectionObject(Supplier<L> listGetter, T value, T defaultValue, String header, String description) {
+//            super(value, defaultValue, header, description);
+//            this.listGetter = listGetter;
+//            this.list = null;
+//            this.selectionType = "button";
+//        }
+//        public ConfigSelectionObject(L list, T value, T defaultValue, String header, String description, String selectionType) {
+//            super(value, defaultValue, header, description);
+//            this.list = list;
+//            this.listGetter = null;
+//            this.selectionType = selectionType;
+//        }
+//        public ConfigSelectionObject(Supplier<L> listGetter, T value, T defaultValue, String header, String description, String selectionType) {
+//            super(value, defaultValue, header, description);
+//            this.listGetter = listGetter;
+//            this.list = null;
+//            this.selectionType = selectionType;
+//        }
+//
+//        public L getList() {
+//            return list!=null ? list : Objects.requireNonNull(listGetter).get();
+//        }
+//        public String getSelectionType() {
+//            return selectionType;
+//        }
+//
+//        public void setList(L list) {
+//            this.list = list;
+//        }
+//        public void setList(Supplier<L> listGetter) {
+//            this.listGetter = listGetter;
+//        }
+//    }
 
 }
 

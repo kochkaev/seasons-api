@@ -1,37 +1,25 @@
 package ru.kochkaev.api.seasons.integration.mod;
 
-import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
-import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
-import me.shedaniel.clothconfig2.gui.entries.DoubleListEntry;
+import me.shedaniel.clothconfig2.gui.entries.DropdownBoxEntry;
+import me.shedaniel.clothconfig2.gui.entries.SelectionListEntry;
 import me.shedaniel.clothconfig2.gui.entries.TooltipListEntry;
-import me.shedaniel.clothconfig2.impl.builders.AbstractFieldBuilder;
-import me.shedaniel.clothconfig2.impl.builders.FieldBuilder;
-import me.shedaniel.clothconfig2.impl.builders.IntFieldBuilder;
-import me.shedaniel.clothconfig2.impl.builders.StringFieldBuilder;
-import net.fabricmc.loader.api.FabricLoader;
+import me.shedaniel.clothconfig2.impl.builders.*;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.StringUtils;
-import ru.kochkaev.api.seasons.object.ConfigObject;
-import ru.kochkaev.api.seasons.object.TXTConfigObject;
+import org.jetbrains.annotations.NotNull;
+import ru.kochkaev.api.seasons.object.*;
 import ru.kochkaev.api.seasons.service.Config;
-import ru.kochkaev.api.seasons.util.map.Map1Key2Values;
-import ru.kochkaev.api.seasons.util.map.Map1Key3Values;
 
-import javax.lang.model.type.UnionType;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 public class ClothConfigClient extends ClothConfig {
-
-//    private static final Map<String, Map<String, Map1Key2Values<String, String, String>>> categoryMatrix = new HashMap<>();
-//    private static final List<ConfigObject> configs = new ArrayList<>();
 
     public ClothConfigClient() {
 
@@ -41,67 +29,50 @@ public class ClothConfigClient extends ClothConfig {
         ConfigBuilder builder = ConfigBuilder.create()
                 .setParentScreen((Screen) parent)
                 .setTitle(Text.of("Seasons Config"));
-//        ConfigEntryBuilder entryBuilder = builder.entryBuilder();
-//        for (String modName : categoryMatrix.keySet()) {
-//            for (String configName : categoryMatrix.get(modName).keySet()) {
-//                ConfigCategory modCategory = builder.getOrCreateCategory(Text.of(modName+"-"+configName));
-//                for (String key : categoryMatrix.get(modName).get(configName).getKeySet())
-//                    modCategory.addEntry(entryBuilder.startStrField(Text.of(key), Config.getModConfig(modName).getConfig(configName).getString(key))
-//                            .setDefaultValue(categoryMatrix.get(modName).get(configName).getSecond(key))
-//                            .setTooltip(Text.of(categoryMatrix.get(modName).get(configName).getFirst(key)))
-//                            .setSaveConsumer(newValue -> Config.getModConfig(modName).getConfig(configName).write(key, newValue))
-//                            .build()
-//                    );
-//            }
-//        }
         for (ConfigObject mod : Config.getMods().values()) {
-            for (TXTConfigObject config : mod.getConfigs().values()) {
-                ConfigCategory modCategory = builder.getOrCreateCategory(Text.of(mod.getModName()+(mod.getConfigs().size()>1 ? " ("+config.getFilename()+")" : "")));
-//                        .setCategoryBackground(Identifier.of("seasons-api", "seasons-config-background.png"));
-//                Identifier modCategoryBackground = modCategory.getBackground();
-//                modCategory.setCategoryBackground(Identifier.of("seasons-api", "seasons-config-background.png"));
-                if (config.getModName().equals(priority.getModName())) builder.setFallbackCategory(modCategory);
-                Map<String, TXTConfigObject.ConfigValueObject<?>> valuesMap = config.getTypedValuesMap();
-                for (String key : valuesMap.keySet()) {
-                    modCategory.addEntry(
-//                            (
-//                                    value instanceof String ?
-//                                            builder.entryBuilder().startStrField(Text.of(key), (String) value)
-//                                                    .setDefaultValue((String) value) :
-//                                            value instanceof Boolean ?
-//                                                    builder.entryBuilder().startBooleanToggle(Text.of(key), (Boolean) value)
-//                                                            .setDefaultValue((Boolean) value) :
-//                                                    value instanceof Integer ?
-//                                                            builder.entryBuilder().startIntField(Text.of(key), (Integer) value)
-//                                                                    .setDefaultValue((Integer) value) :
-//                                                            value instanceof Long ?
-//                                                                    builder.entryBuilder().startLongField(Text.of(key), (Long) value)
-//                                                                            .setDefaultValue((Long) value) :
-//                                                                    value instanceof Float ?
-//                                                                            builder.entryBuilder().startFloatField(Text.of(key), (Float) value)
-//                                                                                    .setDefaultValue((Float) value) :
-//                                                                            value instanceof Double ?
-//                                                                                    builder.entryBuilder().startDoubleField(Text.of(key), (Double) value)
-//                                                                                            .setDefaultValue((Double) value) :
-//                                                                                    builder.entryBuilder().startStrField(Text.of(key), StringUtils.join(value))
-//                                                                                            .setDefaultValue(StringUtils.join(value))
-//                            )
-                            typedFieldBuilder(builder, key, valuesMap.get(key), mod.getModName(), config.getFilename())
-                    );
-                }
-            }
+            ConfigCategory modCategory = addCategory(builder, mod);
+            if (mod.getModName().equals(priority.getModName())) builder.setFallbackCategory(modCategory);
         }
         return builder.build();
     }
-//    public void addConfigCategory(ConfigObject config) {
-////        Map<String, Map1Key2Values<String, String, String>> modConfigs = new HashMap<>();
-////        for (TXTConfigObject configObject : config.getConfigs().values()) modConfigs.put(configObject.getFilename(), configObject.getKeyCommentAndDefaultMap());
-////        categoryMatrix.put(config.getModName(), modConfigs);
-//        configs.add(config);
-//    }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    protected static <T, E extends TooltipListEntry<T>, B extends FieldBuilder<T, E, B>, R extends AbstractFieldBuilder<T, E, B>> AbstractConfigListEntry typedFieldBuilder(ConfigBuilder builder, String key, TXTConfigObject.ConfigValueObject<T> valueObject, String modName, String configName) {
+    protected static AbstractConfigListEntry<?> addEntry(String key, Object valueObject, ConfigBuilder builder, String modName, String filename) {
+        if (valueObject instanceof ConfigSelectionObject<?, ? extends List<?>> selectionObj) {
+            return (selectionObj.getSelectionType().equals("Dropdown") || selectionObj.getSelectionType().equals("Suggestion")) ?
+                    dropdownBuilder(builder, key, selectionObj, modName, filename, selectionObj.getSelectionType().equals("Suggestion")) :
+                    selectionBuilder(builder, key, selectionObj, modName, filename);
+        }
+        else if (valueObject instanceof ConfigValueObject<?> valueObj) return typedFieldBuilder(builder, key, valueObj, modName, filename);
+        return null;
+    }
+
+    protected static ConfigCategory addCategory(ConfigBuilder builder, ConfigObject mod) {
+        ConfigCategory modCategory = builder.getOrCreateCategory(Text.of(mod.getModName()));
+        Collection<ConfigFileObject> configs = mod.getConfigs().values();
+        if (configs.size() > 1) for (ConfigFileObject config : configs) {
+            Queue<String> keys = config.getKeysQueue();
+            SubCategoryBuilder configCategory = builder.entryBuilder().startSubCategory(Text.of(config.getFilename()));
+            for (String key : keys) {
+                configCategory.add(
+                        addEntry(key, config.getValueObject(key), builder, mod.getModName(), config.getFilename())
+                );
+            }
+            modCategory.addEntry(configCategory.build());
+        }
+        else if (configs.size() == 1) {
+            ConfigFileObject config = mod.getConfig();
+            Queue<String> keys = config.getKeysQueue();
+            for (String key : keys) {
+                modCategory.addEntry(
+                        addEntry(key, config.getValueObject(key), builder, mod.getModName(), config.getFilename())
+                );
+            }
+        }
+        return modCategory;
+    }
+
+    @SuppressWarnings({"unchecked"})
+    protected static <T, E extends TooltipListEntry<T>, B extends FieldBuilder<T, E, B>, R extends AbstractFieldBuilder<T, E, B>> AbstractConfigListEntry<T> typedFieldBuilder(ConfigBuilder builder, String key, ConfigValueObject<T> valueObject, String modName, String configName) {
         T value = valueObject.getValue();
         T defaultValue = valueObject.getDefaultValue();
         R entryBuilder = switch (value) {
@@ -121,7 +92,7 @@ public class ClothConfigClient extends ClothConfig {
                     .setDefaultValue(StringUtils.join(defaultValue));
         };
         entryBuilder = (R) entryBuilder
-                .setTooltip(Text.of(valueObject.getHeader()), Text.of(valueObject.getDescription()));
+                .setTooltip(getTooltip(valueObject));
         entryBuilder = (R) entryBuilder.setSaveConsumer(newValue -> {
             assert value != null;
             if (!value.equals(newValue)) Config.getModConfig(modName).getConfig(configName).setValue(key, newValue);
@@ -129,43 +100,58 @@ public class ClothConfigClient extends ClothConfig {
         return entryBuilder.build();
     }
 
-//    protected static <T> AbstractConfigListEntry<T> createConfigEntry(ConfigBuilder builder, ConfigEntryBuilder entryBuilder, String modName, String configName, String key, String description, T defaultValue) {
-//        if (defaultValue instanceof Double) {
-//            DoubleListEntry e = builder.doubleEntry(Text.of(key), Config.getModConfig(modName).getConfig(configName).getDouble(key), 0.0, Double.MAX_VALUE);
-//        }
-//            return (AbstractConfigListEntry<T>) entryBuilder
-//                    .startDoubleField(Text.of(key), Config.getModConfig(modName).getConfig(configName).getDouble(key))
-//                    .setTooltip(Text.of(description))
-//                    .setMin(e.getMin())
-//                    .setMax(e.getMax())
-//                    .setDefaultValue(e::getDefault)
-//                    .setSaveConsumer(d -> {
-//                        e.set(d);
-//                        e.save();
-//                    })
-//                    .build();
-//        } else if (entry instanceof IntegerConfigEntry e) {
-//            return (AbstractConfigListEntry<T>) entryBuilder
-//                    .startIntField(name, e.get())
-//                    .setTooltip(description)
-//                    .setMin(e.getMin())
-//                    .setMax(e.getMax())
-//                    .setDefaultValue(e::getDefault)
-//                    .setSaveConsumer(d -> e.set(d).save())
-//                    .build();
-//        } else if (entry instanceof BooleanConfigEntry e) {
-//            return (AbstractConfigListEntry<T>) entryBuilder
-//                    .startBooleanToggle(name, e.get())
-//                    .setTooltip(description)
-//                    .setDefaultValue(e::getDefault)
-//                    .setSaveConsumer(d -> e.set(d).save())
-//                    .build();
-//        } else if (entry instanceof StringConfigEntry e) {
-//            return (AbstractConfigListEntry<T>) entryBuilder
-//                    .startStrField(name, e.get())
-//                    .setTooltip(description)
-//                    .setDefaultValue(e::getDefault)
-//                    .setSaveConsumer(d -> e.set(d).save())
-//                    .build();
-//        }
+    @SuppressWarnings({"unchecked"})
+    protected static @NotNull <T, L extends List<T>, S extends SelectorBuilder<T>> SelectionListEntry<T> selectionBuilder(ConfigBuilder builder, String key, ConfigSelectionObject<T, L> valueObject, String modName, String configName) {
+        L list = valueObject.getList();
+        T value = valueObject.getValue();
+        T defaultValue = valueObject.getDefaultValue();
+        S entryBuilder = (S) builder.entryBuilder().startSelector(Text.of(key), list.toArray(), value)
+                .setDefaultValue(defaultValue);
+        entryBuilder = (S) entryBuilder
+                .setTooltip(getTooltip(valueObject));
+        entryBuilder = (S) entryBuilder.setSaveConsumer(newValue -> {
+            if (!value.equals(newValue)) Config.getModConfig(modName).getConfig(configName).setValue(key, newValue);
+        });
+        return entryBuilder.build();
+    }
+
+    @SuppressWarnings({"unchecked"})
+    protected static @NotNull <T, L extends List<T>, D extends DropdownMenuBuilder<T>> DropdownBoxEntry<T> dropdownBuilder(ConfigBuilder builder, String key, ConfigSelectionObject<T, L> valueObject, String modName, String configName, boolean suggestionMode) {
+        L list = valueObject.getList();
+        T value = valueObject.getValue();
+        T defaultValue = valueObject.getDefaultValue();
+        D entryBuilder = switch (value) {
+            case String s -> (D) builder.entryBuilder().startDropdownMenu(Text.of(key), DropdownMenuBuilder.TopCellElementBuilder.of(s, (str) -> str), DropdownMenuBuilder.CellCreatorBuilder.of())
+                    .setDefaultValue((String) defaultValue);
+            case Boolean b -> (D) builder.entryBuilder().startDropdownMenu(Text.of(key), DropdownMenuBuilder.TopCellElementBuilder.of(b, Boolean::parseBoolean), DropdownMenuBuilder.CellCreatorBuilder.of())
+                    .setDefaultValue((Boolean) defaultValue);
+            case Integer i -> (D) builder.entryBuilder().startDropdownMenu(Text.of(key), DropdownMenuBuilder.TopCellElementBuilder.of(i, Integer::parseInt), DropdownMenuBuilder.CellCreatorBuilder.of())
+                    .setDefaultValue((Integer) defaultValue);
+            case Long l -> (D) builder.entryBuilder().startDropdownMenu(Text.of(key), DropdownMenuBuilder.TopCellElementBuilder.of(l, Long::parseLong), DropdownMenuBuilder.CellCreatorBuilder.of())
+                    .setDefaultValue((Long) defaultValue);
+            case Float f -> (D) builder.entryBuilder().startDropdownMenu(Text.of(key), DropdownMenuBuilder.TopCellElementBuilder.of(f, Float::parseFloat), DropdownMenuBuilder.CellCreatorBuilder.of())
+                    .setDefaultValue((Float) defaultValue);
+            case Double d -> (D) builder.entryBuilder().startDropdownMenu(Text.of(key), DropdownMenuBuilder.TopCellElementBuilder.of(d, Double::parseDouble), DropdownMenuBuilder.CellCreatorBuilder.of())
+                    .setDefaultValue((Double) defaultValue);
+            case null, default -> {
+                assert value != null;
+                yield (D) builder.entryBuilder().startDropdownMenu(Text.of(key), DropdownMenuBuilder.TopCellElementBuilder.of(value, (str) -> str), DropdownMenuBuilder.CellCreatorBuilder.of())
+                        .setDefaultValue(defaultValue);
+            }
+        };
+        entryBuilder = (D) entryBuilder.setSelections(list);
+        entryBuilder = (D) entryBuilder.setSuggestionMode(suggestionMode);
+        entryBuilder = (D) entryBuilder
+                .setTooltip(getTooltip(valueObject));
+        entryBuilder = (D) entryBuilder.setSaveConsumer(newValue -> {
+            if (!value.equals(newValue)) Config.getModConfig(modName).getConfig(configName).setValue(key, newValue);
+        });
+        return entryBuilder.build();
+    }
+
+    protected static Text getTooltip(ConfigValueObject<?> valueObject) {
+        String header = valueObject.getHeader();
+        String description = valueObject.getDescription();
+        return Text.of(header + ((!header.isEmpty() && !description.isEmpty()) ? "\n—————\n" : "") + description);
+    }
 }
