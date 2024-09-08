@@ -1,10 +1,14 @@
 package ru.kochkaev.api.seasons.object;
 
 
+import ru.kochkaev.api.seasons.service.Season;
 import ru.kochkaev.api.seasons.util.Message;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * It's SeasonObject, object for create your own season.<br><br>
@@ -38,22 +42,40 @@ public abstract class SeasonObject {
     /** It's season enabled. */
     protected boolean enabled = true;
 
+    /** List of the parent seasons for this season */
+    protected final List<String> parents = new ArrayList<>();
+
+    /** List of sub seasons for this season */
+    protected final List<String> subSeasons = new ArrayList<>();
+
+    /** List of seasons after which this season has a chance to appear */
+    protected final List<String> previousSeasons = new ArrayList<>();
+
+    /** Chance of appear this season */
+    protected Supplier<Integer> chance;
+
     /**
      * That's constructor.<br><br>
      * Use this for set weather data (call from your class constructor).<br>
      * <code>
-     *     public YourClass() { super("YOUR_SEASON", "Your season", "Your message!"); }<br>
+     *     public YourClass() { super("YOUR_SEASON", "Your season", Arrays.listOf("parentSeason0", "parentSeason1"), Arrays.listOf("previousSeason0", "previousSeason1"), () -> Config.getModConfig("Your Mod ID").getConfig().getInt("keyOfYourSeasonChance")); }<br>
      * </code>
      * You can also create anonymous class for create weather.<br>
      * <code>
-     *     WeatherObject yourSeason = new ChallengeObject("YOUR_SEASON", "Your season", "Your message!") { ... };<br>
+     *     WeatherObject yourSeason = new ChallengeObject("YOUR_SEASON", "Your season", new ArrayList<>(), Collections.singletonList("previousSeason"), () -> 100) { ... };<br>
      * </code>
      * @param id {@link #id}
      * @param name {@link #name}
+     * @param parents {@link #parents}
+     * @param previousSeasons {@link #previousSeasons}
+     * @param chance {@link #chance}
      */
-    public SeasonObject(String id, Supplier<String> name) {
+    public SeasonObject(String id, Supplier<String> name, List<String> parents, List<String> previousSeasons, Supplier<Integer> chance) {
         this.id = id;
         this.name = name;
+        this.parents.addAll(parents);
+        this.previousSeasons.addAll(previousSeasons);
+        this.chance = chance;
     }
 
     /**
@@ -75,6 +97,8 @@ public abstract class SeasonObject {
      * @return {@link #name}
      */
     public String getName() { return this.name.get(); }
+
+    public int getChance() { return this.chance.get(); }
 
     /**
      * You can use this method for send message to server players.
@@ -99,8 +123,62 @@ public abstract class SeasonObject {
 
     }
 
+    public void init() {
+        this.parents.forEach(seasonID -> Season.getSeasonByID(seasonID).addParent(id));
+    }
+
 
     public boolean isEnabled() { return this.enabled; }
     public void setEnabled(boolean enabled) { this.enabled = enabled; }
 
+    public List<SeasonObject> getParents() {
+        return this.parents.stream().map(Season::getSeasonByID).collect(Collectors.toList());
+    }
+    public List<SeasonObject> getSubSeasons() {
+        return this.subSeasons.stream().map(Season::getSeasonByID).collect(Collectors.toList());
+    }
+    public void addParent(String seasonId) {
+        if (!this.parents.contains(seasonId)) {
+            this.parents.add(seasonId);
+            SeasonObject season = Season.getSeasonByID(seasonId);
+            if (!season.isSubSeasonOf(id)) addSubSeason(id);
+        }
+    }
+    public void addSubSeason(String seasonId) {
+        if (!this.subSeasons.contains(seasonId)) {
+            this.subSeasons.add(seasonId);
+            SeasonObject season = Season.getSeasonByID(seasonId);
+            if (!season.isParentOf(id)) addParent(id);
+        }
+    }
+    public void removeParent(String seasonId) {
+        if (this.parents.contains(seasonId)) {
+            this.parents.remove(seasonId);
+            SeasonObject season = Season.getSeasonByID(seasonId);
+            if (season.isSubSeasonOf(id)) removeSubSeason(id);
+        }
+    }
+    public void removeSubSeason(String seasonId) {
+        if (this.subSeasons.contains(seasonId)) {
+            this.subSeasons.remove(seasonId);
+            SeasonObject season = Season.getSeasonByID(seasonId);
+            if (season.isParentOf(id)) removeParent(id);
+        }
+    }
+    public boolean isParentOf(String seasonId) {
+        return this.parents.contains(seasonId);
+    }
+    public boolean isSubSeasonOf(String seasonId) {
+        return this.subSeasons.contains(seasonId);
+    }
+
+    public List<SeasonObject> getPreviousSeasons() {
+        return this.previousSeasons.stream().map(Season::getSeasonByID).collect(Collectors.toList());
+    }
+    public void addPreviousSeason(String seasonId) {
+        this.previousSeasons.add(seasonId);
+    }
+    public void removePreviousSeason(String seasonId) {
+        this.previousSeasons.remove(seasonId);
+    }
 }

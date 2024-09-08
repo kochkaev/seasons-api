@@ -69,8 +69,8 @@ public class Config {
     public static String getCurrent(String key) { return current.get(key).getAsString(); }
     public static String getCurrentOrDefault(String key, String def) { return current.has(key)? current.get(key).getAsString() : def; }
     public static void writeCurrent(String key, String value) { current.addProperty(key, value); }
-    public static void writeCurrentIfDoNotExists(String key) { current.addProperty(key, ""); }
-    public static void writeCurrentIfDoNotExists(String key, String value) { current.addProperty(key, value); }
+    public static void writeCurrentIfDoNotExists(String key) { if (!current.has(key)) current.addProperty(key, ""); }
+    public static void writeCurrentIfDoNotExists(String key, String value) { if (!current.has(key)) current.addProperty(key, value); }
 
     public static String getCurrentLang() { return currentLang; }
 

@@ -61,7 +61,7 @@ public class ConfigObject {
     }
     public void loadLang(String langName) {
         lang = langs.containsKey(langName) ? langs.get(langName) : langs.get(defaultLang);
-        lang.generateCreateIfDoNotExistsOpenAndUpdateIfLegacy();
+        if (lang != null) lang.generateCreateIfDoNotExistsOpenAndUpdateIfLegacy();
     }
 
     public void reload() {

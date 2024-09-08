@@ -41,6 +41,8 @@ public class SeasonsAPI {
         Config.writeCurrentIfDoNotExists("season");
         Config.writeCurrentIfDoNotExists("weather");
         Config.writeCurrentIfDoNotExists("previous_weather");
+        Config.writeCurrentIfDoNotExists("days_after_season_set", "0");
+        Config.writeCurrentIfDoNotExists("next_day_to_season_cycle", "0");
         Register.register();
         Season.onServerStartup();
         Weather.onServerStartup();

@@ -28,11 +28,13 @@ public class DefaultTXTConfig extends ConfigFileObject {
         content
                 // Messages format
                 .addHeader("MESSAGES FORMAT")
-                .addValue("conf.format.chat.message", "%seasons:display-name% &7• %message%", "Chat message format\nYou can use %message% for insert message")
+                .addValue("conf.format.chat.message", "%seasons:display-name% &7• %message%", "Chat message format" +
+                        "\nYou can use %message% for insert message")
                 .addValue("conf.format.title.actionbar", "%seasons:season% &r&7• %seasons:weather%", "Actionbar title format")
                 .addValue("conf.format.title.title", "%seasons:title-new-day%", "Title (on weather changed) format")
                 .addValue("conf.format.title.subtitle", "%seasons:title-info%", "Subtitle (on weather changed) format")
-                .addValue("conf.format.chat.feedback", "&7&oSeasons feedback: %message%", "Command feedback format\nYou can use %message% for insert feedback message")
+                .addValue("conf.format.chat.feedback", "&7&oSeasons feedback: %message%", "Command feedback format" +
+                        "\nYou can use %message% for insert feedback message")
                 // Enable/disable features
                 .addHeader("ENABLE/DISABLE FEATURES")
                 .addValue("conf.enable.title.actionbar", true, "Do enables/disables actionbar titles")
@@ -44,6 +46,16 @@ public class DefaultTXTConfig extends ConfigFileObject {
                 .addValue("conf.tick.day.end", 12542L, "Tick of day ends")
                 .addValue("conf.tick.secondsPerTick", 1, "Seconds per seasons-api tick")
                 .addValue("conf.tick.ticksPerAction", 3, "Ticks before action starts (for example, damage)")
+                // Seasons cycle
+                .addHeader("SEASONS CYCLE")
+                .addValue("conf.seasonsCycle.doSeasonsCycle", true, "Do cycle the first order seasons for a daysPerSeason (<duration_of_parent_season>/subSeasonPerSeason for a sub seasons) Minecraft days?" +
+                        "\nThe highest (first) order seasons are seasons that are not a sub season for any other season." +
+                        "\nThe second order seasons are seasons that are sub seasons for the first order, but parent for the third order. Etc." +
+                        "\nThe parent season is the season of the order above, for which this season is a sub season.")
+                .addValue("conf.seasonsCycle.maxOrderToCycle", 1, "Number of the order from which all orders bellow are able to cycle seasons.")
+                .addValue("conf.seasonsCycle.daysPerSeason", 30, "The time of the season change to the next one (in Minecraft days)")
+                .addValue("conf.seasonsCycle.subSeasonPerSeason", 3, "Count of sub seasons possible to set during the season." +
+                        "\nIf doFirstOrderCycle = false the second order seasons will cycle every daysPerSeason, and lower orders <duration_of_parent_season>/(subSeasonsPerSeason)")
                 // Language
                 .addHeader("LANGUAGE")
                 .addDynamicSelectionDropdown("conf.lang", Config::getListOfLangs, "en_US", "", "Current language of seasons mod", (oldValue, newValue) -> Config.updateLang(newValue));

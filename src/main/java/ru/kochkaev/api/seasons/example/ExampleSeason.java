@@ -3,9 +3,11 @@ package ru.kochkaev.api.seasons.example;
 import net.minecraft.server.MinecraftServer;
 import ru.kochkaev.api.seasons.object.SeasonObject;
 
+import java.util.ArrayList;
+
 public class ExampleSeason extends SeasonObject {
     public ExampleSeason() {
-        super("example", () -> "No seasons matched");
+        super("example", () -> "No seasons matched", new ArrayList<>(), new ArrayList<>(), () -> 0);
     }
 
     @Override

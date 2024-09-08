@@ -22,16 +22,6 @@ public class Weather {
     private static final Map<String, WeatherObject> allWeathers = new HashMap<>();
     private static @Nullable Boolean isNight;
 
-    public static void register(WeatherObject weather) {
-        allWeathers.put(weather.getId(), weather);
-        @Nullable
-        Boolean nightly = weather.isNightly();
-        if (nightly != null) {
-            if (nightly) nightlyWeathers.add(weather);
-            else dailyWeathers.add(weather);
-        }
-    }
-
     public static WeatherObject getChancedWeather(List<WeatherObject> weathers){
         Map<WeatherObject, Integer> chances = new HashMap<>();
         int maxChance = 0;
@@ -48,6 +38,16 @@ public class Weather {
             else maxChance -= chances.get(weather);
         }
         return getWeatherByID("example");
+    }
+
+    public static void register(WeatherObject weather) {
+        allWeathers.put(weather.getId(), weather);
+        @Nullable
+        Boolean nightly = weather.isNightly();
+        if (nightly != null) {
+            if (nightly) nightlyWeathers.add(weather);
+            else dailyWeathers.add(weather);
+        }
     }
 
     public static List<WeatherObject> getSeasonDailyWeathers(SeasonObject season){

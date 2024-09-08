@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 public class ConfigContentObject extends HashMap<String, ConfigValueObject<?>> {
 
-    private final Queue<String> queue = new PriorityQueue<>();
+    private final Queue<String> queue = new ArrayDeque<>();
 
 //    private String generateMode = "structure";
     private final Consumer<ConfigContentObject> generate;
