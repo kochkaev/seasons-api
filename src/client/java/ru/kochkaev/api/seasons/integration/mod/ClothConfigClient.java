@@ -12,11 +12,10 @@ import net.minecraft.text.Text;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import ru.kochkaev.api.seasons.object.*;
-import ru.kochkaev.api.seasons.service.Config;
+import ru.kochkaev.api.seasons.provider.Config;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 
 public class ClothConfigClient extends ClothConfig {

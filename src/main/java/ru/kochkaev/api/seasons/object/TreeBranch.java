@@ -1,9 +1,7 @@
 package ru.kochkaev.api.seasons.object;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class TreeBranch<T> {
     protected T component;
@@ -26,17 +24,26 @@ public class TreeBranch<T> {
         addBranch(new TreeBranch<>(component, this));
     }
     public void remove(T component) {
-        removeBranch(find(component));
+        removeBranches(findAllInBranch(component));
+    }
+    public void removeAll(Collection<T> components) {
+        components.stream().map(this::findAllInBranch).forEach(this::removeBranches);
     }
     public TreeBranch<T> find(T component) {
         if (component.equals(this.component)) return this;
         else return branches.stream().map(branch -> branch.find(component)).findAny().orElse(null);
     }
-    public Set<TreeBranch<T>> findAll(T component) {
+    public Collection<TreeBranch<T>> findAll(T component) {
         Set<TreeBranch<T>> output = new HashSet<>();
         if (component.equals(this.component)) output.add(this);
         branches.stream().map(branch -> branch.findAll(component)).forEach(output::addAll);
         return output;
+    }
+    public TreeBranch<T> findInBranch(T component) {
+        return branches.stream().filter(branch -> branch.is(component)).findAny().orElse(null);
+    }
+    public Collection<TreeBranch<T>> findAllInBranch(T component) {
+        return branches.stream().filter(branch -> branch.is(component)).collect(Collectors.toSet());
     }
     public boolean contains(T component) {
         if (component.equals(this.component)) return true;
@@ -45,13 +52,19 @@ public class TreeBranch<T> {
     public boolean haveBranchOf(T component) {
         return branches.stream().map(TreeBranch::get).anyMatch(branch -> branch.equals(component));
     }
+    public boolean hasComponent() {
+        return component!= null;
+    }
     public boolean isBranchOf(T component) {
         if (component.equals(this.component)) return true;
         else if (parent != null) return parent.isBranchOf(component);
         else return false;
     }
+    public boolean is(T component) {
+        return component.equals(this.component);
+    }
 
-    public Set<TreeBranch<T>> getBranches() {
+    public Collection<TreeBranch<T>> getBranches() {
         return branches;
     }
     public TreeBranch<T> getBranch(T component) {
@@ -63,13 +76,13 @@ public class TreeBranch<T> {
     public final void addBranch(TreeBranch<T> branch) {
         this.branches.add(branch);
     }
-    public void addBranches(Set<TreeBranch<T>> branches) {
+    public void addBranches(Collection<TreeBranch<T>> branches) {
         this.branches.addAll(branches);
     }
     public final void removeBranch(TreeBranch<T> branch) {
         this.branches.remove(branch);
     }
-    public void removeBranches(Set<TreeBranch<T>> branches) {
+    public void removeBranches(Collection<TreeBranch<T>> branches) {
         this.branches.removeAll(branches);
     }
 
@@ -77,7 +90,7 @@ public class TreeBranch<T> {
         return parent;
     }
 
-    public Set<TreeBranch<T>> getBranchesSet() {
+    public Collection<TreeBranch<T>> getBranchesSet() {
         Set<TreeBranch<T>> output = new HashSet<>();
         branches.forEach(branch -> {
             output.add(branch);
@@ -85,7 +98,7 @@ public class TreeBranch<T> {
         });
         return output;
     }
-    public Set<T> getBranchesComponentsSet() {
+    public Collection<T> getBranchesComponentsSet() {
         Set<T> output = new HashSet<>();
         branches.forEach(branch -> {
             output.add(branch.get());

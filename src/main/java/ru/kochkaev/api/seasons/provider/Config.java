@@ -1,4 +1,4 @@
-package ru.kochkaev.api.seasons.service;
+package ru.kochkaev.api.seasons.provider;
 
 import com.google.gson.JsonObject;
 import net.minecraft.util.WorldSavePath;

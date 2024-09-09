@@ -1,10 +1,10 @@
 package ru.kochkaev.api.seasons;
 
 import ru.kochkaev.api.seasons.object.*;
-import ru.kochkaev.api.seasons.service.Config;
-import ru.kochkaev.api.seasons.service.Challenge;
-import ru.kochkaev.api.seasons.service.Season;
-import ru.kochkaev.api.seasons.service.Weather;
+import ru.kochkaev.api.seasons.provider.Config;
+import ru.kochkaev.api.seasons.provider.Challenge;
+import ru.kochkaev.api.seasons.provider.Season;
+import ru.kochkaev.api.seasons.provider.Weather;
 import ru.kochkaev.api.seasons.util.Parse;
 
 import java.lang.reflect.InvocationTargetException;

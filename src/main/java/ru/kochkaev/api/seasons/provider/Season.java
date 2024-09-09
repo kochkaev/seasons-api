@@ -1,4 +1,4 @@
-package ru.kochkaev.api.seasons.service;
+package ru.kochkaev.api.seasons.provider;
 
 //import ru.kochkaev.seasons-api.Config.OldConfig;
 
@@ -45,16 +45,16 @@ public class Season {
 //        seasonsTree.getBranchesComponentsSet().forEach(SeasonObject::init);
 //        highestOrderSeasons.addAll(seasonsTree.getBranchesComponentsSet().stream().filter(season -> !season.getParents().isEmpty()).toList());
         String currentStr = Config.getCurrent("season");
-        if (currentStr.isEmpty() || currentStr.equals("'example'")) setCurrent(getRandomSeason());
+        if (currentStr.isEmpty() || currentStr.equals("'example'") || currentStr.equals("example")) setCurrent(getRandomSeason());
         else {
-            Deque<SeasonObject> path = Arrays.stream(currentStr.split(" -> ")).map(line -> line.substring(1, line.length()-1)).map(Season::getSeasonByID).collect(Collectors.toCollection(ArrayDeque::new));
+            Deque<SeasonObject> path = Arrays.stream(currentStr.split(" -> ")).map(line -> line.substring(line.startsWith("'") ? line.indexOf("'") : 0, line.endsWith("'") ? line.lastIndexOf("'") : 0)).map(Season::getSeasonByID).collect(Collectors.toCollection(ArrayDeque::new));
             TreeBranch<SeasonObject> branch = seasonsTree.getBranchByComponentsPathDeque(path);
             CURRENT_SEASON_BRANCH = branch;
             CURRENT_SEASON = branch.get();
         }
     }
     public static void addToTree(Collection<SeasonObject> seasons) {
-        seasons = seasons.stream().filter(seasonsTree::contains).filter(season -> {
+        seasons = seasons.stream().filter(season -> !seasonsTree.contains(season)).filter(season -> {
             if (!season.getParents().isEmpty()) return true;
             else {
                 seasonsTree.add(season);
@@ -73,7 +73,7 @@ public class Season {
     }
 
     public static void saveCurrentToConfig() {
-        String currentStr = CURRENT_SEASON_BRANCH.getBranchPathDeque().stream().map(branch -> "'"+branch.get().getId()+"'").collect(Collectors.joining(" -> "));
+        String currentStr = CURRENT_SEASON_BRANCH.getBranchPathDeque().stream().map(branch -> (branch.hasComponent()) ? ("'"+branch.get().getId()+"'") : "").filter(line -> !line.isEmpty()).collect(Collectors.joining(" -> "));
         Config.writeCurrent("season", currentStr);
         Config.saveCurrent();
     }
@@ -118,10 +118,10 @@ public class Season {
 //    public static SeasonObject getRandomSeason() {
 //        return allSeasons.size() > 1 ? allSeasons.entrySet().stream().filter(entry -> !entry.getKey().equals("example")).findAny().orElseThrow().getValue() : allSeasons.get("example");
 //    }
-    public static SeasonObject getRandomSeason(List<SeasonObject> seasons) {
+    public static SeasonObject getRandomSeason(Collection<SeasonObject> seasons) {
         return !seasons.isEmpty() ? seasons.stream().filter(season -> !season.getId().equals("example")).findAny().orElseThrow() : allSeasons.get("example");
     }
-    public static TreeBranch<SeasonObject> getChancedSeason(List<TreeBranch<SeasonObject>> seasons) {
+    public static TreeBranch<SeasonObject> getChancedSeason(Collection<TreeBranch<SeasonObject>> seasons) {
         Map<TreeBranch<SeasonObject>, Integer> chances = new HashMap<>();
         int maxChance = seasons.stream().filter(branch -> branch.get().isEnabled()).filter(branch -> branch.get().getChance() > 0).mapToInt(branch -> {
             int chance = branch.get().getChance();
@@ -152,7 +152,6 @@ public class Season {
         int order = CURRENT_SEASON_BRANCH.getBranchPathDeque().size();
         int daysPerSeason = config.getInt("conf.seasonsCycle.daysPerSeason");
         int subSeasonsPerSeason = config.getInt("conf.seasonsCycle.subSeasonsPerSeason");
-        int currentDayAfterSeasonSet = Integer.parseInt(Config.getCurrent("next_day_to_season_cycle"));
         if (config.getBoolean("conf.seasonsCycle.doSeasonsCycle")) {
 //            if (days == daysPerSeason) {
 //                TreeBranch<SeasonObject> branch = CURRENT_SEASON_BRANCH.getBranchPathDeque().stream().skip(maxOrder-1).findFirst().orElseThrow();
@@ -175,9 +174,9 @@ public class Season {
             for (int i = 0; i < order-tempOrder; i++) branch = branch.getParent();
             while (!branch.getBranches().isEmpty()) {
 //                branch = branch.getAnyBranch();
-                branch = getChancedSeason(branch.getBranches().stream().toList());
+                branch = getChancedSeason(branch.getBranches());
             }
-            branch = getChancedSeason(branch.getParent().getBranches().stream().toList());
+            branch = getChancedSeason(branch.getParent().getBranches());
 //            Config.writeCurrent("next_day_to_season_cycle", String.valueOf(days + branch.getBranchPathDeque().size()));
             return branch;
         }
@@ -186,7 +185,14 @@ public class Season {
     public static void setNextSeason() {
         TreeBranch<SeasonObject> nextSeason = getNextSeason();
         setSeason(nextSeason);
-        Config.writeCurrent("next_day_to_season_cycle", String.valueOf(Integer.parseInt(Config.getCurrent("days_after_season_set")) + nextSeason.getBranchPathDeque().size()));
+        int days = Integer.parseInt(Config.getCurrent("days_after_season_set"));
+        int daysPerSeason = Config.getModConfig("API").getConfig().getInt("conf.seasonsCycle.daysPerSeason");
+        int subSeasonsPerSeason = Config.getModConfig("API").getConfig().getInt("conf.seasonsCycle.subSeasonsPerSeason");
+        int order = nextSeason.getBranchPathDeque().size();
+        int nextDay = ((days < daysPerSeason) ? days : 0) + daysPerSeason/(order > 1 ? (subSeasonsPerSeason ^ (order-1)) : 1);
+        if (nextDay > daysPerSeason) nextDay = daysPerSeason;
+        Config.writeCurrent("next_day_to_season_cycle", String.valueOf(nextDay));
+        Config.saveCurrent();
     }
 
     public static int getLowestSeasonOrder(SeasonObject season) {

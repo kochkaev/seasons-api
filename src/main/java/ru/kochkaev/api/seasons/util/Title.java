@@ -9,8 +9,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import ru.kochkaev.api.seasons.SeasonsAPI;
-import ru.kochkaev.api.seasons.SeasonsAPIFabric;
-import ru.kochkaev.api.seasons.service.Config;
+import ru.kochkaev.api.seasons.provider.Config;
 
 import java.util.function.Function;
 

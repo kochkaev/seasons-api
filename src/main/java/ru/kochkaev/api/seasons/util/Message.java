@@ -3,8 +3,7 @@ package ru.kochkaev.api.seasons.util;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import ru.kochkaev.api.seasons.SeasonsAPI;
-import ru.kochkaev.api.seasons.SeasonsAPIFabric;
-import ru.kochkaev.api.seasons.service.Config;
+import ru.kochkaev.api.seasons.provider.Config;
 
 import java.util.HashMap;
 import java.util.List;

@@ -1,7 +1,7 @@
 package ru.kochkaev.api.seasons.object;
 
 
-import ru.kochkaev.api.seasons.service.Season;
+import ru.kochkaev.api.seasons.provider.Season;
 import ru.kochkaev.api.seasons.util.Message;
 
 import java.util.ArrayList;

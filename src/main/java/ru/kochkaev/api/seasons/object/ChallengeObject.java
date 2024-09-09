@@ -10,17 +10,15 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import ru.kochkaev.api.seasons.ChallengesTicker;
 import ru.kochkaev.api.seasons.SeasonsAPI;
-import ru.kochkaev.api.seasons.service.Task;
-import ru.kochkaev.api.seasons.service.Weather;
+import ru.kochkaev.api.seasons.provider.Task;
+import ru.kochkaev.api.seasons.provider.Weather;
 import ru.kochkaev.api.seasons.util.Message;
 import ru.kochkaev.api.seasons.WeatherDamageType;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * It's ChallengeObject, object for create your own challenges.<br><br>

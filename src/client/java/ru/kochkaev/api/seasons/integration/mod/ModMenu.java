@@ -2,11 +2,10 @@ package ru.kochkaev.api.seasons.integration.mod;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
-import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import net.minecraft.client.gui.screen.Screen;
 import ru.kochkaev.api.seasons.SeasonsAPI;
 import ru.kochkaev.api.seasons.object.ConfigObject;
-import ru.kochkaev.api.seasons.service.Config;
+import ru.kochkaev.api.seasons.provider.Config;
 
 public class ModMenu implements ModMenuApi {
 

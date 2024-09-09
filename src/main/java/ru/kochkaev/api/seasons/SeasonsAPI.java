@@ -10,10 +10,10 @@ import ru.kochkaev.api.seasons.integration.IntegrationManager;
 import ru.kochkaev.api.seasons.integration.mod.ClothConfig;
 import ru.kochkaev.api.seasons.integration.mod.PlaceholderAPI;
 import ru.kochkaev.api.seasons.object.ConfigObject;
-import ru.kochkaev.api.seasons.service.Challenge;
-import ru.kochkaev.api.seasons.service.Config;
-import ru.kochkaev.api.seasons.service.Season;
-import ru.kochkaev.api.seasons.service.Weather;
+import ru.kochkaev.api.seasons.provider.Challenge;
+import ru.kochkaev.api.seasons.provider.Config;
+import ru.kochkaev.api.seasons.provider.Season;
+import ru.kochkaev.api.seasons.provider.Weather;
 import ru.kochkaev.api.seasons.util.Format;
 
 public class SeasonsAPI {
@@ -32,7 +32,7 @@ public class SeasonsAPI {
     }
 
     public static void onWorldStarted(MinecraftServer server) {
-        Register.registerAllInPackage("ru.kochkaev.api.seasons.event");
+//        Register.registerAllInPackage("ru.kochkaev.api.seasons.event");
         Register.registerAllInPackage("ru.kochkaev.api.seasons.example");
         SeasonsAPI.server = server;
         SeasonsAPI.world = server.getOverworld();
@@ -43,6 +43,7 @@ public class SeasonsAPI {
         Config.writeCurrentIfDoNotExists("previous_weather");
         Config.writeCurrentIfDoNotExists("days_after_season_set", "0");
         Config.writeCurrentIfDoNotExists("next_day_to_season_cycle", "0");
+        Config.saveCurrent();
         Register.register();
         Season.onServerStartup();
         Weather.onServerStartup();
@@ -55,7 +56,10 @@ public class SeasonsAPI {
         ChallengesTicker.stop();
         Weather.saveCurrentToConfig();
         Season.saveCurrentToConfig();
+        Season.getTree().clear();
         Config.saveCurrent();
+//        while (ChallengesTicker.isTicking());
+//        ChallengesTicker.close();
         isLoaded = false;
         isStarted = false;
     }

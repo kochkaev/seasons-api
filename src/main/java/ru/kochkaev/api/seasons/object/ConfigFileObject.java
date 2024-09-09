@@ -171,17 +171,19 @@ public abstract class ConfigFileObject {
     }
 
     public void parseAndAddValue(String key, String value) {
-        content.get(key).setValue(
-                switch (content.get(key).getValue()) {
-                    case String s -> value;
-                    case Boolean b -> Boolean.parseBoolean(value);
-                    case Integer i -> Integer.parseInt(value);
-                    case Long l -> Long.parseLong(value);
-                    case Float f -> Float.parseFloat(value);
-                    case Double d -> Double.parseDouble(value);
-                    case null, default -> null;
-                }
-                );
+        ConfigValueObject<?> valueObject = content.get(key);
+        if (valueObject!=null){
+            valueObject.setValue(
+                    switch (valueObject.getValue()) {
+                        case String s -> value;
+                        case Boolean b -> Boolean.parseBoolean(value);
+                        case Integer i -> Integer.parseInt(value);
+                        case Long l -> Long.parseLong(value);
+                        case Float f -> Float.parseFloat(value);
+                        case Double d -> Double.parseDouble(value);
+                        case null, default -> null;
+                    });
+        }
     }
 
     public String getModName() {

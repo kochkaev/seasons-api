@@ -1,4 +1,4 @@
-package ru.kochkaev.api.seasons.service;
+package ru.kochkaev.api.seasons.provider;
 
 //import ru.kochkaev.seasons-api.Config.OldConfig;
 import org.jetbrains.annotations.Nullable;
@@ -94,10 +94,10 @@ public class Weather {
 
     public static void onServerStartup(){
         String currentStr = Config.getCurrent("weather");
-        String prevCurrentStr = Config.getCurrent("previous-weather");
-        if (currentStr.equals("NONE") || currentStr.equals("example")) {
+        String prevCurrentStr = Config.getCurrent("previous_weather");
+        if (currentStr.isEmpty() || currentStr.equals("example")) {
             boolean isDay = SeasonsAPI.getOverworld().getTimeOfDay() % 24000L < Config.getModConfig("API").getConfig().getLong("conf.tick.day.end");
-            CURRENT_WEATHER = (prevCurrentStr.equals("NONE")) ? getChancedWeather(isDay ? getSeasonDailyWeathers(Season.getCurrent()) : getSeasonNightlyWeathers(Season.getCurrent())) : getWeatherByID(prevCurrentStr);
+            CURRENT_WEATHER = (prevCurrentStr.isEmpty()) ? getChancedWeather(isDay ? getSeasonDailyWeathers(Season.getCurrent()) : getSeasonNightlyWeathers(Season.getCurrent())) : getWeatherByID(prevCurrentStr);
             if (isDay) {
                 setDay();
             }
@@ -106,7 +106,7 @@ public class Weather {
         else {
             CURRENT_WEATHER = getWeatherByID(currentStr);
         }
-        if (prevCurrentStr.equals("NONE") || !prevCurrentStr.equals(currentStr)) CURRENT_WEATHER_PREVIOUS = getWeatherByID(prevCurrentStr);
+        if (prevCurrentStr.isEmpty() || !prevCurrentStr.equals(currentStr)) CURRENT_WEATHER_PREVIOUS = getWeatherByID(prevCurrentStr);
         else {
             SeasonObject season = Season.getCurrent();
             CURRENT_WEATHER_PREVIOUS = getChancedWeather(Boolean.TRUE.equals(Objects.requireNonNull(Weather.getWeatherByID(currentStr)).isNightly()) ? getSeasonDailyWeathers(season) : getSeasonNightlyWeathers(season));
@@ -118,13 +118,13 @@ public class Weather {
         String currentStr = CURRENT_WEATHER.getId();
         String prevCurrentStr = CURRENT_WEATHER_PREVIOUS.getId();
         Config.writeCurrent("weather", currentStr);
-        Config.writeCurrent("previous-weather", prevCurrentStr);
+        Config.writeCurrent("previous_weather", prevCurrentStr);
         Config.saveCurrent();
     }
 
     public static void reloadFromConfig() {
         String currentStr = Config.getCurrent("weather");
-        String prevCurrentStr = Config.getCurrent("previous-weather");
+        String prevCurrentStr = Config.getCurrent("previous_weather");
         WeatherObject curWeather = getWeatherByID(currentStr);
         WeatherObject curWeatherPrev = getWeatherByID(prevCurrentStr);
         if (CURRENT_WEATHER != curWeather) {

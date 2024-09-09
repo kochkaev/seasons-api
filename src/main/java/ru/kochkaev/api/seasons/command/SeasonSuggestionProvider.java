@@ -7,7 +7,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.server.command.ServerCommandSource;
 import ru.kochkaev.api.seasons.object.SeasonObject;
-import ru.kochkaev.api.seasons.service.Season;
+import ru.kochkaev.api.seasons.provider.Season;
 
 import java.util.concurrent.CompletableFuture;
 

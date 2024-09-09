@@ -2,8 +2,7 @@ package ru.kochkaev.api.seasons.config.lang;
 
 import ru.kochkaev.api.seasons.object.ConfigContentObject;
 import ru.kochkaev.api.seasons.object.ConfigFileObject;
-import ru.kochkaev.api.seasons.service.Config;
-import ru.kochkaev.api.seasons.object.TXTConfigObject;
+import ru.kochkaev.api.seasons.provider.Config;
 
 public class DefaultTXTLangRU extends ConfigFileObject {
 

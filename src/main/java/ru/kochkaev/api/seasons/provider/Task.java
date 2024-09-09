@@ -1,4 +1,4 @@
-package ru.kochkaev.api.seasons.service;
+package ru.kochkaev.api.seasons.provider;
 
 import ru.kochkaev.api.seasons.util.map.Map1Key2Values;
 

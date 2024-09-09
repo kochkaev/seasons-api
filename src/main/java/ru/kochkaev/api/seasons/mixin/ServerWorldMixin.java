@@ -15,11 +15,13 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import ru.kochkaev.api.seasons.ChallengesTicker;
 import ru.kochkaev.api.seasons.SeasonsAPI;
-import ru.kochkaev.api.seasons.service.Config;
+import ru.kochkaev.api.seasons.provider.Config;
 import ru.kochkaev.api.seasons.object.WeatherObject;
-import ru.kochkaev.api.seasons.service.Task;
-import ru.kochkaev.api.seasons.service.Weather;
+import ru.kochkaev.api.seasons.provider.Season;
+import ru.kochkaev.api.seasons.provider.Task;
+import ru.kochkaev.api.seasons.provider.Weather;
 import ru.kochkaev.api.seasons.util.Title;
 
 import java.util.function.BooleanSupplier;
@@ -34,6 +36,8 @@ public abstract class ServerWorldMixin
         this.worldProperties = worldProperties;
     }
 
+    private static boolean doChallengeTick = true;
+
 
 //    @Final
 //    @Shadow(prefix="seasonsAPI$")
@@ -47,13 +51,22 @@ public abstract class ServerWorldMixin
         if (SeasonsAPI.isLoaded()){
             if ((this.properties.getTimeOfDay() % 24000L >= Config.getModConfig("API").getConfig().getLong("conf.tick.day.start")) && (Boolean.TRUE.equals(Weather.isNight())) && (Config.getModConfig("API").getConfig().getLong("conf.tick.day.end") > this.properties.getTimeOfDay() % 24000L)) {
                 Weather.setDay();
-                Config.writeCurrent("days_after_season_set", String.valueOf((Integer.parseInt(Config.getCurrent("days_after_season_set")) + 1)));
+                int days = (Integer.parseInt(Config.getCurrent("days_after_season_set")) + 1);
+                Config.writeCurrent("days_after_season_set", String.valueOf(days));
+                Config.saveCurrent();
+                if (days == Integer.parseInt(Config.getCurrent("next_day_to_season_cycle"))) Season.setNextSeason();
             }
             if ((this.properties.getTimeOfDay() % 24000L >= Config.getModConfig("API").getConfig().getLong("conf.tick.day.end")) && (Boolean.FALSE.equals(Weather.isNight())))
                 Weather.setNight();
             if (Config.getModConfig("API").getConfig().getBoolean("conf.enable.title.actionbar")) Title.showActionBar();
             if ((this.worldProperties.isRaining() != Weather.getCurrent().getRaining()) || (this.worldProperties.isThundering() != Weather.getCurrent().getThundering()))
                 this.setWeather(-1, -1, false, false);
+            if (this.properties.getTimeOfDay()%Config.getModConfig("API").getConfig().getInt("conf.tick.ticksPerChallengeTick") == 0) {
+                if (!doChallengeTick){
+                    doChallengeTick = true;
+                    ChallengesTicker.tick();
+                }
+            } else if (doChallengeTick) doChallengeTick = false;
             Task.runTasks();
         }
     }

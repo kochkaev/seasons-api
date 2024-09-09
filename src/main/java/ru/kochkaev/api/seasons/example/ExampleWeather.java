@@ -1,8 +1,7 @@
 package ru.kochkaev.api.seasons.example;
 
-import net.minecraft.server.MinecraftServer;
 import ru.kochkaev.api.seasons.object.WeatherObject;
-import ru.kochkaev.api.seasons.service.Season;
+import ru.kochkaev.api.seasons.provider.Season;
 
 import java.util.Collections;
 

@@ -6,12 +6,12 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import ru.kochkaev.api.seasons.ChallengesTicker;
 import ru.kochkaev.api.seasons.SeasonsAPI;
-import ru.kochkaev.api.seasons.service.Config;
+import ru.kochkaev.api.seasons.provider.Config;
 import ru.kochkaev.api.seasons.object.ChallengeObject;
 import ru.kochkaev.api.seasons.object.WeatherObject;
-import ru.kochkaev.api.seasons.service.Challenge;
-import ru.kochkaev.api.seasons.service.Season;
-import ru.kochkaev.api.seasons.service.Weather;
+import ru.kochkaev.api.seasons.provider.Challenge;
+import ru.kochkaev.api.seasons.provider.Season;
+import ru.kochkaev.api.seasons.provider.Weather;
 import ru.kochkaev.api.seasons.util.Message;
 
 public class SeasonsCommand {
@@ -61,7 +61,7 @@ public class SeasonsCommand {
     }
 
     public static int setSeason(String seasonID, ServerCommandSource source) {
-        Season.setSeason(Season.getSeasonByID(seasonID));
+        Season.setSeason(Season.getTree().find(Season.getSeasonByID(seasonID)));
         source.sendFeedback((() -> Message.getFeedbackText("Successfully set season \"" + seasonID + "\"")), true);
         return 0;
     }
@@ -86,7 +86,7 @@ public class SeasonsCommand {
         return 0;
     }
     public static int getLang(ServerCommandSource source) {
-        source.sendFeedback((() -> Message.getFeedbackText("Current lang is \"" + Config.getCurrent("language") + "\"")), false);
+        source.sendFeedback((() -> Message.getFeedbackText("Current lang is \"" + Config.getCurrentLang() + "\"")), false);
         return 0;
     }
     public static int forceAllowChallenge(String challenge, ServerCommandSource source) {

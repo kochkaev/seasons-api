@@ -2,15 +2,7 @@ package ru.kochkaev.api.seasons.config;
 
 import ru.kochkaev.api.seasons.object.ConfigContentObject;
 import ru.kochkaev.api.seasons.object.ConfigFileObject;
-import ru.kochkaev.api.seasons.object.ConfigObject;
-import ru.kochkaev.api.seasons.object.TXTConfigObject;
-import ru.kochkaev.api.seasons.service.Config;
-
-import java.util.List;
-import java.util.function.Supplier;
-
-import static ru.kochkaev.api.seasons.service.Config.getCopyright;
-import static ru.kochkaev.api.seasons.service.Config.getListOfLangs;
+import ru.kochkaev.api.seasons.provider.Config;
 
 public class DefaultTXTConfig extends ConfigFileObject {
 
@@ -44,8 +36,8 @@ public class DefaultTXTConfig extends ConfigFileObject {
                 .addHeader("SETTINGS")
                 .addValue("conf.tick.day.start", 0L, "Tick of day starts")
                 .addValue("conf.tick.day.end", 12542L, "Tick of day ends")
-                .addValue("conf.tick.secondsPerTick", 1, "Seconds per seasons-api tick")
-                .addValue("conf.tick.ticksPerAction", 3, "Ticks before action starts (for example, damage)")
+                .addValue("conf.tick.ticksPerChallengeTick", 20, "Minecraft ticks per challenges tick (20 Minecraft ticks in 1 second)")
+                .addValue("conf.tick.challengeTicksPerAction", 3, "Challenges ticks before action starts (for example, damage)")
                 // Seasons cycle
                 .addHeader("SEASONS CYCLE")
                 .addValue("conf.seasonsCycle.doSeasonsCycle", true, "Do cycle the first order seasons for a daysPerSeason (<duration_of_parent_season>/subSeasonPerSeason for a sub seasons) Minecraft days?" +
@@ -54,8 +46,7 @@ public class DefaultTXTConfig extends ConfigFileObject {
                         "\nThe parent season is the season of the order above, for which this season is a sub season.")
                 .addValue("conf.seasonsCycle.maxOrderToCycle", 1, "Number of the order from which all orders bellow are able to cycle seasons.")
                 .addValue("conf.seasonsCycle.daysPerSeason", 30, "The time of the season change to the next one (in Minecraft days)")
-                .addValue("conf.seasonsCycle.subSeasonPerSeason", 3, "Count of sub seasons possible to set during the season." +
-                        "\nIf doFirstOrderCycle = false the second order seasons will cycle every daysPerSeason, and lower orders <duration_of_parent_season>/(subSeasonsPerSeason)")
+                .addValue("conf.seasonsCycle.subSeasonPerSeason", 3, "Count of sub seasons possible to set during the season.")
                 // Language
                 .addHeader("LANGUAGE")
                 .addDynamicSelectionDropdown("conf.lang", Config::getListOfLangs, "en_US", "", "Current language of seasons mod", (oldValue, newValue) -> Config.updateLang(newValue));
