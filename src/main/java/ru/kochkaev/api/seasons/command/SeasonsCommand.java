@@ -61,7 +61,7 @@ public class SeasonsCommand {
     }
 
     public static int setSeason(String seasonID, ServerCommandSource source) {
-        Season.setSeason(Season.getTree().find(Season.getSeasonByID(seasonID)));
+        Season.setSeasonIgnoringPrevious(Season.getSeasonAnyBranchByID(seasonID));
         source.sendFeedback((() -> Message.getFeedbackText("Successfully set season \"" + seasonID + "\"")), true);
         return 0;
     }

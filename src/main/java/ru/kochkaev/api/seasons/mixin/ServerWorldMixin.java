@@ -36,6 +36,7 @@ public abstract class ServerWorldMixin
         this.worldProperties = worldProperties;
     }
 
+    @Unique
     private static boolean doChallengeTick = true;
 
 
@@ -52,6 +53,7 @@ public abstract class ServerWorldMixin
             if ((this.properties.getTimeOfDay() % 24000L >= Config.getModConfig("API").getConfig().getLong("conf.tick.day.start")) && (Boolean.TRUE.equals(Weather.isNight())) && (Config.getModConfig("API").getConfig().getLong("conf.tick.day.end") > this.properties.getTimeOfDay() % 24000L)) {
                 Weather.setDay();
                 int days = (Integer.parseInt(Config.getCurrent("days_after_season_set")) + 1);
+                if (days == Config.getModConfig("API").getConfig().getInt("conf.seasonsCycle.daysPerSeason")) days = 0;
                 Config.writeCurrent("days_after_season_set", String.valueOf(days));
                 Config.saveCurrent();
                 if (days == Integer.parseInt(Config.getCurrent("next_day_to_season_cycle"))) Season.setNextSeason();

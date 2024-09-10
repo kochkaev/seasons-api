@@ -43,6 +43,7 @@ public class SeasonsAPI {
         Config.writeCurrentIfDoNotExists("previous_weather");
         Config.writeCurrentIfDoNotExists("days_after_season_set", "0");
         Config.writeCurrentIfDoNotExists("next_day_to_season_cycle", "0");
+        Config.writeCurrentIfDoNotExists("seasons_cycle", "1:30:3");
         Config.saveCurrent();
         Register.register();
         Season.onServerStartup();
@@ -81,7 +82,7 @@ public class SeasonsAPI {
     private static void registerPlaceholders() {
         Format.regDynamicPlaceholder("weather", () -> Weather.getCurrent().getName());
         Format.regDynamicPlaceholder("season", () -> Season.getCurrent().getName());
-        Format.regDynamicPlaceholder("lang", () -> Config.getCurrent("language"));
+        Format.regDynamicPlaceholder("lang", Config::getCurrentLang);
         Format.regDynamicPlaceholder("display-name", () -> Config.getModConfig("API").getLang().getString("lang.message.seasonsModDisplayName"));
         Format.regDynamicPlaceholder("weather-previous", () -> Weather.getPreviousCurrent().getName());
         Format.regDoubleParseDynamicPlaceholder("title-new-day", () -> Text.of(Config.getModConfig("API").getLang().getString("lang.message.messageNewDay")));

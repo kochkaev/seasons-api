@@ -3,6 +3,7 @@ package ru.kochkaev.api.seasons.config;
 import ru.kochkaev.api.seasons.object.ConfigContentObject;
 import ru.kochkaev.api.seasons.object.ConfigFileObject;
 import ru.kochkaev.api.seasons.provider.Config;
+import ru.kochkaev.api.seasons.provider.Season;
 
 public class DefaultTXTConfig extends ConfigFileObject {
 
@@ -44,9 +45,9 @@ public class DefaultTXTConfig extends ConfigFileObject {
                         "\nThe highest (first) order seasons are seasons that are not a sub season for any other season." +
                         "\nThe second order seasons are seasons that are sub seasons for the first order, but parent for the third order. Etc." +
                         "\nThe parent season is the season of the order above, for which this season is a sub season.")
-                .addValue("conf.seasonsCycle.maxOrderToCycle", 1, "Number of the order from which all orders bellow are able to cycle seasons.")
-                .addValue("conf.seasonsCycle.daysPerSeason", 30, "The time of the season change to the next one (in Minecraft days)")
-                .addValue("conf.seasonsCycle.subSeasonPerSeason", 3, "Count of sub seasons possible to set during the season.")
+                .addValue("conf.seasonsCycle.maxOrderToCycle", 1, "", "Number of the order from which all orders bellow are able to cycle seasons.", (oldValue, newValue) -> Season.reloadCycleTimer())
+                .addValue("conf.seasonsCycle.daysPerSeason", 30, "", "The time of the season change to the next one (in Minecraft days)", (oldValue, newValue) -> Season.reloadCycleTimer())
+                .addValue("conf.seasonsCycle.subSeasonsPerSeason", 3, "", "Count of sub seasons possible to set during the season.", (oldValue, newValue) -> Season.reloadCycleTimer())
                 // Language
                 .addHeader("LANGUAGE")
                 .addDynamicSelectionDropdown("conf.lang", Config::getListOfLangs, "en_US", "", "Current language of seasons mod", (oldValue, newValue) -> Config.updateLang(newValue));

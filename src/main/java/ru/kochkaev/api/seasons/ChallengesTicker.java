@@ -1,14 +1,11 @@
 package ru.kochkaev.api.seasons;
 
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.jetbrains.annotations.NotNull;
 import ru.kochkaev.api.seasons.provider.Config;
 import ru.kochkaev.api.seasons.object.ChallengeObject;
 import ru.kochkaev.api.seasons.provider.Challenge;
 
 import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class ChallengesTicker {
 
@@ -26,7 +23,7 @@ public class ChallengesTicker {
 
     private static final List<ChallengeObject> allowedChallenges = new ArrayList<>();
     private static boolean changeWeather = false;
-    private static boolean shutdown = false;
+//    private static boolean shutdown = false;
 
     public static void start() {
         isTicking = true;
@@ -34,7 +31,17 @@ public class ChallengesTicker {
     }
 
     public static void stop()  {
-        shutdown = true;
+//        shutdown = true;
+        for (ChallengeObject challenge : allowedChallenges) {
+            for (ServerPlayerEntity player : players) {
+                int count = countOfInARowCallsMap.get(player).get(challenge);
+                if (count != 0) {
+                    countOfInARowCallsMap.get(player).put(challenge, 0);
+                    challenge.onChallengeEnd(player);
+                }
+            }
+        }
+        isTicking = false;
     }
 //    @SuppressWarnings("ResultOfMethodCallIgnored")
 //    public static void close() {
@@ -48,21 +55,12 @@ public class ChallengesTicker {
 //            throw new RuntimeException(e);
 //        }
 //    }
-    private static void shutdownTask() {
-        for (ChallengeObject challenge : allowedChallenges) {
-            for (ServerPlayerEntity player : players) {
-                int count = countOfInARowCallsMap.get(player).get(challenge);
-                if (count != 0) {
-                    countOfInARowCallsMap.get(player).put(challenge, 0);
-                    challenge.onChallengeEnd(player);
-                }
-            }
-        }
-        isTicking = false;
-//        executorService.shutdown();
-//        executorService.shutdownNow();
-//        executorService = Executors.newSingleThreadScheduledExecutor(new TickerTreadFactory());
-    }
+//    private static void shutdownTask() {
+//
+////        executorService.shutdown();
+////        executorService.shutdownNow();
+////        executorService = Executors.newSingleThreadScheduledExecutor(new TickerTreadFactory());
+//    }
 
     public static void tick() {
         if (isTicking){
@@ -80,7 +78,7 @@ public class ChallengesTicker {
             if (changeWeather) changeWeatherTask();
 //        Main.getLogger().info("Challenges ticker is ticking");
 //            SeasonsAPI.getLogger().info("Tick!");
-            if (shutdown) shutdownTask();
+//            if (shutdown) shutdownTask();
         }
     }
 

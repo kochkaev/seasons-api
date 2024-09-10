@@ -31,7 +31,7 @@ public class TreeBranch<T> {
     }
     public TreeBranch<T> find(T component) {
         if (component.equals(this.component)) return this;
-        else return branches.stream().map(branch -> branch.find(component)).findAny().orElse(null);
+        else return branches.stream().map(branch -> branch.find(component)).filter(Objects::nonNull).findAny().orElse(null);
     }
     public Collection<TreeBranch<T>> findAll(T component) {
         Set<TreeBranch<T>> output = new HashSet<>();

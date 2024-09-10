@@ -124,7 +124,7 @@ public abstract class SeasonObject {
     }
 
     public void init() {
-        this.parents.forEach(seasonID -> Season.getSeasonByID(seasonID).addParent(id));
+        this.parents.forEach(seasonID -> Season.getSeasonByID(seasonID).addSubSeason(id));
     }
 
 
