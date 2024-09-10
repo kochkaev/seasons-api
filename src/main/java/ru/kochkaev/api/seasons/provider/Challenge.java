@@ -6,7 +6,7 @@ import ru.kochkaev.api.seasons.object.ChallengeObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Challenge {
+public final class Challenge {
 
     private static final List<ChallengeObject> challenges = new ArrayList<>();
 

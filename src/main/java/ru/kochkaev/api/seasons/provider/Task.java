@@ -5,7 +5,7 @@ import ru.kochkaev.api.seasons.util.map.Map1Key2Values;
 import java.util.*;
 import java.util.function.Function;
 
-public class Task {
+public final class Task {
 
     private static final Map1Key2Values<Object, Function<List<?>, List<?>>, List<?>> tasks = new Map1Key2Values.HashMap1Key2Values<>();
     private static final List<Object> forRemove = new ArrayList<>();

@@ -12,7 +12,7 @@
 		"sources": "https://github.com/kochkaev/seasons-api"
 	},
 	"license": "Apache-2.0",
-	"icon": "assets/icon.png",
+	"icon": "assets/seasons-api/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"client": [
@@ -32,7 +32,7 @@
 			"seasons-api.mixins.json"
 	],
 	"depends": {
-		"fabricloader": ">=0.15.11",
+		"fabricloader": ">=${loader_version}",
 		"minecraft": [
 			"1.21",
 			"1.21.1"
@@ -51,7 +51,7 @@
 				"id": "seasons",
 				"name": "Seasons",
 				"description": "Differentiate your gameplay by adding new weather depending on the current season, and weather-set Challenges that you have to complete throughout the day!",
-				"icon": "assets/icon_parent.png",
+				"icon": "assets/seasons-api/icon_parent.png",
 				"update_checker": false
 			},
 			"update_checker": true

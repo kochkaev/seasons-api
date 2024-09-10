@@ -2,6 +2,7 @@ package ru.kochkaev.api.seasons.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.ArgumentBuilder;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import ru.kochkaev.api.seasons.ChallengesTicker;
@@ -21,6 +22,7 @@ public class SeasonsCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("seasons")
+                .requires(source -> source.hasPermissionLevel(2))
                 .then(CommandManager.literal("set")
                         .then(CommandManager.literal("season")
                                 .then(CommandManager.argument("season", StringArgumentType.string()).suggests(new SeasonSuggestionProvider())
@@ -113,5 +115,9 @@ public class SeasonsCommand {
         source.sendFeedback(() -> Message.getFeedbackText("Seasons configs successfully reloaded!"), true);
         return 0;
     }
+
+//    private <S, T extends ArgumentBuilder<S, T>> ArgumentBuilder<S, T> getSeasonSetBranch(){
+//
+//    }
 
 }

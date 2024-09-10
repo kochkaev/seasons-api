@@ -8,7 +8,7 @@ import ru.kochkaev.api.seasons.object.JSONConfigObject;
 
 import java.util.*;
 
-public class Config {
+public final class Config {
 
     private static JsonObject current = new JsonObject();
     private static JSONConfigObject jsonCore;

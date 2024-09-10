@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-public class Season {
+public final class Season {
 
     private static SeasonObject CURRENT_SEASON;
     private static TreeBranch<SeasonObject> CURRENT_SEASON_BRANCH;

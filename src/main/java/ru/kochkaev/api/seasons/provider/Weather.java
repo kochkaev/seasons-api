@@ -10,7 +10,7 @@ import ru.kochkaev.api.seasons.util.Title;
 
 import java.util.*;
 
-public class Weather {
+public final class Weather {
 
     private static final Random random = new Random();
 
