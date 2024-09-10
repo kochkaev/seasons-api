@@ -45,7 +45,7 @@ public class ConfigContentObject extends HashMap<String, ConfigValueObject<?>> {
                 header = "\n\n# * " + valueObject.getHeader();
                 ref.tempHeader = valueObject.getHeader();
             }
-            return header + (!valueObject.getDescription().isEmpty() ? "\n# "+ String.join("\n#", valueObject.getDescription().split("\n")) : "") +
+            return header + (!valueObject.getDescription().isEmpty() ? "\n# "+ String.join("\n# ", valueObject.getDescription().split("\n")) : "") +
                         "\n# type: \"" + valueObject.getValue().getClass().getSimpleName() + "\" | default: \"" + valueObject.getDefaultValue() + "\"" +
                         ((valueObject instanceof ConfigSelectionObject<?,? extends List<?>> selectionObject && !selectionObject.isDynamic()) ? "\n# available values: ["+selectionObject.getList().stream().map(value -> "\""+value+"\"").collect(Collectors.joining(", "))+"]" : "") +
                         "\n" + key + ": \"" + valueObject.getValue() + "\"";

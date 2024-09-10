@@ -21,6 +21,6 @@ public class DefaultTXTLangEN extends ConfigFileObject {
         content
                 .addValue("lang.message.seasonsModDisplayName", "&e&lSeasons", "Seasons mod name (used in chat messages as %seasons:display-name% placeholder)")
                 .addValue("lang.message.messageNewDay", "&e&bThat's a new day!", "New day title message (used in titles as %seasons:title-new-day% placeholder)")
-                .addValue("lang.message.currentInfo", "%season%. &7Today's %weather%", "Current weather and season title message (used in titles as %seasons:title-info% placeholder)");
+                .addValue("lang.message.currentInfo", "%seasons:season%. &7Today's %seasons:weather%", "Current weather and season title message (used in titles as %seasons:title-info% placeholder)");
     }
 }
