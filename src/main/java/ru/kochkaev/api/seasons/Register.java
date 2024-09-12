@@ -1,8 +1,11 @@
 package ru.kochkaev.api.seasons;
 
-import ru.kochkaev.api.seasons.object.*;
-import ru.kochkaev.api.seasons.provider.Config;
+import ru.kochkaev.api.seasons.object.ChallengeObject;
+import ru.kochkaev.api.seasons.object.ConfigFileObject;
+import ru.kochkaev.api.seasons.object.SeasonObject;
+import ru.kochkaev.api.seasons.object.WeatherObject;
 import ru.kochkaev.api.seasons.provider.Challenge;
+import ru.kochkaev.api.seasons.provider.Config;
 import ru.kochkaev.api.seasons.provider.Season;
 import ru.kochkaev.api.seasons.provider.Weather;
 import ru.kochkaev.api.seasons.util.Parse;

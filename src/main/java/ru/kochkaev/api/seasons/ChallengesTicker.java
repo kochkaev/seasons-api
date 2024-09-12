@@ -1,11 +1,14 @@
 package ru.kochkaev.api.seasons;
 
 import net.minecraft.server.network.ServerPlayerEntity;
-import ru.kochkaev.api.seasons.provider.Config;
 import ru.kochkaev.api.seasons.object.ChallengeObject;
 import ru.kochkaev.api.seasons.provider.Challenge;
+import ru.kochkaev.api.seasons.provider.Config;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ChallengesTicker {
 

@@ -7,8 +7,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.command.WeatherCommand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-import ru.kochkaev.api.seasons.command.SeasonSuggestionProvider;
 import ru.kochkaev.api.seasons.command.SeasonsCommand;
 import ru.kochkaev.api.seasons.command.WeatherSuggestionProvider;
 

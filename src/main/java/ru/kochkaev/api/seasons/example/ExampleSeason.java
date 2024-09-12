@@ -1,6 +1,5 @@
 package ru.kochkaev.api.seasons.example;
 
-import net.minecraft.server.MinecraftServer;
 import ru.kochkaev.api.seasons.object.SeasonObject;
 
 import java.util.ArrayList;

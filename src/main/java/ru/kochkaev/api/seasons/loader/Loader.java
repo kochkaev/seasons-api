@@ -1,4 +1,4 @@
-package ru.kochkaev.api.seasons.integration;
+package ru.kochkaev.api.seasons.loader;
 
 import java.nio.file.Path;
 

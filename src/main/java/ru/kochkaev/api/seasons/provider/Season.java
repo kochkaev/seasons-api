@@ -3,7 +3,10 @@ package ru.kochkaev.api.seasons.provider;
 //import ru.kochkaev.seasons-api.Config.OldConfig;
 
 import ru.kochkaev.api.seasons.SeasonsAPI;
-import ru.kochkaev.api.seasons.object.*;
+import ru.kochkaev.api.seasons.object.ConfigFileObject;
+import ru.kochkaev.api.seasons.object.SeasonObject;
+import ru.kochkaev.api.seasons.object.Tree;
+import ru.kochkaev.api.seasons.object.TreeBranch;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -36,8 +39,15 @@ public final class Season {
         else {
             Deque<SeasonObject> path = Arrays.stream(currentStr.split(" -> ")).map(line -> line.substring(line.startsWith("'") ? line.indexOf("'")+1 : 0, line.endsWith("'") ? line.lastIndexOf("'") : line.length()-1)).map(Season::getSeasonByID).collect(Collectors.toCollection(ArrayDeque::new));
             TreeBranch<SeasonObject> branch = seasonsTree.getBranchByComponentsPathDeque(path);
-            CURRENT_SEASON_BRANCH = branch;
-            CURRENT_SEASON = branch.get();
+            if (branch!=null){
+                CURRENT_SEASON_BRANCH = branch;
+                CURRENT_SEASON = branch.get();
+            }
+            else {
+                TreeBranch<SeasonObject> season = getRandomSeason();
+                setCurrent(season);
+                Config.writeCurrent("next_day_to_season_cycle", String.valueOf(getNextSeasonEndDay(season)));
+            }
         }
         reloadCycleTimer();
     }

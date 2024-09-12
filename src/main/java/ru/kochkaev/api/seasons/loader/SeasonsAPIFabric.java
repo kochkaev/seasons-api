@@ -1,4 +1,4 @@
-package ru.kochkaev.api.seasons;
+package ru.kochkaev.api.seasons.loader;
 
 import net.fabricmc.api.ModInitializer;
 
@@ -6,7 +6,7 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import ru.kochkaev.api.seasons.command.SeasonsCommand;
-import ru.kochkaev.api.seasons.integration.Loader;
+import ru.kochkaev.api.seasons.SeasonsAPI;
 import ru.kochkaev.api.seasons.provider.Config;
 
 import java.nio.file.Path;

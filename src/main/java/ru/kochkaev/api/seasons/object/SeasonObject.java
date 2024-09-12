@@ -5,6 +5,7 @@ import ru.kochkaev.api.seasons.provider.Season;
 import ru.kochkaev.api.seasons.util.Message;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -45,8 +46,8 @@ public abstract class SeasonObject {
     /** List of the parent seasons for this season */
     protected final List<String> parents = new ArrayList<>();
 
-    /** List of sub seasons for this season */
-    protected final List<String> subSeasons = new ArrayList<>();
+//    /** List of sub seasons for this season */
+//    protected final List<String> subSeasons = new ArrayList<>();
 
     /** List of seasons after which this season has a chance to appear */
     protected final List<String> previousSeasons = new ArrayList<>();
@@ -124,56 +125,49 @@ public abstract class SeasonObject {
     }
 
     public void init() {
-        this.parents.forEach(seasonID -> Season.getSeasonByID(seasonID).addSubSeason(id));
+//        parents = this.parents.stream().map(Season::getSeasonByID).collect(Collectors.toSet());
     }
 
 
     public boolean isEnabled() { return this.enabled; }
     public void setEnabled(boolean enabled) { this.enabled = enabled; }
 
-    public List<SeasonObject> getParents() {
-        return this.parents.stream().map(Season::getSeasonByID).collect(Collectors.toList());
+    public Collection<SeasonObject> getParents() {
+        return this.parents.stream().map(Season::getSeasonByID).collect(Collectors.toSet());
     }
-    public List<SeasonObject> getSubSeasons() {
-        return this.subSeasons.stream().map(Season::getSeasonByID).collect(Collectors.toList());
-    }
+//    public List<SeasonObject> getSubSeasons() {
+//        return this.subSeasons.stream().map(Season::getSeasonByID).collect(Collectors.toList());
+//    }
     public void addParent(String seasonId) {
-        if (!this.parents.contains(seasonId)) {
+        if (!this.parents.contains(seasonId))
             this.parents.add(seasonId);
-            SeasonObject season = Season.getSeasonByID(seasonId);
-            if (!season.isSubSeasonOf(id)) addSubSeason(id);
-        }
     }
-    public void addSubSeason(String seasonId) {
-        if (!this.subSeasons.contains(seasonId)) {
-            this.subSeasons.add(seasonId);
-            SeasonObject season = Season.getSeasonByID(seasonId);
-            if (!season.isParentOf(id)) addParent(id);
-        }
-    }
+//    public void addSubSeason(String seasonId) {
+//        if (!this.subSeasons.contains(seasonId)) {
+//            this.subSeasons.add(seasonId);
+//            SeasonObject season = Season.getSeasonByID(seasonId);
+//            if (!season.isParentOf(id)) addParent(id);
+//        }
+//    }
     public void removeParent(String seasonId) {
-        if (this.parents.contains(seasonId)) {
-            this.parents.remove(seasonId);
-            SeasonObject season = Season.getSeasonByID(seasonId);
-            if (season.isSubSeasonOf(id)) removeSubSeason(id);
-        }
+        this.parents.remove(seasonId);
     }
-    public void removeSubSeason(String seasonId) {
-        if (this.subSeasons.contains(seasonId)) {
-            this.subSeasons.remove(seasonId);
-            SeasonObject season = Season.getSeasonByID(seasonId);
-            if (season.isParentOf(id)) removeParent(id);
-        }
-    }
-    public boolean isParentOf(String seasonId) {
+//    public void removeSubSeason(String seasonId) {
+//        if (this.subSeasons.contains(seasonId)) {
+//            this.subSeasons.remove(seasonId);
+//            SeasonObject season = Season.getSeasonByID(seasonId);
+//            if (season.isParentOf(id)) removeParent(id);
+//        }
+//    }
+    public boolean isSubSeasonOf(String seasonId) {
         return this.parents.contains(seasonId);
     }
-    public boolean isSubSeasonOf(String seasonId) {
-        return this.subSeasons.contains(seasonId);
-    }
+//    public boolean isSubSeasonOf(String seasonId) {
+//        return this.subSeasons.contains(seasonId);
+//    }
 
-    public List<SeasonObject> getPreviousSeasons() {
-        return this.previousSeasons.stream().map(Season::getSeasonByID).collect(Collectors.toList());
+    public Collection<SeasonObject> getPreviousSeasons() {
+        return this.previousSeasons.stream().map(Season::getSeasonByID).collect(Collectors.toSet());
     }
     public void addPreviousSeason(String seasonId) {
         this.previousSeasons.add(seasonId);

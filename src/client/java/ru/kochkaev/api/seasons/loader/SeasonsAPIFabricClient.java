@@ -1,6 +1,7 @@
-package ru.kochkaev.api.seasons;
+package ru.kochkaev.api.seasons.loader;
 
 import net.fabricmc.api.ClientModInitializer;
+import ru.kochkaev.api.seasons.SeasonsAPI;
 import ru.kochkaev.api.seasons.integration.mod.ClothConfig;
 import ru.kochkaev.api.seasons.integration.mod.ClothConfigClient;
 

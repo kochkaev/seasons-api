@@ -2,7 +2,8 @@ package ru.kochkaev.api.seasons.provider;
 
 import ru.kochkaev.api.seasons.util.map.Map1Key2Values;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 public final class Task {

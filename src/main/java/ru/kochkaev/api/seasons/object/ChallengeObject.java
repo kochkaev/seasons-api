@@ -10,10 +10,10 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import ru.kochkaev.api.seasons.ChallengesTicker;
 import ru.kochkaev.api.seasons.SeasonsAPI;
+import ru.kochkaev.api.seasons.WeatherDamageType;
 import ru.kochkaev.api.seasons.provider.Task;
 import ru.kochkaev.api.seasons.provider.Weather;
 import ru.kochkaev.api.seasons.util.Message;
-import ru.kochkaev.api.seasons.WeatherDamageType;
 
 import java.util.Arrays;
 import java.util.List;
