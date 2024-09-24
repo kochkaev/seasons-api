@@ -93,8 +93,8 @@ public final class Weather {
     }
 
     public static void onServerStartup(){
-        String currentStr = Config.getCurrent("weather");
-        String prevCurrentStr = Config.getCurrent("previous_weather");
+        String currentStr = (String) Config.getCurrentTypedValue("weather");
+        String prevCurrentStr = (String) Config.getCurrentTypedValue("previous_weather");
         if (currentStr.isEmpty() || currentStr.equals("example")) {
             boolean isDay = SeasonsAPI.getOverworld().getTimeOfDay() % 24000L < Config.getModConfig("API").getConfig().getLong("conf.tick.day.end");
             CURRENT_WEATHER = (prevCurrentStr.isEmpty()) ? getChancedWeather(isDay ? getSeasonDailyWeathers(Season.getCurrent()) : getSeasonNightlyWeathers(Season.getCurrent())) : getWeatherByID(prevCurrentStr);
@@ -123,8 +123,8 @@ public final class Weather {
     }
 
     public static void reloadFromConfig() {
-        String currentStr = Config.getCurrent("weather");
-        String prevCurrentStr = Config.getCurrent("previous_weather");
+        String currentStr = (String) Config.getCurrentTypedValue("weather");
+        String prevCurrentStr = (String) Config.getCurrentTypedValue("previous_weather");
         WeatherObject curWeather = getWeatherByID(currentStr);
         WeatherObject curWeatherPrev = getWeatherByID(prevCurrentStr);
         if (CURRENT_WEATHER != curWeather) {

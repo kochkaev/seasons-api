@@ -30,7 +30,7 @@ public final class Season {
     public static void onServerStartup() {
         allSeasons.values().forEach(SeasonObject::init);
         addToTree(allSeasons.values());
-        String currentStr = Config.getCurrent("season");
+        String currentStr = (String) Config.getCurrentTypedValue("season");
         if (currentStr.isEmpty() || currentStr.equals("'example'") || currentStr.equals("example")) {
             TreeBranch<SeasonObject> season = getRandomSeason();
             setCurrent(season);
@@ -171,7 +171,7 @@ public final class Season {
          return branch;
     }
     private static int getNextSeasonEndDay(TreeBranch<SeasonObject> branch) {
-        final int startDay = Integer.parseInt(Config.getCurrent("days_after_season_set"))+1;
+        final int startDay = (Integer) Config.getCurrentTypedValue("days_after_season_set")+1;
         final int subSeasonsPerSeason = Config.getModConfig("API").getConfig().getInt("conf.seasonsCycle.subSeasonsPerSeason");
         final int cycleOrder = branch.getBranchPathDeque().size() - Config.getModConfig("API").getConfig().getInt("conf.seasonsCycle.maxOrderToCycle")-1;
         final int daysPerSeason = Config.getModConfig("API").getConfig().getInt("conf.seasonsCycle.daysPerSeason");
@@ -191,7 +191,7 @@ public final class Season {
         return (startDay!=daysPerSeason ? startDay : 0) + tempSeasonDurationRounded - 1;
     }
     private static int getNextSeasonOrder() {
-        final int days = Integer.parseInt(Config.getCurrent("days_after_season_set"))+1;
+        final int days = (Integer) Config.getCurrentTypedValue("days_after_season_set")+1;
         final ConfigFileObject config = Config.getModConfig("API").getConfig();
         final int subSeasonsPerSeason = config.getInt("conf.seasonsCycle.subSeasonsPerSeason");
         int tempSeasonDuration = config.getInt("conf.seasonsCycle.daysPerSeason");
