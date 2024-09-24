@@ -56,8 +56,14 @@ public class SeasonsCommand {
                         .then(CommandManager.literal("weather").executes(context -> getWeather(context.getSource())))
                         .then(CommandManager.literal("lang").executes(context -> getLang(context.getSource())))
                         .then(CommandManager.literal("challenges").executes(context -> getChallenges(context.getSource())))
+                        .then(CommandManager.literal("enabled").executes(context -> getEnabled(context.getSource())))
                 )
                 .then(CommandManager.literal("reload").executes(context -> reload(context.getSource())))
+                .then(CommandManager.literal("turn")
+                        .then(CommandManager.literal("on").executes(context -> setEnabled(true, context.getSource())))
+                        .then(CommandManager.literal("off").executes(context -> setEnabled(false, context.getSource())))
+                        .executes(context -> setEnabled(!((Boolean)Config.getCurrentTypedValue("enable")), context.getSource()))
+                )
         );
     }
 
@@ -102,6 +108,16 @@ public class SeasonsCommand {
     }
     public static int getChallenges(ServerCommandSource source) {
         source.sendFeedback((() -> Message.getFeedbackText("Currently allowed challenges are " + ChallengesTicker.getAllowedChallenges().stream().map(ChallengeObject::getID).toList())), false);
+        return 0;
+    }
+
+    public static int setEnabled(boolean enabled, ServerCommandSource source) {
+        Config.writeCurrent("enable", enabled);
+        source.sendFeedback((() -> Message.getFeedbackText("Seasons mod is now " + (enabled? "enabled" : "disabled") + " in this world. (You must restart your world to apply it)")), true);
+        return 0;
+    }
+    public static int getEnabled(ServerCommandSource source) {
+        source.sendFeedback((() -> Message.getFeedbackText("Currently seasons mod is " + ((Boolean)Config.getCurrentTypedValue("enable")? "enabled" : "disabled") + " in this world.")), false);
         return 0;
     }
 

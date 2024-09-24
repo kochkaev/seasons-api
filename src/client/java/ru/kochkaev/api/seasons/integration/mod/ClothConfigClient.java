@@ -11,6 +11,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import ru.kochkaev.api.seasons.SeasonsAPI;
 import ru.kochkaev.api.seasons.object.*;
 import ru.kochkaev.api.seasons.provider.Config;
 
@@ -28,6 +29,7 @@ public class ClothConfigClient extends ClothConfig {
         ConfigBuilder builder = ConfigBuilder.create()
                 .setParentScreen((Screen) parent)
                 .setTitle(Text.of("Seasons Config"));
+        if (SeasonsAPI.isStarted()) addCurrentCategory(builder);
         for (ConfigObject mod : Config.getMods().values()) {
             ConfigCategory modCategory = addCategory(builder, mod);
             if (mod.getModName().equals(priority.getModName())) builder.setFallbackCategory(modCategory);
@@ -92,10 +94,18 @@ public class ClothConfigClient extends ClothConfig {
         };
         entryBuilder = (R) entryBuilder
                 .setTooltip(getTooltip(valueObject));
-        entryBuilder = (R) entryBuilder.setSaveConsumer(newValue -> {
-            assert value != null;
-            if (!value.equals(newValue)) Config.getModConfig(modName).getConfig(configName).setValue(key, newValue);
-        });
+        if (!modName.isEmpty()){
+            entryBuilder = (R) entryBuilder.setSaveConsumer(newValue -> {
+                assert value!= null;
+                if (!value.equals(newValue)) Config.getModConfig(modName).getConfig(configName).setValue(key, newValue);
+            });
+        }
+        else {
+            entryBuilder = (R) entryBuilder.setSaveConsumer(newValue -> {
+                assert value!= null;
+                if (!value.equals(newValue)) Config.writeCurrent(key, newValue);
+            });
+        }
         return entryBuilder.build();
     }
 
@@ -108,9 +118,16 @@ public class ClothConfigClient extends ClothConfig {
                 .setDefaultValue(defaultValue);
         entryBuilder = (S) entryBuilder
                 .setTooltip(getTooltip(valueObject));
-        entryBuilder = (S) entryBuilder.setSaveConsumer(newValue -> {
-            if (!value.equals(newValue)) Config.getModConfig(modName).getConfig(configName).setValue(key, newValue);
-        });
+        if (!modName.isEmpty()){
+            entryBuilder = (S) entryBuilder.setSaveConsumer(newValue -> {
+                if (!value.equals(newValue)) Config.getModConfig(modName).getConfig(configName).setValue(key, newValue);
+            });
+        }
+        else {
+            entryBuilder = (S) entryBuilder.setSaveConsumer(newValue -> {
+                if (!value.equals(newValue)) Config.writeCurrent(key, newValue);
+            });
+        }
         return entryBuilder.build();
     }
 
@@ -142,9 +159,16 @@ public class ClothConfigClient extends ClothConfig {
         entryBuilder = (D) entryBuilder.setSuggestionMode(suggestionMode);
         entryBuilder = (D) entryBuilder
                 .setTooltip(getTooltip(valueObject));
-        entryBuilder = (D) entryBuilder.setSaveConsumer(newValue -> {
-            if (!value.equals(newValue)) Config.getModConfig(modName).getConfig(configName).setValue(key, newValue);
-        });
+        if (!modName.isEmpty()){
+            entryBuilder = (D) entryBuilder.setSaveConsumer(newValue -> {
+                if (!value.equals(newValue)) Config.getModConfig(modName).getConfig(configName).setValue(key, newValue);
+            });
+        }
+        else {
+            entryBuilder = (D) entryBuilder.setSaveConsumer(newValue -> {
+                if (!value.equals(newValue)) Config.writeCurrent(key, newValue);
+            });
+        }
         return entryBuilder.build();
     }
 
@@ -152,5 +176,17 @@ public class ClothConfigClient extends ClothConfig {
         String header = valueObject.getHeader();
         String description = valueObject.getDescription();
         return Text.of(header + ((!header.isEmpty() && !description.isEmpty()) ? "\n—————\n" : "") + description);
+    }
+
+
+
+    protected static ConfigCategory addCurrentCategory(ConfigBuilder builder){
+        ConfigCategory modCategory = builder.getOrCreateCategory(Text.of("World Properties"));
+        for (String key : Config.getCurrentMap().keySet()) {
+            modCategory.addEntry(
+                    addEntry(key, Config.getCurrentTypedValueObject(key), builder, "", "")
+            );
+        }
+        return modCategory;
     }
 }

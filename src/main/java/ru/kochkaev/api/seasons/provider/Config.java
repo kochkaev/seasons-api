@@ -3,7 +3,9 @@ package ru.kochkaev.api.seasons.provider;
 import com.google.gson.JsonObject;
 import net.minecraft.util.WorldSavePath;
 import ru.kochkaev.api.seasons.SeasonsAPI;
+import ru.kochkaev.api.seasons.object.ConfigFileObject;
 import ru.kochkaev.api.seasons.object.ConfigObject;
+import ru.kochkaev.api.seasons.object.ConfigValueObject;
 import ru.kochkaev.api.seasons.object.JSONConfigObject;
 
 import java.util.*;
@@ -11,6 +13,7 @@ import java.util.*;
 public final class Config {
 
     private static JsonObject current = new JsonObject();
+    private static final Map<String, ConfigValueObject<?>> currentMap = new HashMap<>();
     private static JSONConfigObject jsonCore;
     private static final Map<String, ConfigObject> mods = new HashMap<>();
     private static final List<String> listOfLangs =  new ArrayList<>();
@@ -66,13 +69,42 @@ public final class Config {
         jsonCore.save();
     }
 
-    public static String getCurrent(String key) { return current.get(key).getAsString(); }
+    public static String getCurrent(String key) { return ""+currentMap.get(key).getValue(); }
+    public static Object getCurrentTypedValue(String key) { return currentMap.get(key).getValue(); }
+    public static ConfigValueObject<?> getCurrentTypedValueObject(String key) { return currentMap.get(key); }
+    public static Object getCurrentTypedValueOrElse(String key, Object def) { return currentMap.containsKey(key) ? currentMap.get(key).getDefaultValue() : def; }
+    public static Object getCurrentTypedDefaultValue(String key) { return currentMap.get(key).getDefaultValue(); }
+    public static String getCurrentTypedValueDescription(String key) { return currentMap.get(key).getDescription(); }
     public static String getCurrentOrDefault(String key, String def) { return current.has(key)? current.get(key).getAsString() : def; }
-    public static void writeCurrent(String key, String value) { current.addProperty(key, value); }
-    public static void writeCurrentIfDoNotExists(String key) { if (!current.has(key)) current.addProperty(key, ""); }
-    public static void writeCurrentIfDoNotExists(String key, String value) { if (!current.has(key)) current.addProperty(key, value); }
+    public static void writeCurrent(String key, Object value) {
+        writeCurrent(key, value, "");
+    }
+    public static void writeCurrent(String key, Object value, String description) {
+//        Object val = current.has(key) ? current.get(key) : value;
+        if (!currentMap.containsKey(key)) {
+            currentMap.put(key, new ConfigValueObject<>(value, value, "", description, (oldValue, newValue) -> current.addProperty(key, ""+newValue)));
+            current.addProperty(key, ""+value);
+        }
+        else {
+            if (value instanceof String s) currentMap.get(key).setValue(ConfigFileObject.parseValue(currentMap.get(key), s));
+            else currentMap.get(key).setValue(value);
+        }
+    }
+    public static void writeCurrentIfDoNotExists(String key) { writeCurrentIfDoNotExists(key, ""); }
+    public static void writeCurrentIfDoNotExists(String key, String value) { writeCurrentIfDoNotExists(key, value, ""); }
+    public static void writeCurrentIfDoNotExists(String key, Object value, String description) {
+        if (!current.has(key)) writeCurrent(key, value, description);
+    }
+    public static void addCurrentValue(String key, Object def, String description) {
+        if (!currentMap.containsKey(key)) currentMap.put(key, new ConfigValueObject<>(def, def, "", description, (oldValue, newValue) -> current.addProperty(key, ""+newValue)));
+        if (current.has(key)) currentMap.get(key).setValue(ConfigFileObject.parseValue(currentMap.get(key), current.get(key).getAsString()));
+        else {
+            current.addProperty(key, ""+def);
+        }
+    }
 
     public static String getCurrentLang() { return currentLang; }
+    public static Map<String, ConfigValueObject<?>> getCurrentMap() { return currentMap; }
 
     public static String getCopyright() {
         return "------------------------------------------------\nseasons-api\n------------------------------------------------\n" +
