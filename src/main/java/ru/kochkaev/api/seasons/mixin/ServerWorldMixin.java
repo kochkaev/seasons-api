@@ -65,7 +65,7 @@ public abstract class ServerWorldMixin
                 Weather.setNight();
             if (Config.getModConfig("API").getConfig().getBoolean("conf.enable.title.actionbar")) Title.showActionBar();
             if ((this.worldProperties.isRaining() != Weather.getCurrent().getRaining()) || (this.worldProperties.isThundering() != Weather.getCurrent().getThundering()))
-                this.setWeather(-1, -1, false, false);
+                this.setWeatherSeasons();
             if (this.properties.getTimeOfDay()%Config.getModConfig("API").getConfig().getInt("conf.tick.ticksPerChallengeTick") == 0) {
                 if (!doChallengeTick){
                     doChallengeTick = true;
@@ -77,22 +77,33 @@ public abstract class ServerWorldMixin
     }
 
 
-    /**
-     * @author kochkaev
-     * @reason Disable weather reset.
-     */
+//    /**
+//     * @author kochkaev
+//     * @reason Disable weather reset.
+//     */
     @VisibleForTesting
-    @Overwrite
-    public void resetWeather() {
+//    @Overwrite
+    @Inject(method = "resetWeather", at = @At("HEAD"), cancellable = true)
+    public void resetWeatherSeasons(CallbackInfo ci) {
+        if (SeasonsAPI.isLoaded()) ci.cancel();
     }
 
-    /**
-     * @author kochkaev
-     * @reason Disable weather reset.
-     */
+//    /**
+//     * @author kochkaev
+//     * @reason Disable weather reset.
+//     */
+//
+//    @Overwrite
+    @Inject(method = "setWeather", at = @At("HEAD"), cancellable = true)
+    private void setWeatherSeasons(int clearDuration, int rainDuration, boolean raining, boolean thundering, CallbackInfo ci) {
+        if (SeasonsAPI.isLoaded()) {
+            setWeatherSeasons();
+            ci.cancel();
+        }
+    }
 
-    @Overwrite
-    public void setWeather(int clearDuration, int rainDuration, boolean raining, boolean thundering) {
+    @Unique
+    private void setWeatherSeasons() {
         WeatherObject weather = Weather.getCurrent();
         this.worldProperties.setClearWeatherTime(-1);
         this.worldProperties.setRainTime(-1);

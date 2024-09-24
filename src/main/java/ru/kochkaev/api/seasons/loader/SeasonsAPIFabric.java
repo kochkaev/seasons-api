@@ -5,8 +5,10 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.server.command.WeatherCommand;
 import ru.kochkaev.api.seasons.command.SeasonsCommand;
 import ru.kochkaev.api.seasons.SeasonsAPI;
+import ru.kochkaev.api.seasons.mixin.WeatherCommandMixin;
 import ru.kochkaev.api.seasons.provider.Config;
 
 import java.nio.file.Path;
@@ -24,6 +26,7 @@ public class SeasonsAPIFabric extends Loader implements ModInitializer {
 	@Override
 	public void registerCommands() {
 		CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> SeasonsCommand.register(dispatcher)));
+//		CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> WeatherCommandMixin.registerSeasons(dispatcher)));
 	}
 
 	@Override
