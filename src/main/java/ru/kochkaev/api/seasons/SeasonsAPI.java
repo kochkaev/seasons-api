@@ -38,7 +38,7 @@ public class SeasonsAPI {
         SeasonsAPI.world = server.getOverworld();
         SeasonsAPI.isStarted = true;
         Config.loadCurrent();
-        Config.addCurrentValue("enable", true, "Do seasons mod enabled in this world?\nThis setting requires to restart your world.");
+//        Config.addCurrentValue("enable", true, "Do seasons mod enabled in this world?\nThis setting requires to restart your world.");
         Config.addCurrentValue("season", "", "Current season (full path in seasons tree).\n'First-order season'->...->'Lower-order season'");
         Config.addCurrentValue("weather", "", "Current weather.");
         Config.addCurrentValue("previous_weather", "", "Previous weather.");
@@ -46,7 +46,7 @@ public class SeasonsAPI {
         Config.addCurrentValue("next_day_to_season_cycle", 0, "The day in order from the last setting of the first-order season, when the lower-order season will be replaced.");
         Config.addCurrentValue("seasons_cycle", "1:30:3", "Seasons cycle mode. This will be automatically updated after changing the relevant settings in API config.\n<maxOrderToCycle>:<daysPerSeason>:<subSeasonsPerSeason>\nPlease, DON'T TOUCH IT!");
         Config.saveCurrent();
-        if ((Boolean)Config.getCurrentTypedValue("enable")){
+//        if ((Boolean)Config.getCurrentTypedValue("enable")){
             Register.register();
             Season.onServerStartup();
             Weather.onServerStartup();
@@ -54,7 +54,7 @@ public class SeasonsAPI {
             Challenge.updateChallengesInCurrentWeather();
             ChallengesTicker.changeWeather();
             ChallengesTicker.start();
-        }
+//        }
     }
     public static void onWorldShutdown() {
         if (isLoaded){
