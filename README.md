@@ -45,3 +45,8 @@ You can create your own set of seasons, weathers and challenges in your mod. Mor
 - VK: https://vk.com/kleverdi/
 - YouTube: https://youtube.com/@kochkaev/
 - Contact email: kleverdi@vk.com
+
+***
+
+## Known issues
+- Сan't miss a thunderstorm by sleeping in a bed;
