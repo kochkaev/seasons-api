@@ -50,3 +50,4 @@ You can create your own set of seasons, weathers and challenges in your mod. Mor
 
 ## Known issues
 - Сan't miss a thunderstorm by sleeping in a bed;
+- Incompatible with Fabric Seasons;
