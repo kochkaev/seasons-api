@@ -172,10 +172,12 @@ public final class Weather {
     }
 
     public static void setNight() {
+        if (Boolean.TRUE.equals(isNight)) CURRENT_WEATHER = getChancedWeather(getSeasonDailyWeathers(Season.getCurrent()));
         isNight = true;
         setChancedWeatherInCurrentSeason();
     }
     public static void setDay() {
+        if (Boolean.FALSE.equals(isNight)) CURRENT_WEATHER = getChancedWeather(getSeasonNightlyWeathers(Season.getCurrent()));
         isNight = false;
         setChancedWeatherInCurrentSeason();
     }

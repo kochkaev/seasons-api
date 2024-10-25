@@ -50,16 +50,13 @@ public abstract class ServerWorldMixin
     private final ServerWorldProperties worldProperties;
 
 
+    @Shadow public abstract void setWeather(int clearDuration, int rainDuration, boolean raining, boolean thundering);
+
     @Inject(method = "tick", at = @At("HEAD"))
     public void tick(BooleanSupplier shouldKeepTicking, CallbackInfo ci){
         if (SeasonsAPI.isLoaded()){
             if ((this.properties.getTimeOfDay() % 24000L >= Config.getModConfig("API").getConfig().getLong("conf.tick.day.start")) && (Boolean.TRUE.equals(Weather.isNight())) && (Config.getModConfig("API").getConfig().getLong("conf.tick.day.end") > this.properties.getTimeOfDay() % 24000L)) {
-                Weather.setDay();
-                int days = ((Integer) Config.getCurrentTypedValue("days_after_season_set") + 1);
-                if (days == Config.getModConfig("API").getConfig().getInt("conf.seasonsCycle.daysPerSeason")) days = 0;
-                Config.writeCurrent("days_after_season_set", days);
-                Config.saveCurrent();
-                if (days == (Integer) Config.getCurrentTypedValue("next_day_to_season_cycle")) Season.setNextSeason();
+                setDay();
             }
             if ((this.properties.getTimeOfDay() % 24000L >= Config.getModConfig("API").getConfig().getLong("conf.tick.day.end")) && (Boolean.FALSE.equals(Weather.isNight())))
                 Weather.setNight();
@@ -74,6 +71,16 @@ public abstract class ServerWorldMixin
             } else if (doChallengeTick) doChallengeTick = false;
             Task.runTasks();
         }
+    }
+
+    @Unique
+    public void setDay() {
+        Weather.setDay();
+        int days = ((Integer) Config.getCurrentTypedValue("days_after_season_set") + 1);
+        if (days == Config.getModConfig("API").getConfig().getInt("conf.seasonsCycle.daysPerSeason")) days = 0;
+        Config.writeCurrent("days_after_season_set", days);
+        Config.saveCurrent();
+        if (days == (Integer) Config.getCurrentTypedValue("next_day_to_season_cycle")) Season.setNextSeason();
     }
 
 
@@ -110,6 +117,11 @@ public abstract class ServerWorldMixin
         this.worldProperties.setThunderTime(-1);
         this.worldProperties.setRaining(weather.getRaining());
         this.worldProperties.setThundering(weather.getThundering());
+    }
+
+    @Inject(method="tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;resetWeather()V"))
+    public void afterSleep(BooleanSupplier shouldKeepTicking, CallbackInfo ci) {
+        setDay();
     }
 
 }

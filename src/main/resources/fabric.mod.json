@@ -45,7 +45,7 @@
 	"custom": {
 		"modmenu": {
 			"parent": {
-				"id": "seasons",
+				"id": "seasons-api-parent",
 				"name": "Seasons",
 				"description": "Differentiate your gameplay by adding new weather depending on the current season, and weather-set Challenges that you have to complete throughout the day!",
 				"icon": "assets/seasons-api/icon_parent.png",
