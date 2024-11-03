@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import ru.kochkaev.api.seasons.provider.Weather;
 import ru.kochkaev.api.seasons.util.Message;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -149,6 +150,18 @@ public abstract class WeatherObject {
      * @return {@link #seasons}
      */
     public @Nullable List<SeasonObject> getSeasons() { return this.seasons; }
+    public void removeSeason(SeasonObject season) {
+        if (this.seasons != null) {
+            this.seasons.remove(season);
+        }
+    }
+    public void addSeason(SeasonObject season) {
+        if (this.seasons == null) {
+            this.seasons = new ArrayList<>();
+        }
+        this.seasons.add(season);
+    }
+
     /** This method returns true, if this weather must be set when night coming.
      * @return {@link #nightly}
      */
