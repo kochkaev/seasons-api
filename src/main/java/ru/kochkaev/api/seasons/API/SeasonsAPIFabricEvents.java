@@ -64,29 +64,49 @@ public class SeasonsAPIFabricEvents extends Events {
     public void invokeBeforeAPIInit() {
         BEFORE_API_INIT.invoker();
     }
-
     @Override
     public void invokeAfterAPIInit() {
         AFTER_API_INIT.invoker();
     }
-
     @Override
     public void invokeBeforeAPIWorldInit(MinecraftServer server) {
         BEFORE_API_WORLD_INIT.invoker();
     }
-
     @Override
     public void invokeAfterAPIWorldInit(MinecraftServer server) {
         AFTER_API_WORLD_INIT.invoker();
     }
-
     @Override
     public void invokeBeforeChallengesTick(Map<ServerPlayerEntity, Map<ChallengeObject, Integer>> countOfInARowCallsMap, List<ServerPlayerEntity> players, List<ChallengeObject> allowedChallenges) {
         BEFORE_CHALLENGES_TICK.invoker();
     }
-
     @Override
     public void invokeAfterChallengesTick(Map<ServerPlayerEntity, Map<ChallengeObject, Integer>> countOfInARowCallsMap, List<ServerPlayerEntity> players, List<ChallengeObject> allowedChallenges) {
         AFTER_CHALLENGES_TICK.invoker();
+    }
+
+    @Override
+    public void registerBeforeAPIInit(APIInit listener) {
+        BEFORE_API_INIT.register(listener);
+    }
+    @Override
+    public void registerAfterAPIInit(APIInit listener) {
+        AFTER_API_INIT.register(listener);
+    }
+    @Override
+    public void registerBeforeAPIWorldInit(APIWorldInit listener) {
+        BEFORE_API_WORLD_INIT.register(listener);
+    }
+    @Override
+    public void registerAfterAPIWorldInit(APIWorldInit listener) {
+        AFTER_API_WORLD_INIT.register(listener);
+    }
+    @Override
+    public void registerBeforeChallengesTick(OnChallengesTick listener) {
+        BEFORE_CHALLENGES_TICK.register(listener);
+    }
+    @Override
+    public void registerAfterChallengesTick(OnChallengesTick listener) {
+        AFTER_CHALLENGES_TICK.register(listener);
     }
 }

@@ -24,6 +24,13 @@ public abstract class Events {
             List<ChallengeObject> allowedChallenges
     );
 
+    public abstract void registerBeforeAPIInit(APIInit listener);
+    public abstract void registerAfterAPIInit(APIInit listener);
+    public abstract void registerBeforeAPIWorldInit(APIWorldInit listener);
+    public abstract void registerAfterAPIWorldInit(APIWorldInit listener);
+    public abstract void registerBeforeChallengesTick(OnChallengesTick listener);
+    public abstract void registerAfterChallengesTick(OnChallengesTick listener);
+
     @FunctionalInterface
     public interface APIInit {
         void event();
