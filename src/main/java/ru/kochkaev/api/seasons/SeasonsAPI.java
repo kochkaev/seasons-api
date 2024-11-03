@@ -5,6 +5,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.kochkaev.api.seasons.API.Events;
 import ru.kochkaev.api.seasons.integration.IntegrationManager;
 import ru.kochkaev.api.seasons.integration.mod.ClothConfig;
 import ru.kochkaev.api.seasons.integration.mod.PlaceholderAPI;
@@ -24,15 +25,19 @@ public class SeasonsAPI {
     private static PlaceholderAPI placeholderAPI = null;
     private static ClothConfig clothConfig = null;
     private static Loader loader;
+    private static Events events;
     private static MinecraftServer server;
     private static ServerWorld world;
 
     public static void regLoader(Loader loader) {
         SeasonsAPI.loader = loader;
     }
+    public static void regEvents(Events events) {
+        SeasonsAPI.events = events;
+    }
 
     public static void onWorldStarted(MinecraftServer server) {
-//        Register.registerAllInPackage("ru.kochkaev.api.seasons.event");
+        events.invokeBeforeAPIWorldInit(server);
         Register.registerAllInPackage("ru.kochkaev.api.seasons.example");
         SeasonsAPI.server = server;
         SeasonsAPI.world = server.getOverworld();
@@ -55,6 +60,7 @@ public class SeasonsAPI {
             ChallengesTicker.changeWeather();
             ChallengesTicker.start();
 //        }
+        events.invokeAfterAPIWorldInit(server);
     }
     public static void onWorldShutdown() {
         if (isLoaded){
@@ -76,12 +82,14 @@ public class SeasonsAPI {
     }
 
     public static void start() {
+        events.invokeBeforeAPIInit();
         Config.regModConfig(new ConfigObject("API", "en_US"));
         Register.registerAllAndApply("ru.kochkaev.api.seasons.config");
 //        Config.initConfigObjects();
         Config.initConfigObjects();
         registerPlaceholders();
         loader.registerCommands();
+        events.invokeAfterAPIInit();
     }
 
     private static void registerPlaceholders() {
@@ -99,6 +107,7 @@ public class SeasonsAPI {
     public static boolean isStarted() { return isStarted; }
     public static boolean isLoaded() { return isLoaded; }
     public static Loader getLoader() { return loader; }
+    public static Events getEvents() { return events; }
     public static void setLoaded(boolean loaded) { isLoaded = loaded; }
     public static PlaceholderAPI getPlaceholderAPI() {
         return placeholderAPI;

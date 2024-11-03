@@ -67,6 +67,7 @@ public class ChallengesTicker {
 
     public static void tick() {
         if (isTicking){
+            SeasonsAPI.getEvents().invokeBeforeChallengesTick(countOfInARowCallsMap, players, allowedChallenges);
             for (ServerPlayerEntity player : players) {
                 for (ChallengeObject challenge : allowedChallenges) {
                     countOfInARowCallsMap.get(player).put(
@@ -82,6 +83,7 @@ public class ChallengesTicker {
 //        Main.getLogger().info("Challenges ticker is ticking");
 //            SeasonsAPI.getLogger().info("Tick!");
 //            if (shutdown) shutdownTask();
+            SeasonsAPI.getEvents().invokeAfterChallengesTick(countOfInARowCallsMap, players, allowedChallenges);
         }
     }
 
