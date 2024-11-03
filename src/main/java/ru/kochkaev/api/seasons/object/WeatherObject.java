@@ -53,7 +53,7 @@ public abstract class WeatherObject {
     /** List of seasons-api, that this weather will available.
      * Can be null (if you will set this weather manually) */
     @Nullable
-    protected List<SeasonObject> seasons;
+    protected ArrayList<SeasonObject> seasons;
     /** Set true, if this weather must be set when night coming.
      * Can be null (if you will set this weather manually) */
     @Nullable
@@ -80,7 +80,7 @@ public abstract class WeatherObject {
      * @param seasons {@link #seasons}
      * @param nightly {@link #nightly}
      */
-    public WeatherObject(String id, Supplier<String> name, @Nullable Boolean raining, @Nullable Boolean thundering, @Nullable Integer chance, @Nullable List<SeasonObject> seasons, @Nullable Boolean nightly) {
+    public WeatherObject(String id, Supplier<String> name, @Nullable Boolean raining, @Nullable Boolean thundering, @Nullable Integer chance, @Nullable ArrayList<SeasonObject> seasons, @Nullable Boolean nightly) {
         this.id = id;
         this.name = name;
         this.raining = raining;
@@ -149,7 +149,7 @@ public abstract class WeatherObject {
     /** This method returns seasons-api, that this weather will available.
      * @return {@link #seasons}
      */
-    public @Nullable List<SeasonObject> getSeasons() { return this.seasons; }
+    public @Nullable ArrayList<SeasonObject> getSeasons() { return this.seasons; }
     public void removeSeason(SeasonObject season) {
         if (this.seasons != null) {
             this.seasons.remove(season);

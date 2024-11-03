@@ -44,13 +44,13 @@ public abstract class SeasonObject {
     protected boolean enabled = true;
 
     /** List of the parent seasons for this season */
-    protected final List<String> parents = new ArrayList<>();
+    protected final ArrayList<String> parents = new ArrayList<>();
 
 //    /** List of sub seasons for this season */
 //    protected final List<String> subSeasons = new ArrayList<>();
 
     /** List of seasons after which this season has a chance to appear */
-    protected final List<String> previousSeasons = new ArrayList<>();
+    protected final ArrayList<String> previousSeasons = new ArrayList<>();
 
     /** Chance of appear this season */
     protected Supplier<Integer> chance;

@@ -15,6 +15,7 @@ import ru.kochkaev.api.seasons.provider.Task;
 import ru.kochkaev.api.seasons.provider.Weather;
 import ru.kochkaev.api.seasons.util.Message;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +39,7 @@ import java.util.function.Function;
 public abstract class ChallengeObject {
 
     /** weathers contains weathers, that available this challenge. */
-    protected List<WeatherObject> weathers;
+    protected ArrayList<WeatherObject> weathers;
     /** Set true if this challenge is available if {@link #weathers} contains previous weather (night is also the weather). */
     protected boolean allowIfPrevious;
 
@@ -62,7 +63,7 @@ public abstract class ChallengeObject {
      * @param weathers {@link #weathers}
      * @param allowIfPrevious {@link #allowIfPrevious}
      */
-    public ChallengeObject(String id, List<WeatherObject> weathers, boolean allowIfPrevious) {
+    public ChallengeObject(String id, ArrayList<WeatherObject> weathers, boolean allowIfPrevious) {
         this.id = id;
         this.weathers = weathers;
         this.allowIfPrevious = allowIfPrevious;
@@ -245,7 +246,13 @@ public abstract class ChallengeObject {
     /** This method returns weathers, that available this challenge.
      * @return {@link #weathers}
      */
-    public List<WeatherObject> getWeathers() { return this.weathers; }
+    public ArrayList<WeatherObject> getWeathers() { return this.weathers; }
+    public void addWeather(WeatherObject weather) {
+        this.weathers.add(weather);
+    }
+    public void removeWeather(WeatherObject weather) {
+        this.weathers.remove(weather);
+    }
 
     /** This method returns challenge id.
      * @return {@link #id}
