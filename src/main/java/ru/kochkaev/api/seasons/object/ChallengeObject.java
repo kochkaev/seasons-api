@@ -39,7 +39,7 @@ import java.util.function.Function;
 public abstract class ChallengeObject {
 
     /** weathers contains weathers, that available this challenge. */
-    protected ArrayList<WeatherObject> weathers;
+    protected ArrayList<WeatherObject> weathers = new ArrayList<>();
     /** Set true if this challenge is available if {@link #weathers} contains previous weather (night is also the weather). */
     protected boolean allowIfPrevious;
 
@@ -63,9 +63,9 @@ public abstract class ChallengeObject {
      * @param weathers {@link #weathers}
      * @param allowIfPrevious {@link #allowIfPrevious}
      */
-    public ChallengeObject(String id, ArrayList<WeatherObject> weathers, boolean allowIfPrevious) {
+    public ChallengeObject(String id, List<WeatherObject> weathers, boolean allowIfPrevious) {
         this.id = id;
-        this.weathers = weathers;
+        this.weathers.addAll(weathers);
         this.allowIfPrevious = allowIfPrevious;
     }
 
