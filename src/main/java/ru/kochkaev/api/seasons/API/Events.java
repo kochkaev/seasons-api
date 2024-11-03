@@ -13,6 +13,8 @@ public abstract class Events {
     public abstract void invokeAfterAPIInit();
     public abstract void invokeBeforeAPIWorldInit(MinecraftServer server);
     public abstract void invokeAfterAPIWorldInit(MinecraftServer server);
+    public abstract void invokeBeforeAPIWorldClose();
+    public abstract void invokeAfterAPIWorldClose();
     public abstract void invokeBeforeChallengesTick(
             Map<ServerPlayerEntity, Map<ChallengeObject, Integer>>countOfInARowCallsMap,
             List<ServerPlayerEntity> players,
@@ -28,6 +30,8 @@ public abstract class Events {
     public abstract void registerAfterAPIInit(APIInit listener);
     public abstract void registerBeforeAPIWorldInit(APIWorldInit listener);
     public abstract void registerAfterAPIWorldInit(APIWorldInit listener);
+    public abstract void registerBeforeAPIWorldClose(APIInit listener);
+    public abstract void registerAfterAPIWorldClose(APIInit listener);
     public abstract void registerBeforeChallengesTick(OnChallengesTick listener);
     public abstract void registerAfterChallengesTick(OnChallengesTick listener);
 

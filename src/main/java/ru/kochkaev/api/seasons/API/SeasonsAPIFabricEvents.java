@@ -43,6 +43,22 @@ public class SeasonsAPIFabricEvents extends Events {
                 }
             }
     );
+    public static Event<APIInit> BEFORE_API_WORLD_CLOSE = EventFactory.createArrayBacked(
+            APIInit.class,
+            (listeners) -> () -> {
+                for (APIInit listener : listeners) {
+                    listener.event();
+                }
+            }
+    );
+    public static Event<APIInit> AFTER_API_WORLD_CLOSE = EventFactory.createArrayBacked(
+            APIInit.class,
+            (listeners) -> () -> {
+                for (APIInit listener : listeners) {
+                    listener.event();
+                }
+            }
+    );
     public static Event<OnChallengesTick> BEFORE_CHALLENGES_TICK = EventFactory.createArrayBacked(
             OnChallengesTick.class,
             (listeners) -> (countOfInARowCallsMap, players, allowedChallenges) -> {
@@ -62,27 +78,35 @@ public class SeasonsAPIFabricEvents extends Events {
 
     @Override
     public void invokeBeforeAPIInit() {
-        BEFORE_API_INIT.invoker();
+        BEFORE_API_INIT.invoker().event();
     }
     @Override
     public void invokeAfterAPIInit() {
-        AFTER_API_INIT.invoker();
+        AFTER_API_INIT.invoker().event();
     }
     @Override
     public void invokeBeforeAPIWorldInit(MinecraftServer server) {
-        BEFORE_API_WORLD_INIT.invoker();
+        BEFORE_API_WORLD_INIT.invoker().event(server);
     }
     @Override
     public void invokeAfterAPIWorldInit(MinecraftServer server) {
-        AFTER_API_WORLD_INIT.invoker();
+        AFTER_API_WORLD_INIT.invoker().event(server);
+    }
+    @Override
+    public void invokeBeforeAPIWorldClose() {
+        BEFORE_API_WORLD_CLOSE.invoker().event();
+    }
+    @Override
+    public void invokeAfterAPIWorldClose() {
+        AFTER_API_WORLD_CLOSE.invoker().event();
     }
     @Override
     public void invokeBeforeChallengesTick(Map<ServerPlayerEntity, Map<ChallengeObject, Integer>> countOfInARowCallsMap, List<ServerPlayerEntity> players, List<ChallengeObject> allowedChallenges) {
-        BEFORE_CHALLENGES_TICK.invoker();
+        BEFORE_CHALLENGES_TICK.invoker().tick(countOfInARowCallsMap, players, allowedChallenges);
     }
     @Override
     public void invokeAfterChallengesTick(Map<ServerPlayerEntity, Map<ChallengeObject, Integer>> countOfInARowCallsMap, List<ServerPlayerEntity> players, List<ChallengeObject> allowedChallenges) {
-        AFTER_CHALLENGES_TICK.invoker();
+        AFTER_CHALLENGES_TICK.invoker().tick(countOfInARowCallsMap, players, allowedChallenges);
     }
 
     @Override
@@ -100,6 +124,14 @@ public class SeasonsAPIFabricEvents extends Events {
     @Override
     public void registerAfterAPIWorldInit(APIWorldInit listener) {
         AFTER_API_WORLD_INIT.register(listener);
+    }
+    @Override
+    public void registerBeforeAPIWorldClose(APIInit listener) {
+        BEFORE_API_WORLD_CLOSE.register(listener);
+    }
+    @Override
+    public void registerAfterAPIWorldClose(APIInit listener) {
+        AFTER_API_WORLD_CLOSE.register(listener);
     }
     @Override
     public void registerBeforeChallengesTick(OnChallengesTick listener) {
