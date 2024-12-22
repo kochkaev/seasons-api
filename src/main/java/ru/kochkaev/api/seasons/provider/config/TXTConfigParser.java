@@ -12,8 +12,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 public class TXTConfigParser {
 
     private static final Pattern fieldRegex = Pattern.compile("^\\s*(\\S+?)\\s*:\\s*(?<!\\\\)\"(.*?)(?<!\\\\)\"\\s*(?=#)");
+    private static final Pattern listRegex = Pattern.compile("\\[(\\s*(?<!\\\\)\"(.*?)(?<!\\\\)\"\\s*,)*?]");
     private static final Gson gson = new Gson();
 
     public static <T> T reload(Class<T> clazz, Path path) {
@@ -54,6 +55,13 @@ public class TXTConfigParser {
                         else if (field.getType() == Double.class) value = Double.parseDouble(stringValue);
                         else if (field.getType() == Long.class) value = Long.parseLong(stringValue);
                         else if (field.getType() == Float.class) value = Float.parseFloat(stringValue);
+                        else if (field.getType() == Short.class) value = Short.parseShort(stringValue);
+                        else if (field.getType() == Byte.class) value = Byte.parseByte(stringValue);
+                        else if (field.getType() == Character.class) value = stringValue.charAt(0);
+                        else if (field.getType() == Enum.class) value = Enum.valueOf((Class<Enum>) field.getType(), stringValue);
+                        else if (field.getType() == Date.class) value = new Date(Long.parseLong(stringValue));
+                        else if (field.getType() == List.class || field.getType() == Iterable.class || field.getType() == Object[].class)
+                            value = fromTXTToList(field.getType(), stringValue);
                         else if (stringValue.matches("\\s*\\{(.*?)}\\s")) value = gson.fromJson(stringValue, field.getType());
                         else value = stringValue;
                     }
@@ -146,16 +154,73 @@ public class TXTConfigParser {
             else if (field.getType() == Double.class) stringValue = value.toString();
             else if (field.getType() == Long.class) stringValue = value.toString();
             else if (field.getType() == Float.class) stringValue = value.toString();
+            else if (field.getType() == List.class)
+                stringValue = "["+(objectListToList(value).stream().map(TXTConfigParser::parseFieldValueToTXT).collect(Collectors.joining(",")))+"]";
             else stringValue = gson.toJson(value);
         }
         return stringValue;
+    }
+    private static String parseFieldValueToTXT(Object value) {
+        return switch (value) {
+            case String s -> s;
+            case Integer i -> i.toString();
+            case Boolean b -> b.toString();
+            case Double v -> v.toString();
+            case Long l -> l.toString();
+            case Float v -> v.toString();
+            case List<?> list ->
+                    "[" + (objectListToList(list).stream().map(TXTConfigParser::parseFieldValueToTXT).map(it -> "\""+it+"\"").collect(Collectors.joining(","))) + "]";
+            case Object[] array ->
+                    "[" + (objectListToList(array).stream().map(TXTConfigParser::parseFieldValueToTXT).collect(Collectors.joining(","))) + "]";
+            case Iterable<?> iterable ->
+                    "[" + (objectListToList(iterable).stream().map(TXTConfigParser::parseFieldValueToTXT).collect(Collectors.joining(","))) + "]";
+            case null, default -> gson.toJson(value);
+        };
     }
 
     private static String escapeComment(String string) {
         return escapeComment(string, "\n# ");
     }
     private static String escapeComment(String string, String replacement) {
-        return string.replace("\n", replacement);
+        return replacement + string.replace("\n", replacement);
+    }
+
+    private static <T> List<T> objectListToList(Object object) {
+        final var list = new ArrayList<T>();
+        if (object instanceof List) {
+            list.addAll((List<T>) object);
+        }
+        else if (object instanceof Object[]) {
+            list.addAll(Arrays.asList((T[]) object));
+        }
+        else if (object instanceof Iterable) {
+            ((Iterable<T>)object).forEach(list::add);
+        }
+        else list.add((T) object);
+        return list;
+    }
+    private static <T> List<T> fromTXTToList(Class<T> clazz, String string) {
+        return new ArrayList<T>(
+            listRegex.matcher(string).results().map(MatchResult::group).map(it -> {
+                Object object;
+                if (clazz == String.class) object = it;
+                else if (clazz == Integer.class) object = Integer.parseInt(it);
+                else if (clazz == Boolean.class) object = Boolean.parseBoolean(it);
+                else if (clazz == Double.class) object = Double.parseDouble(it);
+                else if (clazz == Long.class) object = Long.parseLong(it);
+                else if (clazz == Float.class) object = Float.parseFloat(it);
+                else if (clazz == Short.class) object = Short.parseShort(it);
+                else if (clazz == Byte.class) object = Byte.parseByte(it);
+                else if (clazz == Character.class) object = it.charAt(0);
+                else if (clazz == Enum.class) object = Enum.valueOf((Class<Enum>) clazz, it);
+                else if (clazz == Date.class) object = new Date(Long.parseLong(it));
+                else if (clazz == List.class || clazz == Iterable.class || clazz == Object[].class)
+                    object = fromTXTToList(clazz, it);
+                else if (it.matches("\\s*\\{(.*?)}\\s")) object = gson.fromJson(it, clazz);
+                else object = it;
+                return (T) object;
+            }).toList()
+        );
     }
 
 }
