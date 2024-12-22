@@ -154,6 +154,11 @@ public class TXTConfigParser {
             else if (field.getType() == Double.class) stringValue = value.toString();
             else if (field.getType() == Long.class) stringValue = value.toString();
             else if (field.getType() == Float.class) stringValue = value.toString();
+            else if (field.getType() == Short.class) stringValue = value.toString();
+            else if (field.getType() == Byte.class) stringValue = value.toString();
+            else if (field.getType() == Character.class) stringValue = value.toString();
+            else if (field.getType() == Enum.class) stringValue = ((Enum<?>)value).name();
+            else if (field.getType() == Date.class) stringValue = value.toString();
             else if (field.getType() == List.class)
                 stringValue = "["+(objectListToList(value).stream().map(TXTConfigParser::parseFieldValueToTXT).collect(Collectors.joining(",")))+"]";
             else stringValue = gson.toJson(value);
@@ -168,6 +173,11 @@ public class TXTConfigParser {
             case Double v -> v.toString();
             case Long l -> l.toString();
             case Float v -> v.toString();
+            case Short s -> s.toString();
+            case Byte b -> b.toString();
+            case Character character -> character.toString();
+            case Enum<?> e -> e.name();
+            case Date date -> date.toString();
             case List<?> list ->
                     "[" + (objectListToList(list).stream().map(TXTConfigParser::parseFieldValueToTXT).map(it -> "\""+it+"\"").collect(Collectors.joining(","))) + "]";
             case Object[] array ->
