@@ -77,7 +77,12 @@ public class SeasonsCommand {
                         .requires(source -> source.hasPermissionLevel(0))
                         .then(CommandManager.literal("on").executes(context -> setActionbar(true, context.getSource())))
                         .then(CommandManager.literal("off").executes(context -> setActionbar(false, context.getSource())))
-                        .executes(context -> setActionbar(!(Config.getCurrent("players_show_actionbar").contains(context.getSource().getName())), context.getSource()))
+                        .executes(context ->
+                                setActionbar(
+                                        Config.getModConfig("API").getConfig().getBoolean("conf.enable.title.actionbarDefaultForAll") == (Config.getCurrent("players_show_actionbar").contains(context.getSource().getName())),
+                                        context.getSource()
+                                )
+                        )
                 )
         );
     }
@@ -150,11 +155,12 @@ public class SeasonsCommand {
         final var player = source.getPlayer();
         if (player != null) {
             String[] current = Config.getCurrent("players_show_actionbar").split(";");
+            final var inverse = Config.getModConfig("API").getConfig().getBoolean("conf.enable.title.actionbarDefaultForAll");
             final var nickname = source.getPlayer().getNameForScoreboard();
             List<String> list = new ArrayList<>(Arrays.asList(current));
-            if (!enabled && list.contains(nickname))
+            if (list.contains(nickname) && inverse == enabled)
                 list.remove(nickname);
-            else if (enabled && !list.contains(nickname))
+            else if (!list.contains(nickname) && inverse != enabled)
                 list.add(nickname);
             Config.writeCurrent("players_show_actionbar", String.join(";", list));
             source.sendFeedback((() -> Message.getFeedbackText("Now seasons info in actionbar is " + (enabled? "enabled" : "disabled") + " for you!")), false);

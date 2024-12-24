@@ -31,6 +31,7 @@ public class DefaultTXTConfig extends ConfigFileObject {
                 // Enable/disable features
                 .addHeader("ENABLE/DISABLE FEATURES")
                 .addValue("conf.enable.title.actionbar", true, "Do enables/disables actionbar titles")
+                .addValue("conf.enable.title.actionbarDefaultForAll", true, "If true all players will see the information in the actionbar by default.")
                 .addValue("conf.enable.title.title", false, "Do enables/disables titles and subtitles on weather changed")
                 .addValue("conf.enable.chat.message", true, "Do enables/disables chat messages")
                 // Settings

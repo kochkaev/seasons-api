@@ -12,6 +12,7 @@ import ru.kochkaev.api.seasons.SeasonsAPI;
 import ru.kochkaev.api.seasons.provider.Config;
 
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class Title{
 
@@ -20,7 +21,11 @@ public class Title{
         Function<Text, Packet<?>> constructor = OverlayMessageS2CPacket::new;
         Text title = Text.of(Format.formatMessage(Config.getModConfig("API").getConfig().getString("conf.format.title.actionbar")));
         final var enabledFor = Config.getCurrent("players_show_actionbar");
-        final var availablePlayers = SeasonsAPI.getServer().getPlayerManager().getPlayerList().stream().filter(it -> enabledFor.contains(it.getNameForScoreboard())).toList();
+        final var inverse = Config.getModConfig("API").getConfig().getBoolean("conf.enable.title.actionbarDefaultForAll");
+//        final Predicate<? super ServerPlayerEntity> condition = (ServerPlayerEntity player) -> {
+//            return inverse != enabledFor.contains(player.getNameForScoreboard());
+//        };
+        final var availablePlayers = SeasonsAPI.getServer().getPlayerManager().getPlayerList().stream().filter(it -> inverse != enabledFor.contains(it.getNameForScoreboard())).toList();
         for (ServerPlayerEntity player : availablePlayers) {
             try {
                 player.networkHandler.sendPacket(constructor.apply(Texts.parse(null, title, player, 0)));
