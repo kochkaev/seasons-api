@@ -1,4 +1,4 @@
-package ru.kochkaev.api.seasons.provider.config;
+package ru.kochkaev.api.seasons.feature.config;
 
 public enum ConfigTypes {
     CONFIG,

@@ -14,6 +14,11 @@ import ru.kochkaev.api.seasons.provider.Season;
 import ru.kochkaev.api.seasons.provider.Weather;
 import ru.kochkaev.api.seasons.util.Message;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class SeasonsCommand {
 
     public SeasonsCommand() {
@@ -21,8 +26,8 @@ public class SeasonsCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("seasons")
-                .requires(source -> source.hasPermissionLevel(2))
                 .then(CommandManager.literal("set")
+                        .requires(source -> source.hasPermissionLevel(2))
                         .then(CommandManager.literal("season")
                                 .then(CommandManager.argument("season", StringArgumentType.string()).suggests(new SeasonSuggestionProvider())
                                         .executes(context -> setSeason(StringArgumentType.getString(context, "season"), context.getSource()))
@@ -52,17 +57,27 @@ public class SeasonsCommand {
                         )
                 )
                 .then(CommandManager.literal("get")
+                        .requires(source -> source.hasPermissionLevel(2))
                         .then(CommandManager.literal("season").executes(context -> getSeason(context.getSource())))
                         .then(CommandManager.literal("weather").executes(context -> getWeather(context.getSource())))
                         .then(CommandManager.literal("lang").executes(context -> getLang(context.getSource())))
                         .then(CommandManager.literal("challenges").executes(context -> getChallenges(context.getSource())))
                         .then(CommandManager.literal("enabled").executes(context -> getEnabled(context.getSource())))
                 )
-                .then(CommandManager.literal("reload").executes(context -> reload(context.getSource())))
+                .then(CommandManager.literal("reload")
+                        .requires(source -> source.hasPermissionLevel(2))
+                        .executes(context -> reload(context.getSource())))
                 .then(CommandManager.literal("turn")
+                        .requires(source -> source.hasPermissionLevel(2))
                         .then(CommandManager.literal("on").executes(context -> setEnabled(true, context.getSource())))
                         .then(CommandManager.literal("off").executes(context -> setEnabled(false, context.getSource())))
                         .executes(context -> setEnabled(!((Boolean)Config.getCurrentTypedValue("enable")), context.getSource()))
+                )
+                .then(CommandManager.literal("actionbar")
+                        .requires(source -> source.hasPermissionLevel(0))
+                        .then(CommandManager.literal("on").executes(context -> setActionbar(true, context.getSource())))
+                        .then(CommandManager.literal("off").executes(context -> setActionbar(false, context.getSource())))
+                        .executes(context -> setActionbar(!(Config.getCurrent("players_show_actionbar").contains(context.getSource().getName())), context.getSource()))
                 )
         );
     }
@@ -129,6 +144,25 @@ public class SeasonsCommand {
         SeasonsAPI.setLoaded(true);
         source.sendFeedback(() -> Message.getFeedbackText("Seasons configs successfully reloaded!"), true);
         return 0;
+    }
+
+    public static int setActionbar(boolean enabled, ServerCommandSource source) {
+        final var player = source.getPlayer();
+        if (player != null) {
+            String[] current = Config.getCurrent("players_show_actionbar").split(";");
+            final var nickname = source.getPlayer().getNameForScoreboard();
+            List<String> list = new ArrayList<>(Arrays.asList(current));
+            if (!enabled && list.contains(nickname))
+                list.remove(nickname);
+            else if (enabled && !list.contains(nickname))
+                list.add(nickname);
+            Config.writeCurrent("players_show_actionbar", String.join(";", list));
+            source.sendFeedback((() -> Message.getFeedbackText("Now seasons info in actionbar is " + (enabled? "enabled" : "disabled") + " for you!")), false);
+            return 0;
+        } else {
+            source.sendFeedback((() -> Message.getFeedbackText("You must be player for do it!")), false);
+            return 1;
+        }
     }
 
 //    private <S, T extends ArgumentBuilder<S, T>> ArgumentBuilder<S, T> getSeasonSetBranch(){

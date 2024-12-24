@@ -1,4 +1,4 @@
-package ru.kochkaev.api.seasons.provider.config.annotation;
+package ru.kochkaev.api.seasons.feature.config.annotation;
 
 import java.lang.annotation.*;
 

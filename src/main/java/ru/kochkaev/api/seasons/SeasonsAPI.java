@@ -50,6 +50,7 @@ public class SeasonsAPI {
         Config.addCurrentValue("days_after_season_set", 0, "The count of days since the last installation of the first-order season.");
         Config.addCurrentValue("next_day_to_season_cycle", 0, "The day in order from the last setting of the first-order season, when the lower-order season will be replaced.");
         Config.addCurrentValue("seasons_cycle", "1:30:3", "Seasons cycle mode. This will be automatically updated after changing the relevant settings in API config.\n<maxOrderToCycle>:<daysPerSeason>:<subSeasonsPerSeason>\nPlease, DON'T TOUCH IT!");
+        Config.addCurrentValue("players_show_actionbar", "", "Players who should be shown the action bar. It can be changed by \"/seasons actionbar {on/off}\". Delimiter: \";\"");
         Config.saveCurrent();
 //        if ((Boolean)Config.getCurrentTypedValue("enable")){
             Register.register();

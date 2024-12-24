@@ -1,6 +1,6 @@
-package ru.kochkaev.api.seasons.provider.config.annotation;
+package ru.kochkaev.api.seasons.feature.config.annotation;
 
-import ru.kochkaev.api.seasons.provider.config.ConfigTypes;
+import ru.kochkaev.api.seasons.feature.config.ConfigTypes;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

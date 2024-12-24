@@ -1,8 +1,8 @@
-package ru.kochkaev.api.seasons.provider.config;
+package ru.kochkaev.api.seasons.feature.config;
 
 import com.google.gson.Gson;
 import org.jetbrains.annotations.Nullable;
-import ru.kochkaev.api.seasons.provider.config.annotation.*;
+import ru.kochkaev.api.seasons.feature.config.annotation.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +18,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/// It's not stable config manager and it works not correctly (if it forks). Use classic config instead.
+@Deprecated()
 public class TXTConfigParser {
 
     private static final Pattern fieldRegex = Pattern.compile("^\\s*(\\S+?)\\s*:\\s*(?<!\\\\)\"(.*?)(?<!\\\\)\"\\s*(?=#)");
@@ -38,10 +40,11 @@ public class TXTConfigParser {
             final var constructor = clazz.getDeclaredConstructor();
             constructor.setAccessible(true);
             object = constructor.newInstance();
+            Stack<String> keyPath = new Stack<>();
             for (var field : fields) {
                 field.setAccessible(true);
                 if (field.isAnnotationPresent(TXTConfigIgnore.class) || field.isAnnotationPresent(TXTConfigSecondFile.class)) continue;
-                final var key = (field.isAnnotationPresent(TXTConfigCustomKey.class)) ? field.getAnnotation(TXTConfigCustomKey.class).value() : field.getName();
+                final var key = (field.isAnnotationPresent(TXTConfigCustomKey.class)) ? field.getAnnotation(TXTConfigCustomKey.class).value() : keyPath.stream().collect(Collectors.joining("."))+field.getName();
                 Object value;
                 final var stringValue = content.get(key);
                 if (content.containsKey(key)) {

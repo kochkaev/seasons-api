@@ -1,10 +1,7 @@
-package ru.kochkaev.api.seasons.config;
+package ru.kochkaev.api.seasons.feature.config;
 
-import ru.kochkaev.api.seasons.object.ConfigContentObject;
-import ru.kochkaev.api.seasons.object.ConfigFileObject;
+import ru.kochkaev.api.seasons.feature.config.annotation.*;
 import ru.kochkaev.api.seasons.provider.Config;
-import ru.kochkaev.api.seasons.provider.Season;
-import ru.kochkaev.api.seasons.provider.config.annotation.*;
 
 public class NewTXTConfig {
 

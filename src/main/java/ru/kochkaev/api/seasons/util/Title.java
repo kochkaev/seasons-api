@@ -19,7 +19,9 @@ public class Title{
     public static void showActionBar() {
         Function<Text, Packet<?>> constructor = OverlayMessageS2CPacket::new;
         Text title = Text.of(Format.formatMessage(Config.getModConfig("API").getConfig().getString("conf.format.title.actionbar")));
-        for (ServerPlayerEntity player : SeasonsAPI.getServer().getPlayerManager().getPlayerList()) {
+        final var enabledFor = Config.getCurrent("players_show_actionbar");
+        final var availablePlayers = SeasonsAPI.getServer().getPlayerManager().getPlayerList().stream().filter(it -> enabledFor.contains(it.getNameForScoreboard())).toList();
+        for (ServerPlayerEntity player : availablePlayers) {
             try {
                 player.networkHandler.sendPacket(constructor.apply(Texts.parse(null, title, player, 0)));
             } catch (CommandSyntaxException e) {
