@@ -63,6 +63,7 @@ public class ChallengesTicker {
 
 
     public static void addPlayer(ServerPlayerEntity player) {
+        if (player.isDead()) return;
         if (playersRemoveList.contains(player)) playersRemoveList.remove(player);
         else if (!players.contains(player)) playersAddList.add(player);
     }
