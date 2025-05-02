@@ -15,10 +15,7 @@ import ru.kochkaev.api.seasons.provider.Task;
 import ru.kochkaev.api.seasons.provider.Weather;
 import ru.kochkaev.api.seasons.util.Message;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -112,7 +109,7 @@ public abstract class ChallengeObject {
      */
     protected void damage(PlayerEntity player, float amount, RegistryKey<DamageType> key) {
         DamageSource type = WeatherDamageType.of(player.getWorld(), key);
-        player.damage(type, amount);
+        player.damage(Objects.requireNonNull(player.getServer()).getWorld(player.getWorld().getRegistryKey()), type, amount);
     }
     /** See {@link  #damage(PlayerEntity, float, RegistryKey)} */
     protected void damage(PlayerEntity player, RegistryKey<DamageType> key) { damage(player, 1.0f, key); }
