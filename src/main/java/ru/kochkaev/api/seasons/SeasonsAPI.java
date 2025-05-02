@@ -19,7 +19,7 @@ import ru.kochkaev.api.seasons.util.Format;
 
 public class SeasonsAPI {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger("Seasons");
+    private static final SimpleLogger LOGGER = new SimpleLogger(LoggerFactory.getLogger("Seasons"));
     private static boolean isStarted = false;
     private static boolean isLoaded = false;
     private static PlaceholderAPI placeholderAPI = null;
@@ -104,7 +104,7 @@ public class SeasonsAPI {
         Format.regDoubleParseDynamicPlaceholder("actionbar", () -> Text.of(Config.getModConfig("API").getConfig().getString("conf.format.title.actionbar")));
     }
 
-    public static Logger getLogger() { return LOGGER; }
+    public static SimpleLogger getLogger() { return LOGGER; }
     public static boolean isStarted() { return isStarted; }
     public static boolean isLoaded() { return isLoaded; }
     public static Loader getLoader() { return loader; }

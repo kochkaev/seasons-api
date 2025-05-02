@@ -158,7 +158,7 @@ public final class Weather {
         SeasonsAPI.getOverworld().setWeather(-1, -1, weather.getRaining(), weather.getThundering());
         Challenge.updateChallengesInCurrentWeather();
         ChallengesTicker.changeWeather();
-        SeasonsAPI.getLogger().info("Weather was set to \"{}\"", weather.getId());
+        SeasonsAPI.getLogger().debug("Weather was set to \"" + weather.getId() + "\"");
         if (Config.getModConfig("API").getConfig().getBoolean("conf.enable.title.title") && Boolean.FALSE.equals(weather.isNightly()))
             Title.showTitle();
     }

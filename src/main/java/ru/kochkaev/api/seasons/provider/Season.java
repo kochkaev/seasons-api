@@ -226,7 +226,7 @@ public final class Season {
         CURRENT_SEASON.onSeasonRemove();
         setCurrent(season);
         season.get().onSeasonSet();
-        SeasonsAPI.getLogger().info("Season was set to \"{}\"", season.get().getId());
+        SeasonsAPI.getLogger().debug("Season was set to \"" + season.get().getId() + "\"");
     }
     public static void setSeasonIgnoringPrevious(TreeBranch<SeasonObject> season) {
         Config.writeCurrent("days_after_season_set", String.valueOf(Config.getModConfig("API").getConfig().getInt("conf.seasonsCycle.daysPerSeason")-1));

@@ -121,7 +121,7 @@ public class ChallengesTicker {
         allowedChallenges.clear();
         allowedChallenges.addAll(challenges);
         changeWeather = false;
-        SeasonsAPI.getLogger().info("In current weather available challenges: {}", allowedChallenges.stream().map(ChallengeObject::getID).toList());
+        SeasonsAPI.getLogger().debug("In current weather available challenges: " + allowedChallenges.stream().map(ChallengeObject::getID).toList());
     }
 
     public static List<ChallengeObject> getAllowedChallenges() {

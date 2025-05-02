@@ -51,7 +51,10 @@ public class DefaultTXTConfig extends ConfigFileObject {
                 .addValue("conf.seasonsCycle.subSeasonsPerSeason", 3, "", "Count of sub seasons possible to set during the season.", (oldValue, newValue) -> Season.reloadCycleTimer())
                 // Language
                 .addHeader("LANGUAGE")
-                .addDynamicSelectionDropdown("conf.lang", Config::getListOfLangs, "en_US", "", "Current language of seasons mod", (oldValue, newValue) -> Config.updateLang(newValue));
+                .addDynamicSelectionDropdown("conf.lang", Config::getListOfLangs, "en_US", "", "Current language of seasons mod", (oldValue, newValue) -> Config.updateLang(newValue))
+                // Developer
+                .addHeader("DEVELOPER")
+                .addValue("conf.dev.logging", false, "Do enables/disables advanced logging");
 
     }
 }

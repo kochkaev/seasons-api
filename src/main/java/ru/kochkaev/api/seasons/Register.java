@@ -28,15 +28,15 @@ public class Register {
                 Config.getModConfig(configObject.getModName()).registerConfigObject(configObject);
             }
             if (SeasonsAPI.isStarted()){
-                SeasonsAPI.getLogger().info("Registered {} config files", configs4Reg.size());
+                SeasonsAPI.getLogger().info("Registered " + configs4Reg.size() + " config files");
                 for (Class<SeasonObject> season : seasons4Reg) Season.register(season.getConstructor().newInstance());
-                SeasonsAPI.getLogger().info("Registered {} seasons", seasons4Reg.size());
+                SeasonsAPI.getLogger().info("Registered " + seasons4Reg.size() + " seasons");
                 for (Class<WeatherObject> weather : weathers4Reg)
                     Weather.register(weather.getConstructor().newInstance());
-                SeasonsAPI.getLogger().info("Registered {} weathers", weathers4Reg.size());
+                SeasonsAPI.getLogger().info("Registered " + weathers4Reg.size() + " weathers");
                 for (Class<ChallengeObject> challenge : challenges4Reg)
                     Challenge.register(challenge.getConstructor().newInstance());
-                SeasonsAPI.getLogger().info("Registered {} challenges", challenges4Reg.size());
+                SeasonsAPI.getLogger().info("Registered " + challenges4Reg.size() + " challenges");
             }
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {

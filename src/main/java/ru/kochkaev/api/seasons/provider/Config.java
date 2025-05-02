@@ -52,7 +52,7 @@ public final class Config {
         }
         Season.reloadDynamics();
         Weather.reloadDynamics();
-        SeasonsAPI.getLogger().info("Lang changed to: {}", lang);
+        SeasonsAPI.getLogger().info("Lang changed to: " + lang);
     }
 
     public static List<String> getListOfLangs() { return listOfLangs; }
