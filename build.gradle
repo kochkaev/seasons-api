@@ -73,6 +73,15 @@ dependencies {
     modApi("me.shedaniel.cloth:cloth-config-fabric:${project.clothconfig_version}") {
         exclude(group: 'net.fabricmc.fabric-api')
     }
+
+    include(implementation("net.kyori:adventure-api:${project.property("adventure_version")}"))
+    include(implementation("net.kyori:adventure-text-minimessage:${project.property("adventure_version")}"))
+    include(implementation("net.kyori:adventure-text-serializer-gson:${project.property("adventure_version")}") {
+        exclude(module: "gson")
+    })
+    include(implementation("net.kyori:adventure-text-serializer-json:${project.property("adventure_version")}") {
+        exclude(module: "gson")
+    })
 }
 
 processResources {

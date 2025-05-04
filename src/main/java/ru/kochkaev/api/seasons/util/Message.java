@@ -70,7 +70,9 @@ public abstract class Message {
         return Format.formatMessage(Config.getModConfig("API").getConfig().getString("conf.format.chat.feedback").replace("%message%", message));
     }
     public static Text getFeedbackText(String message){
-        return Format.formatTextMessage(Text.of(Config.getModConfig("API").getConfig().getString("conf.format.chat.feedback").replace("%message%", message)));
+        var placeholders = new HashMap<String, Text>();
+        placeholders.put("message", Text.of(message));
+        return Format.formatTextMessage(Config.getModConfig("API").getConfig().getText("conf.format.chat.feedback"), placeholders);
     }
 
     public static String getFormattedMessage(String message, Map<String, String> placeholders) {

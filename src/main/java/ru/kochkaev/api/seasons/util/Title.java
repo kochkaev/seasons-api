@@ -19,7 +19,7 @@ public class Title{
 
     public static void showActionBar() {
         Function<Text, Packet<?>> constructor = OverlayMessageS2CPacket::new;
-        Text title = Text.of(Format.formatMessage(Config.getModConfig("API").getConfig().getString("conf.format.title.actionbar")));
+        Text title = Format.formatTextMessage(Config.getModConfig("API").getConfig().getText("conf.format.title.actionbar"));
         final var enabledFor = Config.getCurrent("players_show_actionbar");
         final var inverse = Config.getModConfig("API").getConfig().getBoolean("conf.enable.title.actionbarDefaultForAll");
 //        final Predicate<? super ServerPlayerEntity> condition = (ServerPlayerEntity player) -> {
@@ -38,8 +38,8 @@ public class Title{
     public static void showTitle() {
         Function<Text, Packet<?>> titleConstructor = TitleS2CPacket::new;
         Function<Text, Packet<?>> subtitleConstructor = SubtitleS2CPacket::new;
-        Text title = Format.formatToTextMessage(Config.getModConfig("API").getConfig().getString("conf.format.title.title"));
-        Text subtitle = Format.formatToTextMessage(Config.getModConfig("API").getConfig().getString("conf.format.title.subtitle"));
+        Text title = Format.formatTextMessage(Config.getModConfig("API").getConfig().getText("conf.format.title.title"));
+        Text subtitle = Format.formatTextMessage(Config.getModConfig("API").getConfig().getText("conf.format.title.subtitle"));
         for (ServerPlayerEntity player : SeasonsAPI.getServer().getPlayerManager().getPlayerList()) {
             try {
                 player.networkHandler.sendPacket(titleConstructor.apply(Texts.parse(null, title, player, 0)));

@@ -1,5 +1,6 @@
 package ru.kochkaev.api.seasons.config.lang;
 
+import ru.kochkaev.api.seasons.config.DefaultTXTConfig;
 import ru.kochkaev.api.seasons.object.ConfigContentObject;
 import ru.kochkaev.api.seasons.object.ConfigFileObject;
 import ru.kochkaev.api.seasons.provider.Config;
@@ -14,13 +15,18 @@ public class DefaultTXTLangEN extends ConfigFileObject {
             "\n  - %seasons:title-new-day% - insert new day title message (from langs)\n  - %seasons:title-info% - insert new day info title message (from langs)" +
             "\n  - %seasons:actionbar% - insert actionbar title message format\n  - And others if you have installed PlaceholderAPI";
     public DefaultTXTLangEN() {
-        super("API", "en_US", "lang", copyright);
+        super("API", "en_US", "lang", copyright, 2);
     }
 
     public void generate(ConfigContentObject content) {
         content
-                .addValue("lang.message.seasonsModDisplayName", "&e&lSeasons", "Seasons mod name (used in chat messages as %seasons:display-name% placeholder)")
-                .addValue("lang.message.messageNewDay", "&e&bThat's a new day!", "New day title message (used in titles as %seasons:title-new-day% placeholder)")
-                .addValue("lang.message.currentInfo", "%seasons:season%. &7Today's %seasons:weather%", "Current weather and season title message (used in titles as %seasons:title-info% placeholder)");
+                .addTextValue("lang.message.seasonsModDisplayName", "<yellow><bold>Seasons", "Seasons mod name (used in chat messages as %seasons:display-name% placeholder)")
+                .addValue("lang.message.messageNewDay", "<yellow><bold>That's a new day!", "New day title message (used in titles as %seasons:title-new-day% placeholder)")
+                .addValue("lang.message.currentInfo", "%seasons:season%. <gray>Today's %seasons:weather%", "Current weather and season title message (used in titles as %seasons:title-info% placeholder)");
+    }
+
+    @Override
+    public Boolean update(ConfigContentObject content, Integer targetVersion, Integer currentVersion) {
+        return DefaultTXTConfig.configUpdate(content, targetVersion, currentVersion);
     }
 }

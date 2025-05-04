@@ -1,5 +1,7 @@
 package ru.kochkaev.api.seasons.object;
 
+import net.minecraft.text.Text;
+
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -26,6 +28,7 @@ public class ConfigContentObject extends HashMap<String, ConfigValueObject<?>> {
 
     public void reload() {
         generate.accept(this);
+
     }
 
     public Queue<String> getQueue() {
@@ -74,6 +77,23 @@ public class ConfigContentObject extends HashMap<String, ConfigValueObject<?>> {
     public <T> ConfigContentObject addValue(String key, T value, String header, String description, BiConsumer<T, T> consumer) {
         header = getCorrectHeader(header);
         put(key, new ConfigValueObject<>(value, value, header, description, consumer));
+        queue.add(key);
+        return this;
+    }
+
+    // * Text values
+    public ConfigContentObject addTextValue(String key, String value) {
+        return addTextValue(key, value, "", "", null);
+    }
+    public ConfigContentObject addTextValue(String key, String value, String description) {
+        return addTextValue(key, value, "", description, null);
+    }
+    public ConfigContentObject addTextValue(String key, String value, String header, String description) {
+        return addTextValue(key, value, header, description, null);
+    }
+    public ConfigContentObject addTextValue(String key, String value, String header, String description, BiConsumer<String, String> consumer) {
+        header = getCorrectHeader(header);
+        put(key, new ConfigTextValueObject(value, value, header, description, consumer));
         queue.add(key);
         return this;
     }

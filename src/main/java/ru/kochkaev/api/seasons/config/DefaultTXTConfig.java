@@ -2,6 +2,7 @@ package ru.kochkaev.api.seasons.config;
 
 import ru.kochkaev.api.seasons.object.ConfigContentObject;
 import ru.kochkaev.api.seasons.object.ConfigFileObject;
+import ru.kochkaev.api.seasons.object.ConfigTextValueObject;
 import ru.kochkaev.api.seasons.provider.Config;
 import ru.kochkaev.api.seasons.provider.Season;
 
@@ -14,19 +15,19 @@ public class DefaultTXTConfig extends ConfigFileObject {
             "\n  - %seasons:title-new-day% - insert new day title message (from langs)\n  - %seasons:title-info% - insert new day info title message (from langs)" +
             "\n  - %seasons:actionbar% - insert actionbar title message format\n  - And others if you have installed PlaceholderAPI";
     public DefaultTXTConfig() {
-        super("API", "config", "config", copyright);
+        super("API", "config", "config", copyright, 2);
     }
 
     public void generate(ConfigContentObject content) {
         content
                 // Messages format
                 .addHeader("MESSAGES FORMAT")
-                .addValue("conf.format.chat.message", "%seasons:display-name% &7• %message%", "Chat message format" +
+                .addTextValue("conf.format.chat.message", "%seasons:display-name% <gray>•<reset> %message%", "Chat message format" +
                         "\nYou can use %message% for insert message")
-                .addValue("conf.format.title.actionbar", "%seasons:season% &r&7• %seasons:weather%", "Actionbar title format")
-                .addValue("conf.format.title.title", "%seasons:title-new-day%", "Title (on weather changed) format")
-                .addValue("conf.format.title.subtitle", "%seasons:title-info%", "Subtitle (on weather changed) format")
-                .addValue("conf.format.chat.feedback", "&7&oSeasons feedback: %message%", "Command feedback format" +
+                .addTextValue("conf.format.title.actionbar", "%seasons:season% <gray>•<reset> %seasons:weather%", "Actionbar title format")
+                .addTextValue("conf.format.title.title", "%seasons:title-new-day%", "Title (on weather changed) format")
+                .addTextValue("conf.format.title.subtitle", "%seasons:title-info%", "Subtitle (on weather changed) format")
+                .addTextValue("conf.format.chat.feedback", "<gray><italic>Seasons feedback: %message%", "Command feedback format" +
                         "\nYou can use %message% for insert feedback message")
                 // Enable/disable features
                 .addHeader("ENABLE/DISABLE FEATURES")
@@ -56,5 +57,44 @@ public class DefaultTXTConfig extends ConfigFileObject {
                 .addHeader("DEVELOPER")
                 .addValue("conf.dev.logging", false, "Do enables/disables advanced logging");
 
+    }
+    @Override
+    public Boolean update(ConfigContentObject content, Integer targetVersion, Integer currentVersion) {
+        return configUpdate(content, targetVersion, currentVersion);
+    }
+
+    public static Boolean configUpdate(ConfigContentObject content, Integer targetVersion, Integer currentVersion) {
+        if (currentVersion == 1) {
+            content.forEach((key, value) -> {
+                if (value instanceof ConfigTextValueObject val) {
+                    val.setValue(val.getValue()
+                            .replace("&4", "<dark_red>")
+                            .replace("&c", "<red>")
+                            .replace("&6", "<gold>")
+                            .replace("&e", "<yellow>")
+                            .replace("&2", "<dark_green>")
+                            .replace("&a", "<green>")
+                            .replace("&b", "<aqua>")
+                            .replace("&3", "<dark_aqua>")
+                            .replace("&1", "<dark_blue>")
+                            .replace("&9", "<blue>")
+                            .replace("&d", "<light_purple>")
+                            .replace("&f", "<white>")
+                            .replace("&7", "<gray>")
+                            .replace("&8", "<dark_gray>")
+                            .replace("&0", "<black>")
+                            .replace("&r", "<reset>")
+                            .replace("&l", "<bold>")
+                            .replace("&o", "<italic>")
+                            .replace("&n", "<underlined>")
+                            .replace("&m", "<strikethrough>")
+                            .replace("&k", "<obfuscated>")
+                    );
+                }
+            });
+            content.get("version").setValue(targetVersion);
+            return true;
+        }
+        return false;
     }
 }

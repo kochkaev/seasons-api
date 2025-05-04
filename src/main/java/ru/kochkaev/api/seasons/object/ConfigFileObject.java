@@ -1,5 +1,6 @@
 package ru.kochkaev.api.seasons.object;
 
+import net.minecraft.text.Text;
 import ru.kochkaev.api.seasons.SeasonsAPI;
 
 import java.io.File;
@@ -11,6 +12,7 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,24 +24,42 @@ public abstract class ConfigFileObject {
     private final String modName;
     private final String filename;
     private final Path path;
+    Integer version;
 
     protected ConfigFileObject(String modName, String filename, String type) {
+        this(modName, filename, type, 1);
+    }
+    protected ConfigFileObject(String modName, String filename, String type, Integer version) {
         this.modName = modName;
         this.filename = filename;
         this.type = type;
         this.path = SeasonsAPI.getLoader().getConfigPath().resolve("Seasons/" + modName + (type.equals("lang") ? "/lang/" : "/") + filename + ".txt");
-        this.content = new ConfigContentObject(this::generate);
+        this.content = new ConfigContentObject(this::generateFull);
+        this.version = version;
     }
     protected ConfigFileObject(String modName, String filename, String type, String copyright) {
+        this(modName, filename, type, copyright, 1);
+    }
+    protected ConfigFileObject(String modName, String filename, String type, String copyright, Integer version) {
         this.modName = modName;
         this.filename = filename;
         this.type = type;
         this.path = SeasonsAPI.getLoader().getConfigPath().resolve("Seasons/" + modName + (type.equals("lang") ? "/lang/" : "/") + filename + ".txt");
-        this.content = new ConfigContentObject(this::generate, copyright);
+        this.content = new ConfigContentObject(this::generateFull, copyright);
+        this.version = version;
     }
 
     /** Generate config file content and set of generated keys. */
     public abstract void generate(ConfigContentObject content);
+    /** Generate config file content with additional information if it does not present (for example: config version). */
+    public void generateFull(ConfigContentObject content) {
+        generate(content);
+        if (!content.containsKey("version"))
+            content.addHeader("Technical Info").addValue("version", version, "Config version");
+    }
+
+    /** Calls after config file loaded */
+    public Boolean update(ConfigContentObject content, Integer targetVersion, Integer currentVersion) { return  false; }
 
     public void reload() {
         try {
@@ -49,6 +69,10 @@ public abstract class ConfigFileObject {
         }
     }
 
+    public Text getText(String key) {
+        var entry = content.get(key);
+        return (entry instanceof ConfigTextValueObject val) ? val.getMinecraft() : null;
+    }
     public String getString(String key) {
         Object value = getValue(key);
         return (value instanceof String) ? (String) value : null;
@@ -98,7 +122,7 @@ public abstract class ConfigFileObject {
                 txt.createNewFile();
             }
             content.reload();
-            boolean isLegacy = autoParser(Files.readAllLines(path, StandardCharsets.UTF_8).stream());
+            boolean isLegacy = autoParser(Files.readAllLines(path, StandardCharsets.UTF_8).stream()) || update(content, version, getInt("version"));
             if (isLegacy) write();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -151,16 +175,19 @@ public abstract class ConfigFileObject {
     public boolean autoParser(Stream<String> stream){
 //        stream = Arrays.stream(stream.collect(Collectors.joining()).split("\n"));
 //        String[] lines = stream.collect(Collectors.joining()).split("\n");
+        AtomicBoolean hasVersion = new AtomicBoolean(false);
         Set<String> keySet = stream
                 .filter(line -> !line.startsWith("#"))
                 .filter(line -> !line.isEmpty())
                 .map(line -> line.contains("#") ? line.substring(0, line.indexOf("#")) : line)
                 .map((String line) -> {
                     String key = line.substring(0, line.indexOf(":"));
+                    if (key.equals("version")) hasVersion.set(true);
                     parseAndAddValue(key, line.substring(line.indexOf("\"")+1, line.lastIndexOf("\"")));
                     return key;
                 })
                 .collect(Collectors.toSet());
+        if (!hasVersion.get()) content.get("version").setValue(1);
         return content.keySet().stream().anyMatch(key -> !keySet.contains(key));
     }
     public static Map<String, String> txtParser(Stream<String> stream){
