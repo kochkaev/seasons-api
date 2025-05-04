@@ -82,6 +82,10 @@ dependencies {
     include(implementation("net.kyori:adventure-text-serializer-json:${project.property("adventure_version")}") {
         exclude(module: "gson")
     })
+    include(implementation("net.kyori:examination-api:1.3.0"))
+    include(implementation("net.kyori:examination-string:1.3.0"))
+    include(implementation("net.kyori:option:1.0.0"))
+    include(implementation("net.kyori:adventure-key:${project.property("adventure_version")}"))
 }
 
 processResources {

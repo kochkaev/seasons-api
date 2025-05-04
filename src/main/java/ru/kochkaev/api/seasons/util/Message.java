@@ -76,21 +76,27 @@ public abstract class Message {
     }
 
     public static String getFormattedMessage(String message, Map<String, String> placeholders) {
-        Map<String, String> placeholders1 = new HashMap<>();
-        placeholders1.put("%message%", Format.formatMessage(message, placeholders));
-        placeholders1.put("%seasons:display-name%", Config.getModConfig("API").getLang().getString("lang.message.seasonsModDisplayName"));
-        return Format.formatMessage(Config.getModConfig("API").getConfig().getString("conf.format.chat.message"), placeholders1);
+        Map<String, Text> placeholders1 = new HashMap<>();
+        Map<String, Text> placeholders0 = new HashMap<>();
+        placeholders.forEach((key, value) -> {
+            placeholders0.put(key, Text.of(value));
+        });
+        placeholders1.put("%message%", Format.formatTextMessage(Text.of(message), placeholders0));
+        placeholders1.put("%seasons:display-name%", Config.getModConfig("API").getLang().getText("lang.message.seasonsModDisplayName"));
+        return Format.formatTextMessage(Config.getModConfig("API").getConfig().getText("conf.format.chat.message"), placeholders1).getString();
     }
 
     public static Text getFormattedMessage(Text message, Map<String, Text> placeholders) {
         Map<String, Text> placeholders1 = new HashMap<>();
         placeholders1.put("message", Format.formatTextMessage(message, placeholders));
-        placeholders1.put("seasons:display-name", Text.of(Config.getModConfig("API").getLang().getString("lang.message.seasonsModDisplayName").replace("&", "§")));
-        return Format.formatTextMessage(Text.of(Config.getModConfig("API").getConfig().getString("conf.format.chat.message").replace("&", "§")), placeholders1);
+        placeholders1.put("seasons:display-name", Config.getModConfig("API").getLang().getText("lang.message.seasonsModDisplayName"));
+        return Format.formatTextMessage(Config.getModConfig("API").getConfig().getText("conf.format.chat.message"), placeholders1);
     }
 
     public static Text getFormattedText(String message) {
-        return Format.formatTextMessage(Text.of(Config.getModConfig("API").getConfig().getString("conf.format.chat.message").replace("%message%", message)));
+        var placeholders = new HashMap<String, Text>();
+        placeholders.put("message", Text.of(message));
+        return Format.formatTextMessage(Config.getModConfig("API").getConfig().getText("conf.format.chat.message"), placeholders);
     }
 
 }
