@@ -54,8 +54,8 @@ public class ConfigTextValueObject extends ConfigValueObject<String> {
             res = res.replace("{"+it.left()+"}", mm.escapeTags(it.right()));
         }
         List<TagResolver> allPlaceholders = new ArrayList<>();
-        allPlaceholders.addAll(plainPlaceholders.stream().filter(it -> { return it.left().matches("[!?#]?[a-z0-9_-]*"); }) .map(it -> { return Placeholder.unparsed(it.left(), it.right()); }).toList());
-        allPlaceholders.addAll(componentPlaceholders.stream().map(it -> { return Placeholder.component(it.left(), it.right()); }).toList());
+        allPlaceholders.addAll(plainPlaceholders.stream().filter(it -> it.left().matches("[!?#]?[a-z0-9_-]*")).map(it -> Placeholder.unparsed(it.left(), it.right())).toList());
+        allPlaceholders.addAll(componentPlaceholders.stream().map(it -> Placeholder.component(it.left(), it.right())).toList());
         return mm.deserialize(res, TagResolver.resolver(allPlaceholders.toArray(new TagResolver[0])));
     }
     public Component getAdventure() {

@@ -199,18 +199,23 @@ public abstract class ChallengeObject {
     }
 
 
+    @Deprecated
+    protected void sendMessage(PlayerEntity player, String message, Map<String, String> placeholders) {
+        Message.sendMessage2Player(message, player, placeholders);
+    }
     /**
      * You can use this method for send message to server players.
-     * @see #sendMessage(PlayerEntity, String)
+     * @see #sendMessage(PlayerEntity, Text)
      * @param player player who we will send message.
      * @param message message for send.
      * @param placeholders Map of placeholders.
      */
-    protected void sendMessage(PlayerEntity player, String message, Map<String, String> placeholders) {
-        Message.sendMessage2Player(message, player, placeholders);
-    }
     protected void sendMessage(PlayerEntity player, Text message, Map<String, Text> placeholders) {
         Message.sendMessage2Player(message, player, placeholders);
+    }
+    @Deprecated
+    protected void sendMessage(PlayerEntity player, String message) {
+        Message.sendMessage2PlayerDefaultPlaceholders(message, player);
     }
     /**
      * You can use this method for send a message to player chat.<br><br>
@@ -222,11 +227,8 @@ public abstract class ChallengeObject {
      *     - And others, if you have PlaceholderAPI.<br>
      * @param player player, who we will send message
      * @param message message, who we will send
-     * @see #sendMessage(PlayerEntity, String, Map)
+     * @see #sendMessage(PlayerEntity, Text, Map)
      */
-    protected void sendMessage(PlayerEntity player, String message) {
-        Message.sendMessage2PlayerDefaultPlaceholders(message, player);
-    }
     protected void sendMessage(PlayerEntity player, Text message) {
         Message.sendMessage2Player(message, player);
     }

@@ -9,133 +9,74 @@ import java.util.function.Supplier;
 
 public class Format {
 
-    private static final Map<String, Supplier<String>> placeholders = new HashMap<>();
-
+    @Deprecated
     public static String formatMessage(String message, Map<String, String> placeholders){
-
-        if (SeasonsAPI.getPlaceholderAPI() != null) {
-            message = SeasonsAPI.getPlaceholderAPI().parseString(message);
+        message = SeasonsAPI.getPlaceholderAPI().parseString(message);
+        for (var key: placeholders.keySet()) {
+            message = message.replaceAll(key, placeholders.get(key));
         }
-        else {
-            // Placeholders
-            for (String placeholder : placeholders.keySet()) {
-                message = message.replaceAll(placeholder, placeholders.get(placeholder));
-            }
-        }
-
-        // Colors
         message = message.replaceAll("&", "§");
-
         return message;
     }
 
+    @Deprecated
     public static String formatMessage(String message){
-
-        if (SeasonsAPI.getPlaceholderAPI() != null) {
-            message = SeasonsAPI.getPlaceholderAPI().parseString(message);
-        }
-        else {
-            // Placeholders
-            for (String key : placeholders.keySet()) if (message.contains(key)) message = message.replaceAll(key, placeholders.get(key).get());
-        }
-
-        // Colors
-        message = message.replaceAll("&", "§");
-
-        return message;
-    }
-    public static Text formatToTextMessage(String message){
-        // Colors
-        message = message.replaceAll("&", "§");
-
-        Text out;
-        if (SeasonsAPI.getPlaceholderAPI() != null) {
-            out = SeasonsAPI.getPlaceholderAPI().parseStringToText(message);
-        }
-        else {
-            // Placeholders
-            for (String key : placeholders.keySet()) if (message.contains(key)) message = message.replaceAll(key, placeholders.get(key).get());
-            out = Text.of(message);
-        }
-
-        return out;
+        return formatMessage(message, new HashMap<>());
     }
     public static Text formatTextMessage(Text message){
-
-        if (SeasonsAPI.getPlaceholderAPI() != null) {
-            message = SeasonsAPI.getPlaceholderAPI().parseText(message);
-        }
-        else {
-            String tempMsg = message.getString();
-            // Placeholders
-            for (String placeholder : placeholders.keySet()) {
-                tempMsg = tempMsg.replaceAll(placeholder, placeholders.get(placeholder).get());
-            }
-            message = Text.of(tempMsg);
-        }
-
-        // Colors
-        message = Text.of(message.getString().replaceAll("&", "§"));
-
+        message = SeasonsAPI.getPlaceholderAPI().parseText(message);
         return message;
     }
     public static Text formatTextMessage(Text message, Map<String, Text> placeholders){
-
-        if (SeasonsAPI.getPlaceholderAPI() != null) {
-            message = SeasonsAPI.getPlaceholderAPI().parseText(message, placeholders);
-        }
-        else {
-            String tempMsg = message.getString();
-            // Placeholders
-            for (String placeholder : placeholders.keySet()) {
-                tempMsg = tempMsg.replaceAll("%"+placeholder+"%", placeholders.get(placeholder).getString());
-            }
-            // Colors
-            message = Text.of(tempMsg.replaceAll("&", "§"));
-        }
-
+        message = SeasonsAPI.getPlaceholderAPI().parseText(message, placeholders);
         return message;
     }
     private static String doubleParseFormat(String value){
-        for (String key : placeholders.keySet()) if (value.contains(key)) value = value.replaceAll(key, placeholders.get(key).get());
+        value = SeasonsAPI.getPlaceholderAPI().parseString(value);
         return value;
     }
 
     public static void regDynamicTextPlaceholder(String placeholder, Supplier<Text> supplier){
-        if (SeasonsAPI.getPlaceholderAPI() != null) SeasonsAPI.getPlaceholderAPI().register(placeholder, SeasonsAPI.getPlaceholderAPI().getTextSupplier(supplier));
-        else placeholders.put("%seasons:"+placeholder+"%", () -> { return supplier.get().getString(); });
+        SeasonsAPI.getPlaceholderAPI().register(placeholder, SeasonsAPI.getPlaceholderAPI().getTextSupplier(supplier));
     }
     public static void regStaticPlaceholder(String placeholder, Text value){
-        if (SeasonsAPI.getPlaceholderAPI() != null) SeasonsAPI.getPlaceholderAPI().register(placeholder, value);
-        else placeholders.put("%seasons:"+placeholder+"%", value::getString);
+        SeasonsAPI.getPlaceholderAPI().register(placeholder, value);
     }
 
     public static void regDynamicPlaceholder(String placeholder, Supplier<String> supplier){
-        if (SeasonsAPI.getPlaceholderAPI() != null) SeasonsAPI.getPlaceholderAPI().register(placeholder, SeasonsAPI.getPlaceholderAPI().getStringSupplier(supplier));
-        else placeholders.put("%seasons:"+placeholder+"%", supplier);
+        SeasonsAPI.getPlaceholderAPI().register(placeholder, SeasonsAPI.getPlaceholderAPI().getStringSupplier(supplier));
     }
     public static void regStaticPlaceholder(String placeholder, String value){
-        if (SeasonsAPI.getPlaceholderAPI() != null) SeasonsAPI.getPlaceholderAPI().register(placeholder, value);
-        else placeholders.put("%seasons:"+placeholder+"%", () -> value);
+        SeasonsAPI.getPlaceholderAPI().register(placeholder, value);
     }
     @SuppressWarnings("unchecked")
     public static void regDoubleParseDynamicPlaceholder(String placeholder, Supplier<?> supplier){
         switch (supplier.get()) {
             case String s -> {
-                if (SeasonsAPI.getPlaceholderAPI() != null)
-                    SeasonsAPI.getPlaceholderAPI().registerDoubleParse(placeholder, () -> Text.of((String) supplier.get()));
-                else placeholders.put("%seasons:" + placeholder + "%", () -> doubleParseFormat((String) supplier.get()));
+                SeasonsAPI.getPlaceholderAPI().registerDoubleParse(placeholder, () -> Text.of((String) supplier.get()));
             }
             case Text t -> {
-                if (SeasonsAPI.getPlaceholderAPI() != null) SeasonsAPI.getPlaceholderAPI().registerDoubleParse(placeholder, SeasonsAPI.getPlaceholderAPI().getTextSupplier((Supplier<Text>) supplier));
-                else placeholders.put("%seasons:"+placeholder+"%", () -> doubleParseFormat(((Text) supplier.get()).getString()));
+                SeasonsAPI.getPlaceholderAPI().registerDoubleParse(placeholder, SeasonsAPI.getPlaceholderAPI().getTextSupplier((Supplier<Text>) supplier));
             }
             default -> throw new IllegalStateException("Unexpected value: " + supplier.get());
         }
     }
     public static void regDoubleParseStaticPlaceholder(String placeholder, String value){
-        if (SeasonsAPI.getPlaceholderAPI() != null) SeasonsAPI.getPlaceholderAPI().registerDoubleParse(placeholder, Text.of(value));
-        else placeholders.put("%seasons:"+placeholder+"%", () -> doubleParseFormat(value));
+        SeasonsAPI.getPlaceholderAPI().registerDoubleParse(placeholder, Text.of(value));
+    }
+
+    @Deprecated
+    public static Text formatOld(String message) {
+        return SeasonsAPI.getPlaceholderAPI().parseStringToText(message.replaceAll("&", "§"));
+    }
+    @Deprecated
+    public static Text formatOld(String message, Map<String, String> placeholders) {
+        var text =  SeasonsAPI.getPlaceholderAPI().parseStringToText(message.replaceAll("&", "§"));
+        var placeholders0 = new HashMap<String, Text>();
+        placeholders.forEach((key, value) -> {
+            placeholders0.put(key, formatOld(value));
+        });
+        return SeasonsAPI.getPlaceholderAPI().parseText(text, placeholders0);
     }
 
 }

@@ -91,8 +91,9 @@ public abstract class WeatherObject {
         if (seasons!=null) this.seasons.addAll(seasons);
         this.nightly = nightly;
     }
+    @Deprecated
     public WeatherObject(String id, Supplier<String> name, @Nullable Boolean raining, @Nullable Boolean thundering, @Nullable Integer chance, @Nullable List<SeasonObject> seasons, @Nullable Boolean nightly) {
-        this(() -> { return Text.of(Format.formatMessage(name.get())); }, id, raining, thundering, chance, seasons, nightly);
+        this(() -> Format.formatOld(name.get()), id, raining, thundering, chance, seasons, nightly);
     }
 
     /**
@@ -134,26 +135,28 @@ public abstract class WeatherObject {
         return this.thundering != null ? this.thundering : Weather.getPreviousCurrent().getThundering();
     }
 
-    /**
-     * You can use this method for send message to server players.
-     * @see #sendMessage(String)
-     * @param message message for send.
-     * @param placeholders Map of placeholders.
-     */
+    @Deprecated
     protected void sendMessage(String message, Map<String, String> placeholders) {
         Message.sendMessage2Server(message, placeholders);
     }
+    /**
+     * You can use this method for send message to server players.
+     * @see #sendMessage(Text)
+     * @param message message for send.
+     * @param placeholders Map of placeholders.
+     */
     protected void sendMessage(Text message, Map<String, Text> placeholders) {
         Message.sendMessage2Server(message, placeholders);
     }
-    /**
-     * You can use this method for send message to server players with default placeholders.
-     * @see #sendMessage(String, Map)
-     * @param message message for send.
-     */
+    @Deprecated
     protected void sendMessage(String message) {
         Message.sendMessage2ServerDefaultPlaceholders(message);
     }
+    /**
+     * You can use this method for send message to server players with default placeholders.
+     * @see #sendMessage(Text, Map)
+     * @param message message for send.
+     */
     protected void sendMessage(Text message) {
         Message.sendMessage2Server(message);
     }

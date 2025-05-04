@@ -80,8 +80,9 @@ public abstract class SeasonObject {
         this.previousSeasons.addAll(previousSeasons);
         this.chance = chance;
     }
+    @Deprecated
     public SeasonObject(String id, Supplier<String> name, List<String> parents, List<String> previousSeasons, Supplier<Integer> chance) {
-        this(() -> { return Text.of(Format.formatMessage(name.get())); }, id, parents, previousSeasons, chance);
+        this(() -> Format.formatOld(name.get()), id, parents, previousSeasons, chance);
     }
 
     /**
@@ -107,26 +108,28 @@ public abstract class SeasonObject {
 
     public int getChance() { return this.chance.get(); }
 
-    /**
-     * You can use this method for send message to server players.
-     * @see #sendMessage(String)
-     * @param message message for send.
-     * @param placeholders Map of placeholders.
-     */
+    @Deprecated
     protected void sendMessage(String message, Map<String, String> placeholders) {
         Message.sendMessage2Server(message, placeholders);
     }
+    /**
+     * You can use this method for send message to server players.
+     * @see #sendMessage(Text)
+     * @param message message for send.
+     * @param placeholders Map of placeholders.
+     */
     protected void sendMessage(Text message, Map<String, Text> placeholders) {
         Message.sendMessage2Server(message, placeholders);
     }
-    /**
-     * You can use this method for send message to server players with default placeholders.
-     * @see #sendMessage(String, Map)
-     * @param message message for send.
-     */
+    @Deprecated
     protected void sendMessage(String message) {
         Message.sendMessage2ServerDefaultPlaceholders(message);
     }
+    /**
+     * You can use this method for send message to server players with default placeholders.
+     * @see #sendMessage(Text, Map)
+     * @param message message for send.
+     */
     protected void sendMessage(Text message) {
         Message.sendMessage2Server(message);
     }

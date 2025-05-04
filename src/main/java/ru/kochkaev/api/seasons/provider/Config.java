@@ -111,7 +111,7 @@ public final class Config {
                 "This mod was developed by analogy with the Spigot plugin \"Seasons\"\nspecifically for the private Minecraft server \"Zixa City\"\nby its administrator (kochkaev, aka kleverdi).\nThe idea of this mod was taken from Harieo.\n" +
                 "------------------------------------------------\nHarieo on GitHub: https://github.com/Harieo/\nOriginal plugin on GitHub: https://github.com/Harieo/Seasons/\nOriginal plugin on SpigotMC: https://www.spigotmc.org/resources/seasons.39298/\n" +
                 "------------------------------------------------\nCreated by @kochkaev\n  - GitHub: https://github.com/kochkaev/\n  - VK: https://vk.com/kleverdi/\n  - YouTube: https://youtube.com/@kochkaev/\n  - Contact email: kleverdi@vk.com\n"+
-                "------------------------------------------------\nWARN: It's server-side mod.\n------------------------------------------------\n# # # # # # # # # # # # # # # # # # # # # # # # #\n";
+                "------------------------------------------------\n# # # # # # # # # # # # # # # # # # # # # # # # #\n";
     }
 }
 

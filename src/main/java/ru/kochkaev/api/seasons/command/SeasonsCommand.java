@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
 import ru.kochkaev.api.seasons.ChallengesTicker;
 import ru.kochkaev.api.seasons.SeasonsAPI;
 import ru.kochkaev.api.seasons.object.ChallengeObject;
@@ -89,55 +90,55 @@ public class SeasonsCommand {
 
     public static int setSeason(String seasonID, ServerCommandSource source) {
         Season.setSeasonIgnoringPrevious(Season.getSeasonAnyBranchByID(seasonID));
-        source.sendFeedback((() -> Message.getFeedbackText("Successfully set season \"" + seasonID + "\"")), true);
+        source.sendFeedback((() -> Message.getFeedbackText(Text.of("Successfully set season \"" + seasonID + "\""))), true);
         return 0;
     }
     public static int getSeason(ServerCommandSource source) {
-        source.sendFeedback((() -> Message.getFeedbackText("Current season is \"" + Season.getCurrent().getName() + "\"")), false);
+        source.sendFeedback((() -> Message.getFeedbackText(Text.of("Current season is \"" + Season.getCurrent().getName() + "\""))), false);
         return 0;
     }
     public static int setWeather(String weatherID, ServerCommandSource source) {
         WeatherObject weather = Weather.getWeatherByID(weatherID);
         Weather.setWeather(weather);
         Weather.setIsNight(weather.isNightly());
-        source.sendFeedback((() -> Message.getFeedbackText("Successfully set weather \"" + weatherID + "\"")), true);
+        source.sendFeedback((() -> Message.getFeedbackText(Text.of("Successfully set weather \"" + weatherID + "\""))), true);
         return 0;
     }
     public static int getWeather(ServerCommandSource source) {
-        source.sendFeedback((() -> Message.getFeedbackText("Current weather is \"" + Weather.getCurrent().getName() + "\"")), false);
+        source.sendFeedback((() -> Message.getFeedbackText(Text.of("Current weather is \"" + Weather.getCurrent().getName() + "\""))), false);
         return 0;
     }
     public static int setLang(String lang, ServerCommandSource source) {
         Config.setLang(lang);
-        source.sendFeedback((() -> Message.getFeedbackText("Successfully set lang \"" + lang + "\"")), true);
+        source.sendFeedback((() -> Message.getFeedbackText(Text.of("Successfully set lang \"" + lang + "\""))), true);
         return 0;
     }
     public static int getLang(ServerCommandSource source) {
-        source.sendFeedback((() -> Message.getFeedbackText("Current lang is \"" + Config.getCurrentLang() + "\"")), false);
+        source.sendFeedback((() -> Message.getFeedbackText(Text.of("Current lang is \"" + Config.getCurrentLang() + "\""))), false);
         return 0;
     }
     public static int forceAllowChallenge(String challenge, ServerCommandSource source) {
         ChallengesTicker.forceAllowChallenge(Challenge.getChallengeByID(challenge));
-        source.sendFeedback((() -> Message.getFeedbackText("Successfully force allowed challenge \"" + challenge + "\"")), true);
+        source.sendFeedback((() -> Message.getFeedbackText(Text.of("Successfully force allowed challenge \"" + challenge + "\""))), true);
         return 0;
     }
     public static int forceDisableChallenge(String challenge, ServerCommandSource source) {
         ChallengesTicker.forceDisableChallenge(Challenge.getChallengeByID(challenge));
-        source.sendFeedback((() -> Message.getFeedbackText("Successfully force disabled challenge \"" + challenge + "\"")), true);
+        source.sendFeedback((() -> Message.getFeedbackText(Text.of("Successfully force disabled challenge \"" + challenge + "\""))), true);
         return 0;
     }
     public static int getChallenges(ServerCommandSource source) {
-        source.sendFeedback((() -> Message.getFeedbackText("Currently allowed challenges are " + ChallengesTicker.getAllowedChallenges().stream().map(ChallengeObject::getID).toList())), false);
+        source.sendFeedback((() -> Message.getFeedbackText(Text.of("Currently allowed challenges are " + ChallengesTicker.getAllowedChallenges().stream().map(ChallengeObject::getID).toList()))), false);
         return 0;
     }
 
     public static int setEnabled(boolean enabled, ServerCommandSource source) {
         Config.writeCurrent("enable", enabled);
-        source.sendFeedback((() -> Message.getFeedbackText("Seasons mod is now " + (enabled? "enabled" : "disabled") + " in this world. (You must restart your world to apply it)")), true);
+        source.sendFeedback((() -> Message.getFeedbackText(Text.of("Seasons mod is now " + (enabled? "enabled" : "disabled") + " in this world. (You must restart your world to apply it)"))), true);
         return 0;
     }
     public static int getEnabled(ServerCommandSource source) {
-        source.sendFeedback((() -> Message.getFeedbackText("Currently seasons mod is " + ((Boolean)Config.getCurrentTypedValue("enable")? "enabled" : "disabled") + " in this world.")), false);
+        source.sendFeedback((() -> Message.getFeedbackText(Text.of("Currently seasons mod is " + ((Boolean)Config.getCurrentTypedValue("enable")? "enabled" : "disabled") + " in this world."))), false);
         return 0;
     }
 
@@ -147,7 +148,7 @@ public class SeasonsCommand {
         Season.reloadFromConfig();
         Weather.reloadFromConfig();
         SeasonsAPI.setLoaded(true);
-        source.sendFeedback(() -> Message.getFeedbackText("Seasons configs successfully reloaded!"), true);
+        source.sendFeedback(() -> Message.getFeedbackText(Text.of("Seasons configs successfully reloaded!")), true);
         return 0;
     }
 
@@ -163,10 +164,10 @@ public class SeasonsCommand {
             else if (!list.contains(nickname) && inverse != enabled)
                 list.add(nickname);
             Config.writeCurrent("players_show_actionbar", String.join(";", list));
-            source.sendFeedback((() -> Message.getFeedbackText("Now seasons info in actionbar is " + (enabled? "enabled" : "disabled") + " for you!")), false);
+            source.sendFeedback((() -> Message.getFeedbackText(Text.of("Now seasons info in actionbar is " + (enabled? "enabled" : "disabled") + " for you!"))), false);
             return 0;
         } else {
-            source.sendFeedback((() -> Message.getFeedbackText("You must be player for do it!")), false);
+            source.sendFeedback((() -> Message.getFeedbackText(Text.of("You must be player for do it!"))), false);
             return 1;
         }
     }

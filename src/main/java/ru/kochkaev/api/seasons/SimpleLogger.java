@@ -12,10 +12,10 @@ public class SimpleLogger {
     }
 
     public void info(String message) {
-        logger.info(message);
+        logger.info("[Seasons] {}", message);
     }
     public void debug(String message) {
         if (Config.getModConfig("API").getConfig().getBoolean("conf.dev.logging"))
-            logger.info(message);
+            logger.info("[Seasons debug] {}", message);
     }
 }
