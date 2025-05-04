@@ -1,7 +1,9 @@
 package ru.kochkaev.api.seasons.object;
 
 
+import net.minecraft.text.Text;
 import ru.kochkaev.api.seasons.provider.Season;
+import ru.kochkaev.api.seasons.util.Format;
 import ru.kochkaev.api.seasons.util.Message;
 
 import java.util.ArrayList;
@@ -38,7 +40,7 @@ public abstract class SeasonObject {
      * {@code () -> "Your static name"}<br><br>
      * Lambda expression for get name is String Supplier.
      */
-    protected Supplier<String> name;
+    protected Supplier<Text> name;
 
     /** It's season enabled. */
     protected boolean enabled = true;
@@ -71,12 +73,15 @@ public abstract class SeasonObject {
      * @param previousSeasons {@link #previousSeasons}
      * @param chance {@link #chance}
      */
-    public SeasonObject(String id, Supplier<String> name, List<String> parents, List<String> previousSeasons, Supplier<Integer> chance) {
+    public SeasonObject(Supplier<Text> name, String id, List<String> parents, List<String> previousSeasons, Supplier<Integer> chance) {
         this.id = id;
         this.name = name;
         this.parents.addAll(parents);
         this.previousSeasons.addAll(previousSeasons);
         this.chance = chance;
+    }
+    public SeasonObject(String id, Supplier<String> name, List<String> parents, List<String> previousSeasons, Supplier<Integer> chance) {
+        this(() -> { return Text.of(Format.formatMessage(name.get())); }, id, parents, previousSeasons, chance);
     }
 
     /**
@@ -97,7 +102,8 @@ public abstract class SeasonObject {
     /** This method returns display name of this weather.
      * @return {@link #name}
      */
-    public String getName() { return this.name.get(); }
+    public String getName() { return this.name.get().getString(); }
+    public Text getTextName() { return this.name.get(); }
 
     public int getChance() { return this.chance.get(); }
 
@@ -110,6 +116,9 @@ public abstract class SeasonObject {
     protected void sendMessage(String message, Map<String, String> placeholders) {
         Message.sendMessage2Server(message, placeholders);
     }
+    protected void sendMessage(Text message, Map<String, Text> placeholders) {
+        Message.sendMessage2Server(message, placeholders);
+    }
     /**
      * You can use this method for send message to server players with default placeholders.
      * @see #sendMessage(String, Map)
@@ -117,6 +126,9 @@ public abstract class SeasonObject {
      */
     protected void sendMessage(String message) {
         Message.sendMessage2ServerDefaultPlaceholders(message);
+    }
+    protected void sendMessage(Text message) {
+        Message.sendMessage2Server(message);
     }
 
 

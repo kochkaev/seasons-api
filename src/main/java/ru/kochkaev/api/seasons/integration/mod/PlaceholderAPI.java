@@ -8,6 +8,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import ru.kochkaev.api.seasons.SeasonsAPI;
 
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public class PlaceholderAPI {
@@ -88,8 +90,19 @@ public class PlaceholderAPI {
     public Text parseText(Text message) {
         return Placeholders.parseText(message, PlaceholderContext.of(SeasonsAPI.getServer()));
     }
+    public Text parseText(Text message, Map<String, Text> placeholders) {
+        placeholders.forEach((key, value) -> {
+            Placeholders.register(Identifier.of(key), (ctx, text) -> {
+                return PlaceholderResult.value(value);
+            });
+        });
+        return Placeholders.parseText(message, PlaceholderContext.of(SeasonsAPI.getServer()));
+    }
     public String parseString(String message) {
         return parseText(Text.of(message)).getString();
+    }
+    public Text parseStringToText(String message) {
+        return parseText(Text.of(message));
     }
 
     public TextSupplier getTextSupplier(Supplier<Text> supplier){

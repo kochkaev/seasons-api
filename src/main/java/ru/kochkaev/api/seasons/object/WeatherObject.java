@@ -1,11 +1,14 @@
 package ru.kochkaev.api.seasons.object;
 
 
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import ru.kochkaev.api.seasons.provider.Weather;
+import ru.kochkaev.api.seasons.util.Format;
 import ru.kochkaev.api.seasons.util.Message;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -37,7 +40,7 @@ public abstract class WeatherObject {
      * {@code () -> "Your static name"}<br><br>
      * Lambda expression for get name is String Supplier.
      */
-    protected Supplier<String> name;
+    protected Supplier<Text> name;
     /** Weather property, is it raining in this weather?
      * Can be null (if it shouldn't overwrite previous weather) */
     @Nullable
@@ -79,7 +82,7 @@ public abstract class WeatherObject {
      * @param seasons {@link #seasons}
      * @param nightly {@link #nightly}
      */
-    public WeatherObject(String id, Supplier<String> name, @Nullable Boolean raining, @Nullable Boolean thundering, @Nullable Integer chance, @Nullable List<SeasonObject> seasons, @Nullable Boolean nightly) {
+    public WeatherObject(Supplier<Text> name, String id, @Nullable Boolean raining, @Nullable Boolean thundering, @Nullable Integer chance, @Nullable List<SeasonObject> seasons, @Nullable Boolean nightly) {
         this.id = id;
         this.name = name;
         this.raining = raining;
@@ -87,6 +90,9 @@ public abstract class WeatherObject {
         this.chance = chance;
         if (seasons!=null) this.seasons.addAll(seasons);
         this.nightly = nightly;
+    }
+    public WeatherObject(String id, Supplier<String> name, @Nullable Boolean raining, @Nullable Boolean thundering, @Nullable Integer chance, @Nullable List<SeasonObject> seasons, @Nullable Boolean nightly) {
+        this(() -> { return Text.of(Format.formatMessage(name.get())); }, id, raining, thundering, chance, seasons, nightly);
     }
 
     /**
@@ -107,7 +113,8 @@ public abstract class WeatherObject {
     /** This method returns display name of this weather.
      * @return {@link #name}
      */
-    public String getName() { return this.name.get(); }
+    public String getName() { return this.name.get().getString(); }
+    public Text getTextName() { return this.name.get(); }
     /** This method returns chance of this weather coming.
      * @return {@link #chance}
      */
@@ -136,6 +143,9 @@ public abstract class WeatherObject {
     protected void sendMessage(String message, Map<String, String> placeholders) {
         Message.sendMessage2Server(message, placeholders);
     }
+    protected void sendMessage(Text message, Map<String, Text> placeholders) {
+        Message.sendMessage2Server(message, placeholders);
+    }
     /**
      * You can use this method for send message to server players with default placeholders.
      * @see #sendMessage(String, Map)
@@ -143,6 +153,9 @@ public abstract class WeatherObject {
      */
     protected void sendMessage(String message) {
         Message.sendMessage2ServerDefaultPlaceholders(message);
+    }
+    protected void sendMessage(Text message) {
+        Message.sendMessage2Server(message);
     }
 
     /** This method returns seasons-api, that this weather will available.

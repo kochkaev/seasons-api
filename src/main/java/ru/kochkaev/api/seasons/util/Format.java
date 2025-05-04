@@ -44,6 +44,22 @@ public class Format {
 
         return message;
     }
+    public static Text formatToTextMessage(String message){
+        // Colors
+        message = message.replaceAll("&", "§");
+
+        Text out;
+        if (SeasonsAPI.getPlaceholderAPI() != null) {
+            out = SeasonsAPI.getPlaceholderAPI().parseStringToText(message);
+        }
+        else {
+            // Placeholders
+            for (String key : placeholders.keySet()) if (message.contains(key)) message = message.replaceAll(key, placeholders.get(key).get());
+            out = Text.of(message);
+        }
+
+        return out;
+    }
     public static Text formatTextMessage(Text message){
 
         if (SeasonsAPI.getPlaceholderAPI() != null) {
@@ -63,9 +79,35 @@ public class Format {
 
         return message;
     }
+    public static Text formatTextMessage(Text message, Map<String, Text> placeholders){
+
+        if (SeasonsAPI.getPlaceholderAPI() != null) {
+            message = SeasonsAPI.getPlaceholderAPI().parseText(message, placeholders);
+        }
+        else {
+            String tempMsg = message.getString();
+            // Placeholders
+            for (String placeholder : placeholders.keySet()) {
+                tempMsg = tempMsg.replaceAll("%"+placeholder+"%", placeholders.get(placeholder).getString());
+            }
+            // Colors
+            message = Text.of(tempMsg.replaceAll("&", "§"));
+        }
+
+        return message;
+    }
     private static String doubleParseFormat(String value){
         for (String key : placeholders.keySet()) if (value.contains(key)) value = value.replaceAll(key, placeholders.get(key).get());
         return value;
+    }
+
+    public static void regDynamicTextPlaceholder(String placeholder, Supplier<Text> supplier){
+        if (SeasonsAPI.getPlaceholderAPI() != null) SeasonsAPI.getPlaceholderAPI().register(placeholder, SeasonsAPI.getPlaceholderAPI().getTextSupplier(supplier));
+        else placeholders.put("%seasons:"+placeholder+"%", () -> { return supplier.get().getString(); });
+    }
+    public static void regStaticPlaceholder(String placeholder, Text value){
+        if (SeasonsAPI.getPlaceholderAPI() != null) SeasonsAPI.getPlaceholderAPI().register(placeholder, value);
+        else placeholders.put("%seasons:"+placeholder+"%", value::getString);
     }
 
     public static void regDynamicPlaceholder(String placeholder, Supplier<String> supplier){

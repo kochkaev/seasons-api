@@ -38,8 +38,8 @@ public class Title{
     public static void showTitle() {
         Function<Text, Packet<?>> titleConstructor = TitleS2CPacket::new;
         Function<Text, Packet<?>> subtitleConstructor = SubtitleS2CPacket::new;
-        Text title = Text.of(Format.formatMessage(Config.getModConfig("API").getConfig().getString("conf.format.title.title")));
-        Text subtitle = Text.of(Format.formatMessage(Config.getModConfig("API").getConfig().getString("conf.format.title.subtitle")));
+        Text title = Format.formatToTextMessage(Config.getModConfig("API").getConfig().getString("conf.format.title.title"));
+        Text subtitle = Format.formatToTextMessage(Config.getModConfig("API").getConfig().getString("conf.format.title.subtitle"));
         for (ServerPlayerEntity player : SeasonsAPI.getServer().getPlayerManager().getPlayerList()) {
             try {
                 player.networkHandler.sendPacket(titleConstructor.apply(Texts.parse(null, title, player, 0)));

@@ -8,6 +8,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.text.Text;
 import ru.kochkaev.api.seasons.ChallengesTicker;
 import ru.kochkaev.api.seasons.SeasonsAPI;
 import ru.kochkaev.api.seasons.WeatherDamageType;
@@ -208,6 +209,9 @@ public abstract class ChallengeObject {
     protected void sendMessage(PlayerEntity player, String message, Map<String, String> placeholders) {
         Message.sendMessage2Player(message, player, placeholders);
     }
+    protected void sendMessage(PlayerEntity player, Text message, Map<String, Text> placeholders) {
+        Message.sendMessage2Player(message, player, placeholders);
+    }
     /**
      * You can use this method for send a message to player chat.<br><br>
      *
@@ -222,6 +226,9 @@ public abstract class ChallengeObject {
      */
     protected void sendMessage(PlayerEntity player, String message) {
         Message.sendMessage2PlayerDefaultPlaceholders(message, player);
+    }
+    protected void sendMessage(PlayerEntity player, Text message) {
+        Message.sendMessage2Player(message, player);
     }
 
     /** This method check this challenge available in current weather (or if {@link #allowIfPrevious} == true and {@link #weathers} contains previous weather).

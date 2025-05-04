@@ -23,6 +23,13 @@ public abstract class Message {
         for (PlayerEntity player : SeasonsAPI.getServer().getPlayerManager().getPlayerList()) player.sendMessage(formattedText, false);
     }
 
+    public static void sendMessage2Server(Text message){
+        sendMessage2Server(message, new HashMap<>());
+    }
+    public static void sendMessage2Server(Text message, Map<String, Text> placeholders){
+        sendMessage2Players(message, SeasonsAPI.getServer().getPlayerManager().getPlayerList().stream().map(it -> { return (PlayerEntity) it; }).toList(), placeholders);
+    }
+
     public static void sendMessage2Players(String message, List<PlayerEntity> players){
         sendMessage2Players(message, players, new HashMap<>());
     }
@@ -35,14 +42,28 @@ public abstract class Message {
         for (PlayerEntity player : players) player.sendMessage(formattedText, false);
     }
 
+    public static void sendMessage2Players(Text message, List<PlayerEntity> players){
+        sendMessage2Players(message, players, new HashMap<>());
+    }
+    public static void sendMessage2Players(Text message, List<PlayerEntity> players, Map<String, Text> placeholders){
+        for (PlayerEntity player : players) sendMessage2Player(message, player,placeholders);
+    }
+
     public static void sendMessage2Player(String message, PlayerEntity player){
         sendMessage2Player(message, player, new HashMap<>());
     }
     public static void sendMessage2Player(String message, PlayerEntity player, Map<String, String> placeholders){
-        player.sendMessage(Text.of(getFormattedMessage(message, placeholders)), false);
+        sendMessage2Player(Text.of(Format.formatMessage(message, placeholders)), player);
     }
     public static void sendMessage2PlayerDefaultPlaceholders(String message, PlayerEntity player){
-        player.sendMessage(getFormattedText(message), false);
+        sendMessage2Player(message, player);
+    }
+
+    public static void sendMessage2Player(Text message, PlayerEntity player){
+        sendMessage2Player(message, player, new HashMap<>());
+    }
+    public static void sendMessage2Player(Text message, PlayerEntity player, Map<String, Text> placeholders){
+        player.sendMessage(getFormattedMessage(message, placeholders), false);
     }
 
     public static String getFeedbackMessage(String message){
@@ -57,6 +78,13 @@ public abstract class Message {
         placeholders1.put("%message%", Format.formatMessage(message, placeholders));
         placeholders1.put("%seasons:display-name%", Config.getModConfig("API").getLang().getString("lang.message.seasonsModDisplayName"));
         return Format.formatMessage(Config.getModConfig("API").getConfig().getString("conf.format.chat.message"), placeholders1);
+    }
+
+    public static Text getFormattedMessage(Text message, Map<String, Text> placeholders) {
+        Map<String, Text> placeholders1 = new HashMap<>();
+        placeholders1.put("message", Format.formatTextMessage(message, placeholders));
+        placeholders1.put("seasons:display-name", Text.of(Config.getModConfig("API").getLang().getString("lang.message.seasonsModDisplayName").replace("&", "§")));
+        return Format.formatTextMessage(Text.of(Config.getModConfig("API").getConfig().getString("conf.format.chat.message").replace("&", "§")), placeholders1);
     }
 
     public static Text getFormattedText(String message) {

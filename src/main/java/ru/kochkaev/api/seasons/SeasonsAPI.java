@@ -94,11 +94,11 @@ public class SeasonsAPI {
     }
 
     private static void registerPlaceholders() {
-        Format.regDynamicPlaceholder("weather", () -> Weather.getCurrent().getName());
-        Format.regDynamicPlaceholder("season", () -> Season.getCurrent().getName());
+        Format.regDynamicTextPlaceholder("weather", () -> Weather.getCurrent().getTextName());
+        Format.regDynamicTextPlaceholder("season", () -> Season.getCurrent().getTextName());
         Format.regDynamicPlaceholder("lang", Config::getCurrentLang);
         Format.regDynamicPlaceholder("display-name", () -> Config.getModConfig("API").getLang().getString("lang.message.seasonsModDisplayName"));
-        Format.regDynamicPlaceholder("weather-previous", () -> Weather.getPreviousCurrent().getName());
+        Format.regDynamicTextPlaceholder("weather-previous", () -> Weather.getPreviousCurrent().getTextName());
         Format.regDoubleParseDynamicPlaceholder("title-new-day", () -> Text.of(Config.getModConfig("API").getLang().getString("lang.message.messageNewDay")));
         Format.regDoubleParseDynamicPlaceholder("title-info", () -> Text.of(Config.getModConfig("API").getLang().getString("lang.message.currentInfo")));
         Format.regDoubleParseDynamicPlaceholder("actionbar", () -> Text.of(Config.getModConfig("API").getConfig().getString("conf.format.title.actionbar")));
