@@ -22,8 +22,8 @@ public class DefaultTXTLangEN extends ConfigFileObject {
     public void generate(ConfigContentObject content) {
         content
                 .addTextValue("lang.message.seasonsModDisplayName", "<yellow><bold>Seasons", "Seasons mod name (used in chat messages as %seasons:display-name% placeholder)")
-                .addValue("lang.message.messageNewDay", "<yellow><bold>That's a new day!", "New day title message (used in titles as %seasons:title-new-day% placeholder)")
-                .addValue("lang.message.currentInfo", "%seasons:season%. <gray>Today's %seasons:weather%", "Current weather and season title message (used in titles as %seasons:title-info% placeholder)");
+                .addTextValue("lang.message.messageNewDay", "<yellow><bold>That's a new day!", "New day title message (used in titles as %seasons:title-new-day% placeholder)")
+                .addTextValue("lang.message.currentInfo", "%seasons:season%. <gray>Today's %seasons:weather%", "Current weather and season title message (used in titles as %seasons:title-info% placeholder)");
     }
 
     @Override

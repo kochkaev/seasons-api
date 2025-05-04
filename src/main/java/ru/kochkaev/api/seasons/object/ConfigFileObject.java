@@ -122,8 +122,9 @@ public abstract class ConfigFileObject {
                 txt.createNewFile();
             }
             content.reload();
-            boolean isLegacy = autoParser(Files.readAllLines(path, StandardCharsets.UTF_8).stream()) || update(content, version, getInt("version"));
-            if (isLegacy) write();
+            boolean isLegacy0 = autoParser(Files.readAllLines(path, StandardCharsets.UTF_8).stream());
+            boolean isLegacy1 = update(content, version, getInt("version"));
+            if (isLegacy0 || isLegacy1) write();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
